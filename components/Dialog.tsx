@@ -1,15 +1,26 @@
 import React from 'react';
 import Button from './Button';
 
+type ActionVariant = 'primary' | 'secondary' | 'danger' | 'success';
+
+interface DialogAction {
+  label: string;
+  variant?: ActionVariant;
+  color?: string;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  type?: 'button' | 'submit';
+}
+
 interface DialogProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
   onSubmit?: (e: React.FormEvent) => void;
+  actions?: DialogAction[];
 }
 
-const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children, onSubmit }) => {
+const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children, onSubmit, actions }) => {
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -33,12 +44,28 @@ const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children, onSub
               <form onSubmit={handleSubmit} className="space-y-4">
                 {children}
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
-                  <Button type="submit">
-                    Сохранить
-                  </Button>
-                  <Button type="button" variant="secondary" onClick={onClose}>
-                    Отмена
-                  </Button>
+                  {actions && actions.length > 0 ? (
+                    actions.map((action, idx) => (
+                      <Button
+                        key={idx}
+                        type={action.type ?? 'button'}
+                        variant={action.variant}
+                        onClick={action.onClick}
+                        className={action.color ? action.color : ''}
+                      >
+                        {action.label}
+                      </Button>
+                    ))
+                  ) : (
+                    <>
+                      <Button type="submit">
+                        Сохранить
+                      </Button>
+                      <Button type="button" variant="secondary" onClick={onClose}>
+                        Отмена
+                      </Button>
+                    </>
+                  )}
                 </div>
               </form>
             </div>

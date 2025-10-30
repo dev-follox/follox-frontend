@@ -30,6 +30,7 @@ const BloggersPage: React.FC = () => {
   const [isCreatingLink, setIsCreatingLink] = useState(false);
   const [linkGenerated, setLinkGenerated] = useState(false);
   const [newLinkCode, setNewLinkCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -140,9 +141,28 @@ const BloggersPage: React.FC = () => {
           setSelectedBlogger(null);
           setSelectedProduct(null);
           setLinkGenerated(false);
+          setNewLinkCode(null);
         }}
         title="Создать партнёрскую ссылку"
         onSubmit={handleGenerateLink}
+        actions={linkGenerated
+          ? [
+              {
+                label: 'Закрыть',
+                variant: 'secondary',
+                onClick: () => {
+                  setIsLinkDialogOpen(false);
+                  setSelectedBlogger(null);
+                  setSelectedProduct(null);
+                  setLinkGenerated(false);
+                  setNewLinkCode(null);
+                },
+              },
+            ]
+          : [
+              { label: 'Отмена', variant: 'secondary', onClick: () => setIsLinkDialogOpen(false) },
+              { label: 'Сгенерировать', variant: 'primary', type: 'button', onClick: handleGenerateLink },
+            ]}
       >
         <div className="space-y-4">
           <Select
@@ -165,12 +185,39 @@ const BloggersPage: React.FC = () => {
               label: product.name
             }))}
           />
-          {linkGenerated && (
+          {linkGenerated && newLinkCode && (
             <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
               <p className="text-sm text-green-800 font-medium">Партнёрская ссылка создана!</p>
-              <p className="mt-1 font-mono text-sm break-all">
-                {`${window.location.origin}/#/products/${newLinkCode}`}
-              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <p className="font-mono text-sm break-all flex-1">
+                  {`${window.location.origin}/#/products/${newLinkCode}`}
+                </p>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const url = `${window.location.origin}/#/products/${newLinkCode}`;
+                      navigator.clipboard?.writeText(url).then(() => {
+                        setCopied(true);
+                        window.setTimeout(() => setCopied(false), 1500);
+                      });
+                    }}
+                    className="inline-flex items-center justify-center p-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50"
+                    title="Скопировать ссылку"
+                    aria-label="Скопировать ссылку"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M8 4a3 3 0 013-3h4a3 3 0 013 3v4a3 3 0 01-3 3h-1v-2h1a1 1 0 001-1V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v1H8V4z" />
+                      <path d="M4 7a3 3 0 00-3 3v6a3 3 0 003 3h6a3 3 0 003-3v-6a3 3 0 00-3-3H4zm0 2h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6a1 1 0 011-1z" />
+                    </svg>
+                  </button>
+                  {copied && (
+                    <div className="absolute -top-9 right-0 bg-gray-900 text-white text-xs px-2 py-1 rounded shadow">
+                      Ссылка скопирована
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
