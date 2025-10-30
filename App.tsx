@@ -13,6 +13,9 @@ import BloggersPage from './pages/BloggersPage';
 import NotFoundPage from './pages/NotFoundPage';
 import Header from './components/Header';
 import PublicLayout from './components/PublicLayout';
+import BloggerRegistrationPage from './pages/BloggerRegistrationPage';
+import BloggerProductsDetailedPage from './pages/BloggerProductsDetailedPage';
+import AuthLandingPage from './pages/AuthLandingPage';
 
 const ProtectedRoute: React.FC = () => {
   const { isLoggedIn, loading } = useAuth();
@@ -20,7 +23,7 @@ const ProtectedRoute: React.FC = () => {
   if (loading) {
     return <div>Loading...</div>; // Or a spinner component
   }
-  return isLoggedIn ? <Outlet /> : <Navigate to="/shop/login" replace state={{ from: location }} />;
+  return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />;
 };
 
 const App: React.FC = () => {
@@ -31,19 +34,21 @@ const App: React.FC = () => {
         <main className="flex-grow container mx-auto p-4 md:p-8">
           <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<Navigate to="/shop/login" />} />
+            <Route path="/" element={<AuthLandingPage />} />
             <Route path="/products/:code" element={<PublicLayout><ProductLandingPage /></PublicLayout>} />
             
-            {/* Auth Routes */}
-            <Route path="/shop/login" element={<ShopLoginPage />} />
+            <Route path="/login" element={<ShopLoginPage />} />
             <Route path="/shop/register" element={<ShopRegistrationPage />} />
+            <Route path="/blogger/register" element={<BloggerRegistrationPage />} />
 
-            {/* Protected Shop Routes */}
+            {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
+              {/* Shop */}
               <Route path="/shop/dashboard" element={<ShopDashboardPage />} />
               <Route path="/shop/products/:productId" element={<ShopProductDetailsPage />} />
               <Route path="/shop/bloggers" element={<BloggersPage />} />
-              {/* Add any other protected shop routes here */}
+              {/* Blogger */}
+              <Route path="/blogger/products" element={<BloggerProductsDetailedPage />} />
             </Route>
 
             {/* Not Found Route */}

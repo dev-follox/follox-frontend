@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Shop, Product, ProductCreate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate } from '../types';
+import { Shop, Product, ProductCreate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed } from '../types';
 
 // In development, use the proxy URL, in production use the actual URL
 const BASE_URL = import.meta.env.MODE === 'development' 
@@ -30,25 +30,18 @@ const PUBLIC_ENDPOINTS = [
 // Add token to requests if it exists and endpoint requires auth
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
-  const isPublicEndpoint = PUBLIC_ENDPOINTS.some(endpoint => {
-    if (endpoint === '/products/') {
-      // Only GET /products/{id} is public, not GET /products/ or any sub-endpoints
-      return config.url?.startsWith(endpoint) && 
-             config.method === 'get' && 
-             config.url !== '/products/' &&
-             !config.url?.includes('/orders/') &&
-             !config.url?.includes('/analytics');
-    }
-    if (endpoint === '/orders/') {
-      return config.url?.startsWith(endpoint) && config.method === 'post';
-    }
-    return config.url?.startsWith(endpoint);
-  });
+
+  // Only GET /products/{id} is public
+  const isProductsPublicGet = config.method === 'get' && /^\/products\/\d+(?:\?.*)?$/.test(config.url || '');
+
+  const isPublicEndpoint = (
+    isProductsPublicGet ||
+    (config.url?.startsWith('/orders/') && config.method === 'post') ||
+    (config.url?.startsWith('/analytics/visit'))
+  );
 
   if (token && !isPublicEndpoint) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log('Request headers:', config.headers);
-    console.log('Request URL:', config.url);
   }
   return config;
 });
@@ -71,14 +64,14 @@ axiosInstance.interceptors.response.use(
 const api = {
   getImageUrl,
   // Auth endpoints
-  login: async (email: string, password: string): Promise<{ shop: Shop; token: string }> => {
+  login: async (email: string, password: string): Promise<{ token: TokenResponse; shop?: Shop; blogger?: Blogger }> => {
     const formData = new URLSearchParams();
     formData.append('username', email);
     formData.append('password', password);
 
     console.log('Login request payload:', { username: email, password: '***' });
     // Override axios instance for this specific request
-    const response = await axios.post(`${BASE_URL}/token`, formData, {
+    const response = await axios.post<TokenResponse>(`${BASE_URL}/token`, formData, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -87,25 +80,30 @@ const api = {
     
     // Store the token
     const token = response.data.access_token;
-    const shopId = response.data.shop_id;
 
     // Store token in localStorage so the interceptor can use it
     localStorage.setItem('access_token', token);
+    localStorage.setItem('auth_token_payload', JSON.stringify(response.data));
 
-    // Get shop info using the token and shop_id
-    const shopResponse = await axiosInstance.get(`/shops/me/${shopId}`);
-    
-    // Create shop object from response
-    const shop: Shop = {
-      id: shopId,
-      name: response.data.name,
-      email: response.data.email,
-      description: null,
-      created_at: new Date().toISOString(), // We'll get the real date from /shops/me/{shop_id}
-      updated_at: null
-    };
+    // Optionally fetch full entity data for shops
+    if (response.data.role === 'SHOP' && response.data.shop_id != null) {
+      const shopResponse = await axiosInstance.get(`/shops/me/${response.data.shop_id}`);
+      return { token: response.data, shop: shopResponse.data };
+    }
 
-    return { shop: { ...shop, ...shopResponse.data }, token };
+    // For bloggers, token already includes name/email; we may not have a dedicated profile endpoint
+    if (response.data.role === 'BLOGGER') {
+      const blogger: Blogger = {
+        id: response.data.blogger_id || 0,
+        name: response.data.name,
+        email: response.data.email,
+        created_at: new Date().toISOString(),
+        updated_at: null,
+      };
+      return { token: response.data, blogger };
+    }
+
+    return { token: response.data };
   },
 
   register: async (shopData: { name: string; email: string; password: string; description?: string }): Promise<Shop> => {
@@ -123,6 +121,16 @@ const api = {
 
   getProducts: async (skip = 0, limit = 100): Promise<Product[]> => {
     const response = await axiosInstance.get('/products/', { params: { skip, limit } });
+    return response.data;
+  },
+
+  getProductsForMe: async (): Promise<Product[]> => {
+    const response = await axiosInstance.get('/products/for-me');
+    return response.data;
+  },
+
+  getProductsForMeDetailed: async (): Promise<BloggerProductDetailed[]> => {
+    const response = await axiosInstance.get('/products/for-me/detailed');
     return response.data;
   },
 

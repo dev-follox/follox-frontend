@@ -5,12 +5,12 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import api from '../services/api';
 
-const ShopRegistrationPage: React.FC = () => {
+const BloggerRegistrationPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    description: ''
+    bio: ''
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,8 +22,7 @@ const ShopRegistrationPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await api.register(formData);
-      // Redirect to login page after successful registration
+      await api.createBlogger(formData);
       navigate('/login');
     } catch (err) {
       setError('Не удалось зарегистрироваться. Проверьте данные и попробуйте снова.');
@@ -33,7 +32,7 @@ const ShopRegistrationPage: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target as HTMLInputElement;
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -52,18 +51,18 @@ const ShopRegistrationPage: React.FC = () => {
             </Button>
           </Link>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Создайте аккаунт магазина
+            Создайте аккаунт блогера
           </h2>
           <span className="w-9" />
         </div>
         <Card className="p-8">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && <p className="text-center text-sm text-red-600">{error}</p>}
-            
+
             <Input
               id="name"
               name="name"
-              label="Название магазина"
+              label="Имя"
               type="text"
               required
               value={formData.name}
@@ -93,12 +92,12 @@ const ShopRegistrationPage: React.FC = () => {
             />
 
             <Input
-              id="description"
-              name="description"
-              label="Описание (необязательно)"
+              id="bio"
+              name="bio"
+              label="О себе (необязательно)"
               multiline
               rows={3}
-              value={formData.description}
+              value={formData.bio}
               onChange={handleChange}
             />
 
@@ -123,4 +122,4 @@ const ShopRegistrationPage: React.FC = () => {
   );
 };
 
-export default ShopRegistrationPage;
+export default BloggerRegistrationPage;

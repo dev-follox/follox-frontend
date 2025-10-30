@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Button from './Button';
@@ -8,7 +8,7 @@ import api from '@/services/api';
 import Card from './Card';
 
 const Header: React.FC = () => {
-	const { isLoggedIn, logout, shop } = useAuth();
+	const { isLoggedIn, logout, user } = useAuth();
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [chatId, setChatId] = useState<string>('');
@@ -31,8 +31,10 @@ const Header: React.FC = () => {
 		setLinkLoading(true);
 		setError('');
 		try {
-			const updated = await api.linkTelegram(shop.id, chatId.trim());
-			setLinkSuccess(true);
+			if (user?.role === 'SHOP' && user.shop) {
+				await api.linkTelegram(user.shop.id, chatId.trim());
+				setLinkSuccess(true);
+			}
 		} catch (err) {
 			setError('Не удалось привязать Telegram. Проверьте ID чата.');
 		} finally {
@@ -45,15 +47,15 @@ const Header: React.FC = () => {
 			<header className="bg-white shadow-md">
 				<nav className="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
 					<div className="flex items-center space-x-4">
-						<Link to={isLoggedIn ? '/shop/dashboard' : '/'} className="text-2xl font-bold text-gray-800">
+						<Link to={isLoggedIn ? (user?.role === 'SHOP' ? '/shop/dashboard' : '/blogger/products') : '/'} className="text-2xl font-bold text-gray-800">
 							Follox
 						</Link>
-						{isLoggedIn && shop && (
-									<span className="text-gray-600 hidden sm:block">Добро пожаловать, {shop.name}</span>
+						{isLoggedIn && user?.role === 'SHOP' && user.shop && (
+								<span className="text-gray-600 hidden sm:block">Добро пожаловать, {user.shop.name}</span>
 						)}
 					</div>
 					<div className="flex items-center space-x-4">
-						{isLoggedIn && shop && (
+						{isLoggedIn && user?.role === 'SHOP' && user.shop && (
 							<>
 								<div className="flex items-center space-x-4">
 									<Link to="/shop/dashboard" className="text-gray-600 hover:text-gray-900">
@@ -68,6 +70,9 @@ const Header: React.FC = () => {
 									</Button>
 								</div>
 							</>
+						)}
+						{isLoggedIn && user?.role === 'BLOGGER' && (
+							<Button onClick={logout} variant="secondary">Выйти</Button>
 						)}
 					</div>
 				</nav>
@@ -110,8 +115,8 @@ const Header: React.FC = () => {
 										className="text-indigo-600 underline hover:text-indigo-800 font-medium"
 									>
 										https://t.me/folloxKzBot
-									</a>
-									.
+										</a>
+										.
 								</li>
 								<li>
 									Запустите бота.

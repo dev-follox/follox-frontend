@@ -21,7 +21,8 @@ const BloggersPage: React.FC = () => {
   const [newBlogger, setNewBlogger] = useState({
     name: '',
     email: '',
-    bio: ''
+    bio: '',
+    password: '',
   });
 
   // Affiliate link creation
@@ -57,7 +58,7 @@ const BloggersPage: React.FC = () => {
     try {
       const blogger = await api.createBlogger(newBlogger);
       setBloggers(prev => [...prev, blogger]);
-      setNewBlogger({ name: '', email: '', bio: '' });
+      setNewBlogger({ name: '', email: '', bio: '', password: '' });
       setIsDialogOpen(false);
     } catch (err) {
       setError('Не удалось создать блогера');
@@ -121,6 +122,14 @@ const BloggersPage: React.FC = () => {
           type="email"
           value={newBlogger.email}
           onChange={e => setNewBlogger(prev => ({ ...prev, email: e.target.value }))}
+          required
+        />
+        <Input
+          id="password"
+          label="Пароль"
+          type="password"
+          value={newBlogger.password}
+          onChange={e => setNewBlogger(prev => ({ ...prev, password: e.target.value }))}
           required
         />
         <Input

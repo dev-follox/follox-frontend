@@ -16,6 +16,8 @@ export interface ShopCreate {
   password: string;
 }
 
+export type UserRole = 'SHOP' | 'BLOGGER';
+
 // Product types
 export interface Product {
   id: number;
@@ -24,6 +26,7 @@ export interface Product {
   price: number;
   shop_id: number;
   image_url?: string;
+  blogger_task_description?: string;
   created_at: string;
   updated_at: string | null;
 }
@@ -34,6 +37,7 @@ export interface ProductCreate {
   price: number;
   shop_id: number;
   image_url?: string;
+  blogger_task_description?: string;
 }
 
 // Order types
@@ -103,4 +107,25 @@ export interface BloggerCreate {
   name: string;
   email: string;
   bio?: string;
+  password: string;
+}
+
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  role: UserRole;
+  shop_id?: number | null;
+  blogger_id?: number | null;
+  name: string;
+  email: string;
+}
+
+export interface BloggerProductDetailed {
+  id: number;
+  name: string;
+  description?: string | null;
+  price: number;
+  image_url?: string | null;
+  blogger_task_description?: string | null;
+  affiliate_code: string;
 }

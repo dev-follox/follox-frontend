@@ -11,7 +11,8 @@ import Input from '../components/Input';
 import Dialog from '../components/Dialog';
 
 const ShopDashboardPage: React.FC = () => {
-  const { shop } = useAuth();
+  const { user } = useAuth();
+  const shop = user?.shop;
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +21,7 @@ const ShopDashboardPage: React.FC = () => {
   const [newProduct, setNewProduct] = useState({
     name: '',
     description: '',
+    bloggerTaskDescription: '',
     price: '',
     image: null as File | null,
     imagePreview: '',
@@ -76,12 +78,13 @@ const ShopDashboardPage: React.FC = () => {
       const createdProduct = await api.createProduct({
         name: newProduct.name,
         description: newProduct.description || undefined,
+        blogger_task_description: newProduct.bloggerTaskDescription || undefined,
         price: parseFloat(newProduct.price),
         shop_id: shop.id,
         image_url: imageUrl
       });
       setProducts(prev => [createdProduct, ...prev]);
-      setNewProduct({ name: '', description: '', price: '', image: null, imagePreview: '' });
+      setNewProduct({ name: '', description: '', bloggerTaskDescription: '', price: '', image: null, imagePreview: '' });
       setIsDialogOpen(false);
     } catch (err) {
       setError('Не удалось создать товар.');
@@ -118,6 +121,14 @@ const ShopDashboardPage: React.FC = () => {
           rows={3}
           value={newProduct.description}
           onChange={e => setNewProduct(prev => ({ ...prev, description: e.target.value }))}
+        />
+        <Input
+          id="blogger_task_description"
+          label="ТЗ для блогера"
+          multiline
+          rows={3}
+          value={newProduct.bloggerTaskDescription}
+          onChange={e => setNewProduct(prev => ({ ...prev, bloggerTaskDescription: e.target.value }))}
         />
           <Input
             id="price"

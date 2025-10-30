@@ -1,11 +1,17 @@
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';
-import { Shop } from '../types';
+import { Shop, Blogger, UserRole } from '../types';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
+interface AuthUser {
+  role: UserRole;
+  shop?: Shop | null;
+  blogger?: Blogger | null;
+}
+
 interface AuthContextType {
-  shop: Shop | null;
+  user: AuthUser | null;
   isLoggedIn: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -16,46 +22,63 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [shop, setShop] = useState<Shop | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     try {
-      const storedShop = localStorage.getItem('shop');
-      if (storedShop) {
-        setShop(JSON.parse(storedShop));
+      const storedUser = localStorage.getItem('auth_user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
       }
     } catch (error) {
-      console.error('Failed to parse shop from localStorage', error);
-      localStorage.removeItem('shop');
+      console.error('Failed to parse auth user from localStorage', error);
+      localStorage.removeItem('auth_user');
     } finally {
       setLoading(false);
     }
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const { shop: loggedInShop } = await api.login(email, password);
-    setShop(loggedInShop);
-    localStorage.setItem('shop', JSON.stringify(loggedInShop));
-    navigate('/shop/dashboard', { replace: true });
+    const { token, shop, blogger } = await api.login(email, password);
+
+    if (token.role === 'SHOP') {
+      const authUser: AuthUser = { role: 'SHOP', shop: shop || null };
+      setUser(authUser);
+      localStorage.setItem('auth_user', JSON.stringify(authUser));
+      navigate('/shop/dashboard', { replace: true });
+      return;
+    }
+
+    if (token.role === 'BLOGGER') {
+      const authUser: AuthUser = { role: 'BLOGGER', blogger: blogger || null };
+      setUser(authUser);
+      localStorage.setItem('auth_user', JSON.stringify(authUser));
+      navigate('/blogger/products', { replace: true });
+      return;
+    }
   }, [navigate]);
 
   const logout = useCallback(() => {
-    setShop(null);
-    localStorage.removeItem('shop');
+    setUser(null);
+    localStorage.removeItem('auth_user');
     localStorage.removeItem('access_token');
-    navigate('/shop/login', { replace: true });
+    navigate('/login', { replace: true });
   }, [navigate]);
 
   const setShopData = useCallback((updated: Shop) => {
-    setShop(updated);
-    localStorage.setItem('shop', JSON.stringify(updated));
+    setUser(prev => {
+      if (!prev || prev.role !== 'SHOP') return prev;
+      const updatedUser: AuthUser = { ...prev, shop: updated };
+      localStorage.setItem('auth_user', JSON.stringify(updatedUser));
+      return updatedUser;
+    });
   }, []);
 
   const value = {
-    shop,
-    isLoggedIn: !!shop,
+    user,
+    isLoggedIn: !!user,
     loading,
     login,
     logout,
