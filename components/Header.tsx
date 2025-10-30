@@ -14,25 +14,27 @@ const Header: React.FC = () => {
 	const [chatId, setChatId] = useState<string>('');
 	const [linkLoading, setLinkLoading] = useState(false);
 	const [error, setError] = useState('');
+	const [linkSuccess, setLinkSuccess] = useState(false);
 
 	const handleOpenLinkTelegramDialog = () => {
 		setChatId('');
 		setIsDialogOpen(true);
+		setLinkSuccess(false);
 	};
 
 	const handleSubmitLink = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!chatId.trim()) {
-			setError('Chat ID is required');
+			setError('Укажите ID чата');
 			return;
 		}
 		setLinkLoading(true);
 		setError('');
 		try {
 			const updated = await api.linkTelegram(shop.id, chatId.trim());
-			setIsDialogOpen(false);
+			setLinkSuccess(true);
 		} catch (err) {
-			setError('Failed to link Telegram. Please verify the Chat ID.');
+			setError('Не удалось привязать Telegram. Проверьте ID чата.');
 		} finally {
 			setLinkLoading(false);
 		}
@@ -76,6 +78,21 @@ const Header: React.FC = () => {
 					onClose={() => setIsDialogOpen(false)}
 							title="Привязать Telegram"
 					onSubmit={handleSubmitLink}
+					actions={linkSuccess
+						? [
+							{
+								label: 'Закрыть',
+								variant: 'secondary',
+								onClick: () => {
+									setIsDialogOpen(false);
+									setLinkSuccess(false);
+								},
+							},
+						]
+						: [
+							{ label: 'Отмена', variant: 'secondary', onClick: () => setIsDialogOpen(false) },
+							{ label: 'Привязать', variant: 'primary', type: 'submit' },
+						]}
 				>
 					<div
 						className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md"
@@ -103,11 +120,17 @@ const Header: React.FC = () => {
 							</ol>
 						</>
 					</div>
+					{linkSuccess && (
+						<div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md" role="alert">
+							<p className="font-bold">Telegram привязан!</p>
+							<p>Вы будете получать уведомления о новых заказах.</p>
+						</div>
+					)}
 					{error && <div className="text-red-600 text-sm">{error}</div>}
 					<Input
 						id="telegram_chat_id"
-							label="Chat ID"
-							placeholder=""
+							label="ID чата"
+							placeholder="например, 123456789 или -1001234567890"
 						value={chatId}
 						onChange={e => setChatId(e.target.value)}
 					/>
