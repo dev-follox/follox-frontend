@@ -38,11 +38,10 @@ export interface ProductCreate {
 
 // Order types
 export enum OrderStatus {
-  WaitingToProcess = 'waiting_to_process',
-  Processed = 'processed',
-  Cancelled = 'cancelled'
+  waiting_to_process = 'Ожидает обработки',
+  processed = 'Обработан',
+  cancelled = 'Отменен'
 }
-
 export interface Order {
   id: number;
   product_id: number;

@@ -5,18 +5,19 @@ import { Product, Order, Analytics, OrderStatus } from '../types';
 import api from '../services/api';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
+import { format } from 'date-fns';
 
 type Tab = 'orders' | 'analytics';
 
-const StatusBadge: React.FC<{ status: OrderStatus }> = ({ status }) => {
+const StatusBadge: React.FC<{ status: keyof typeof OrderStatus }> = ({ status }) => {
   const colorClasses = {
-    [OrderStatus.WaitingToProcess]: 'bg-yellow-100 text-yellow-800',
-    [OrderStatus.Processed]: 'bg-green-100 text-green-800',
-    [OrderStatus.Cancelled]: 'bg-red-100 text-red-800',
+    waiting_to_process: 'bg-yellow-100 text-yellow-800',
+    processed: 'bg-green-100 text-green-800',
+    cancelled: 'bg-red-100 text-red-800',
   };
   return (
     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${colorClasses[status]}`}>
-      {status}
+      {OrderStatus[status]}
     </span>
   );
 };
@@ -54,7 +55,7 @@ const ShopProductDetailsPage: React.FC = () => {
     fetchData();
   }, [fetchData]);
 
-  const handleUpdateStatus = async (orderId: number, status: OrderStatus) => {
+  const handleUpdateStatus = async (orderId: number, status: keyof typeof OrderStatus) => {
     setUpdatingOrderId(orderId);
     try {
       await api.updateOrderStatus(orderId, status);
@@ -109,6 +110,7 @@ const ShopProductDetailsPage: React.FC = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Создан</th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Телефон клиента</th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Количество</th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Итого</th>
@@ -125,15 +127,16 @@ const ShopProductDetailsPage: React.FC = () => {
                         </tr>
                       ) : orders.map((order) => (
                         <tr key={order.id}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{format(new Date(order.created_at), 'dd.MM.yyyy HH:mm')}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{order.client_phone}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.quantity}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₸{(order.quantity * order.price_per_item).toFixed(2)}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><StatusBadge status={order.status} /></td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><StatusBadge status={order.status as keyof typeof OrderStatus} /></td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            {order.status === OrderStatus.WaitingToProcess && (
+                            {order.status === 'waiting_to_process' && (
                               <div className="flex items-center justify-end space-x-2">
-                                <Button onClick={() => handleUpdateStatus(order.id, OrderStatus.Processed)} variant="success" size="sm" isLoading={updatingOrderId === order.id}>Обработать</Button>
-                                <Button onClick={() => handleUpdateStatus(order.id, OrderStatus.Cancelled)} variant="danger" size="sm" isLoading={updatingOrderId === order.id}>Отменить</Button>
+                                <Button onClick={() => handleUpdateStatus(order.id, 'processed')} variant="success" size="sm" isLoading={updatingOrderId === order.id}>Обработать</Button>
+                                <Button onClick={() => handleUpdateStatus(order.id, 'cancelled')} variant="danger" size="sm" isLoading={updatingOrderId === order.id}>Отменить</Button>
                               </div>
                             )}
                           </td>

@@ -160,7 +160,7 @@ const api = {
     return response.data;
   },
 
-  updateOrderStatus: async (orderId: number, status: OrderStatus): Promise<void> => {
+  updateOrderStatus: async (orderId: number, status: keyof typeof OrderStatus): Promise<void> => {
     await axiosInstance.put(`/orders/${orderId}/status`, null, {
       params: { status },
     });
