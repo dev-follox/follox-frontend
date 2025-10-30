@@ -34,10 +34,10 @@ const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children, onSub
                 {children}
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
                   <Button type="submit">
-                    Save
+                    Сохранить
                   </Button>
                   <Button type="button" variant="secondary" onClick={onClose}>
-                    Cancel
+                    Отмена
                   </Button>
                 </div>
               </form>

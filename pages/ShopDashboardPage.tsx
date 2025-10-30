@@ -33,7 +33,7 @@ const ShopDashboardPage: React.FC = () => {
           const data = await api.getProducts();
           setProducts(data);
         } catch (err) {
-          setError('Failed to load products.');
+          setError('Не удалось загрузить товары.');
         } finally {
           setLoading(false);
         }
@@ -84,7 +84,7 @@ const ShopDashboardPage: React.FC = () => {
       setNewProduct({ name: '', description: '', price: '', image: null, imagePreview: '' });
       setIsDialogOpen(false);
     } catch (err) {
-      setError('Failed to create product.');
+      setError('Не удалось создать товар.');
     } finally {
       setIsCreating(false);
     }
@@ -93,19 +93,19 @@ const ShopDashboardPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-xl font-bold text-gray-900">Your Products</h1>
-        <Button onClick={() => setIsDialogOpen(true)}>Add Product</Button>
+        <h1 className="text-xl font-bold text-gray-900">Ваши товары</h1>
+        <Button onClick={() => setIsDialogOpen(true)}>Добавить товар</Button>
       </div>
 
       <Dialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        title="Add New Product"
+        title="Добавить новый товар"
         onSubmit={handleCreateProduct}
       >
         <Input
           id="name"
-          label="Name"
+          label="Название"
           type="text"
           required
           value={newProduct.name}
@@ -113,7 +113,7 @@ const ShopDashboardPage: React.FC = () => {
         />
         <Input
           id="description"
-          label="Description"
+          label="Описание"
           multiline
           rows={3}
           value={newProduct.description}
@@ -121,7 +121,7 @@ const ShopDashboardPage: React.FC = () => {
         />
           <Input
             id="price"
-            label="Price"
+            label="Цена"
             type="number"
             step="0.01"
             required
@@ -130,7 +130,7 @@ const ShopDashboardPage: React.FC = () => {
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Product Image
+              Изображение товара
             </label>
             <input
               type="file"
@@ -147,7 +147,7 @@ const ShopDashboardPage: React.FC = () => {
               <div className="mt-2">
                 <img
                   src={newProduct.imagePreview}
-                  alt="Product preview"
+                  alt="Предпросмотр товара"
                   className="h-32 w-32 object-cover rounded-md"
                 />
               </div>
@@ -156,7 +156,7 @@ const ShopDashboardPage: React.FC = () => {
       </Dialog>
 
       {products.length === 0 ? (
-        <p className="text-center text-gray-500">You have not added any products yet.</p>
+        <p className="text-center text-gray-500">Вы еще не добавили ни одного товара.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (

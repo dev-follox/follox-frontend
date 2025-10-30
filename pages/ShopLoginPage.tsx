@@ -26,7 +26,7 @@ const ShopLoginPage: React.FC = () => {
       await login(email, password);
       // Navigation is handled inside useAuth hook
     } catch (err) {
-      setError('Failed to login. Please check your credentials.');
+      setError('Не удалось войти. Проверьте почту и пароль.');
       setIsLoading(false);
     }
   };
@@ -36,7 +36,7 @@ const ShopLoginPage: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your shop account
+            Вход в аккаунт магазина
           </h2>
         </div>
         <Card className="p-8">
@@ -44,7 +44,7 @@ const ShopLoginPage: React.FC = () => {
             {error && <p className="text-center text-sm text-red-600">{error}</p>}
             <Input
               id="email"
-              label="Email address"
+              label="Электронная почта"
               type="email"
               autoComplete="email"
               required
@@ -53,7 +53,7 @@ const ShopLoginPage: React.FC = () => {
             />
             <Input
               id="password"
-              label="Password"
+              label="Пароль"
               type="password"
               autoComplete="current-password"
               required
@@ -65,12 +65,12 @@ const ShopLoginPage: React.FC = () => {
                 to="/shop/register"
                 className="font-medium text-indigo-600 hover:text-indigo-500"
               >
-                Don't have an account? Sign up
+                Нет аккаунта? Зарегистрируйтесь
               </Link>
             </div>
             <div>
               <Button type="submit" isLoading={isLoading} className="w-full">
-                Sign in
+                Войти
               </Button>
             </div>
           </form>

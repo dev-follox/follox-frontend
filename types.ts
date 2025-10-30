@@ -4,6 +4,7 @@ export interface Shop {
   name: string;
   description?: string;
   email: string;
+  telegram_chat_id?: string | null;
   created_at: string;
   updated_at: string | null;
 }

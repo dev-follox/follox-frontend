@@ -89,13 +89,13 @@ const ShopProductDetailsPage: React.FC = () => {
             onClick={() => setActiveTab('orders')}
             className={`${activeTab === 'orders' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
-            Orders
+            Заказы
           </button>
           <button
             onClick={() => setActiveTab('analytics')}
             className={`${activeTab === 'analytics' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
           >
-            Analytics
+            Аналитика
           </button>
         </nav>
       </div>
@@ -109,18 +109,18 @@ const ShopProductDetailsPage: React.FC = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client Phone</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th scope="col" className="relative px-6 py-3"><span className="sr-only">Actions</span></th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Телефон клиента</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Количество</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Итого</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Статус</th>
+                        <th scope="col" className="relative px-6 py-3"><span className="sr-only">Действия</span></th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {orders.length === 0 ? (
                         <tr>
                           <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                            No orders yet
+                            Заказов пока нет
                           </td>
                         </tr>
                       ) : orders.map((order) => (
@@ -132,8 +132,8 @@ const ShopProductDetailsPage: React.FC = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             {order.status === OrderStatus.WaitingToProcess && (
                               <div className="flex items-center justify-end space-x-2">
-                                <Button onClick={() => handleUpdateStatus(order.id, OrderStatus.Processed)} variant="success" size="sm" isLoading={updatingOrderId === order.id}>Process</Button>
-                                <Button onClick={() => handleUpdateStatus(order.id, OrderStatus.Cancelled)} variant="danger" size="sm" isLoading={updatingOrderId === order.id}>Cancel</Button>
+                                <Button onClick={() => handleUpdateStatus(order.id, OrderStatus.Processed)} variant="success" size="sm" isLoading={updatingOrderId === order.id}>Обработать</Button>
+                                <Button onClick={() => handleUpdateStatus(order.id, OrderStatus.Cancelled)} variant="danger" size="sm" isLoading={updatingOrderId === order.id}>Отменить</Button>
                               </div>
                             )}
                           </td>
@@ -151,23 +151,23 @@ const ShopProductDetailsPage: React.FC = () => {
              <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blogger</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visits</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items Sold</th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Блогер</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Визиты</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Заказы</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Продано</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Выручка</th>
                   </tr>
                 </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                   {analytics.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                        No analytics data yet
+                        Данных аналитики пока нет
                       </td>
                     </tr>
                   ) : analytics.map((analytic) => (
                     <tr key={analytic.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{analytic.blogger?.name || `Blogger ${analytic.blogger_id}`}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{analytic.blogger?.name || `Блогер ${analytic.blogger_id}`}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{analytic.visit_count}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{analytic.order_count}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{analytic.items_sold}</td>

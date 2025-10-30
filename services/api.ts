@@ -193,6 +193,24 @@ const api = {
     const response = await axiosInstance.get(`/products/${productId}/analytics`);
     return response.data;
   },
+
+  // Shop endpoints
+  getMyShop: async (shopId: number): Promise<Shop> => {
+    const response = await axiosInstance.get(`/shops/me/${shopId}`);
+    return response.data;
+  },
+
+  linkTelegram: async (shopId: number, telegramChatId: string): Promise<Shop> => {
+    const response = await axiosInstance.post(`/shops/${shopId}/telegram`, {
+      telegram_chat_id: telegramChatId,
+    });
+    return response.data;
+  },
+
+  getTelegramSetup: async (shopId: number): Promise<any> => {
+    const response = await axiosInstance.get(`/shops/${shopId}/telegram/setup`);
+    return response.data;
+  },
 };
 
 export default api;

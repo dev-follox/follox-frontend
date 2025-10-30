@@ -10,6 +10,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+  setShopData: (updated: Shop) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,12 +48,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     navigate('/shop/login', { replace: true });
   }, [navigate]);
 
+  const setShopData = useCallback((updated: Shop) => {
+    setShop(updated);
+    localStorage.setItem('shop', JSON.stringify(updated));
+  }, []);
+
   const value = {
     shop,
     isLoggedIn: !!shop,
     loading,
     login,
     logout,
+    setShopData,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

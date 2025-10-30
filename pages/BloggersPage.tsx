@@ -42,7 +42,7 @@ const BloggersPage: React.FC = () => {
         setBloggers(bloggersData);
         setProducts(productsData);
       } catch (err) {
-        setError('Failed to load data');
+        setError('Не удалось загрузить данные');
       } finally {
         setLoading(false);
       }
@@ -59,7 +59,7 @@ const BloggersPage: React.FC = () => {
       setNewBlogger({ name: '', email: '', bio: '' });
       setIsDialogOpen(false);
     } catch (err) {
-      setError('Failed to create blogger');
+      setError('Не удалось создать блогера');
     } finally {
       setIsCreating(false);
     }
@@ -76,7 +76,7 @@ const BloggersPage: React.FC = () => {
       setLinkGenerated(true);
       setNewLinkCode(link.code);
     } catch (err) {
-      setError('Failed to create affiliate link');
+      setError('Не удалось создать партнёрскую ссылку');
     } finally {
       setIsCreatingLink(false);
     }
@@ -93,10 +93,10 @@ const BloggersPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-xl font-bold text-gray-900">Bloggers</h1>
+        <h1 className="text-xl font-bold text-gray-900">Блогеры</h1>
         <div className="flex gap-2">
-          <Button onClick={() => setIsDialogOpen(true)}>Add Blogger</Button>
-          <Button onClick={() => setIsLinkDialogOpen(true)} variant="secondary">Create Affiliate Link</Button>
+          <Button onClick={() => setIsDialogOpen(true)}>Добавить блогера</Button>
+          <Button onClick={() => setIsLinkDialogOpen(true)} variant="secondary">Создать партнёрскую ссылку</Button>
         </div>
       </div>
 
@@ -104,19 +104,19 @@ const BloggersPage: React.FC = () => {
       <Dialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        title="Add New Blogger"
+        title="Добавить нового блогера"
         onSubmit={handleCreateBlogger}
       >
         <Input
           id="name"
-          label="Name"
+          label="Имя"
           value={newBlogger.name}
           onChange={e => setNewBlogger(prev => ({ ...prev, name: e.target.value }))}
           required
         />
         <Input
           id="email"
-          label="Email"
+          label="Электронная почта"
           type="email"
           value={newBlogger.email}
           onChange={e => setNewBlogger(prev => ({ ...prev, email: e.target.value }))}
@@ -124,7 +124,7 @@ const BloggersPage: React.FC = () => {
         />
         <Input
           id="bio"
-          label="Bio"
+          label="О себе"
           multiline
           rows={3}
           value={newBlogger.bio}
@@ -141,13 +141,13 @@ const BloggersPage: React.FC = () => {
           setSelectedProduct(null);
           setLinkGenerated(false);
         }}
-        title="Create Affiliate Link"
+        title="Создать партнёрскую ссылку"
         onSubmit={handleGenerateLink}
       >
         <div className="space-y-4">
           <Select
             id="blogger"
-            label="Select Blogger"
+            label="Выберите блогера"
             value={selectedBlogger?.id?.toString() || ''}
             onChange={e => setSelectedBlogger(bloggers.find(b => b.id === Number(e.target.value)) || null)}
             options={bloggers.map(blogger => ({
@@ -157,7 +157,7 @@ const BloggersPage: React.FC = () => {
           />
           <Select
             id="product"
-            label="Select Product"
+            label="Выберите товар"
             value={selectedProduct?.id?.toString() || ''}
             onChange={e => setSelectedProduct(products.find(p => p.id === Number(e.target.value)) || null)}
             options={products.map(product => ({
@@ -167,7 +167,7 @@ const BloggersPage: React.FC = () => {
           />
           {linkGenerated && (
             <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
-              <p className="text-sm text-green-800 font-medium">Affiliate Link Created!</p>
+              <p className="text-sm text-green-800 font-medium">Партнёрская ссылка создана!</p>
               <p className="mt-1 font-mono text-sm break-all">
                 {`${window.location.origin}/#/products/${newLinkCode}`}
               </p>
@@ -181,17 +181,17 @@ const BloggersPage: React.FC = () => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Имя</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bio</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">О себе</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Создан</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {bloggers.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
-                  You have not added any bloggers yet.
+                  Вы еще не добавили ни одного блогера.
                 </td>
               </tr>
             ) : bloggers.map((blogger) => (

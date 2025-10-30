@@ -23,7 +23,7 @@ const ProductLandingPage: React.FC = () => {
 
   useEffect(() => {
     if (!code) {
-      setError('Affiliate link code is missing.');
+      setError('Отсутствует код партнёрской ссылки.');
       setLoading(false);
       return;
     }
@@ -42,7 +42,7 @@ const ProductLandingPage: React.FC = () => {
         );
         setProduct(productResponse);
       } catch (err) {
-        setError('Failed to load product data.');
+        setError('Не удалось загрузить данные товара.');
       } finally {
         setLoading(false);
       }
@@ -54,7 +54,7 @@ const ProductLandingPage: React.FC = () => {
   const handleOrderSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!affiliateLink || !phoneNumber || quantity < 1) {
-      alert('Please fill in all fields correctly.');
+      alert('Пожалуйста, заполните поля корректно.');
       return;
     }
     setIsOrdering(true);
@@ -68,7 +68,7 @@ const ProductLandingPage: React.FC = () => {
       });
       setOrderSuccess(true);
     } catch (err) {
-      alert('Failed to place order.');
+      alert('Не удалось оформить заказ.');
     } finally {
       setIsOrdering(false);
     }
@@ -83,7 +83,7 @@ const ProductLandingPage: React.FC = () => {
   }
 
   if (!product) {
-    return <div className="text-center text-gray-500 text-xl">Product not found.</div>;
+    return <div className="text-center text-gray-500 text-xl">Товар не найден.</div>;
   }
 
   return (
@@ -111,23 +111,23 @@ const ProductLandingPage: React.FC = () => {
           
           {orderSuccess ? (
             <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md" role="alert">
-              <p className="font-bold">Order Placed!</p>
-              <p>Thank you! Your order has been received and will be processed shortly.</p>
+              <p className="font-bold">Заказ оформлен!</p>
+              <p>Спасибо! Ваш заказ принят и скоро будет обработан.</p>
             </div>
           ) : (
             <form onSubmit={handleOrderSubmit} className="space-y-4">
               <Input
                 id="phone"
-                label="Phone Number"
+                label="Номер телефона"
                 type="tel"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="e.g., 555-123-4567"
+                placeholder="например, 8 777 123 4567"
                 required
               />
               <Input
                 id="quantity"
-                label="Quantity"
+                label="Количество"
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
@@ -135,7 +135,7 @@ const ProductLandingPage: React.FC = () => {
                 required
               />
               <Button type="submit" isLoading={isOrdering} className="w-full">
-                Place Order
+                Оформить заказ
               </Button>
             </form>
           )}
