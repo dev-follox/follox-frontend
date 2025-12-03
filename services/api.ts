@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Shop, Product, ProductCreate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed } from '../types';
+import { Shop, Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed } from '../types';
 
 // In development, use the proxy URL, in production use the actual URL
 const BASE_URL = import.meta.env.MODE === 'development' 
@@ -149,6 +149,15 @@ const api = {
   createProduct: async (productData: ProductCreate): Promise<Product> => {
     const response = await axiosInstance.post('/products/', productData);
     return response.data;
+  },
+
+  updateProduct: async (productId: number, productData: ProductUpdate): Promise<Product> => {
+    const response = await axiosInstance.put(`/products/${productId}`, productData);
+    return response.data;
+  },
+
+  deleteProduct: async (productId: number): Promise<void> => {
+    await axiosInstance.delete(`/products/${productId}`);
   },
 
   // Orders endpoints

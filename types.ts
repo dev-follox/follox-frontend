@@ -40,6 +40,14 @@ export interface ProductCreate {
   blogger_task_description?: string;
 }
 
+export interface ProductUpdate {
+  name?: string | null;
+  description?: string | null;
+  price?: number | null;
+  image_url?: string | null;
+  blogger_task_description?: string | null;
+}
+
 // Order types
 export enum OrderStatus {
   waiting_to_process = 'Ожидает обработки',
