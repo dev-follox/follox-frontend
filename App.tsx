@@ -15,6 +15,7 @@ import Header from './components/Header';
 import PublicLayout from './components/PublicLayout';
 import BloggerRegistrationPage from './pages/BloggerRegistrationPage';
 import BloggerProductsDetailedPage from './pages/BloggerProductsDetailedPage';
+import BloggerProductDetailsPage from './pages/BloggerProductDetailsPage';
 import AuthLandingPage from './pages/AuthLandingPage';
 
 const ProtectedRoute: React.FC = () => {
@@ -49,6 +50,7 @@ const App: React.FC = () => {
               <Route path="/shop/bloggers" element={<BloggersPage />} />
               {/* Blogger */}
               <Route path="/blogger/products" element={<BloggerProductsDetailedPage />} />
+              <Route path="/blogger/products/:productId" element={<BloggerProductDetailsPage />} />
             </Route>
 
             {/* Not Found Route */}
