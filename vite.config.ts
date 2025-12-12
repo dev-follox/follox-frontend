@@ -9,10 +9,10 @@ export default defineConfig(({ mode }) => {
         port: 4000,
         host: '0.0.0.0',
         proxy: {
-          '/api': {
+          '/v1': {
             target: env.VITE_API_URL || 'https://api.follox.kz',
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/api/, ''),
+            rewrite: (path) => path.replace(/^\/v1/, ''),
             secure: false,
             configure: (proxy, options) => {
               proxy.on('error', (err, req, res) => {
