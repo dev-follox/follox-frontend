@@ -2,9 +2,7 @@ import axios from 'axios';
 import { Shop, Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed } from '../types';
 
 // In development, use the proxy URL, in production use the actual URL
-const BASE_URL = import.meta.env.MODE === 'development' 
-  ? '/api' 
-  : 'https://api.follox.kz';
+const BASE_URL = '/api';
 
 export const getImageUrl = (imageUrl: string) => {
   if (imageUrl.startsWith('http')) return imageUrl;
