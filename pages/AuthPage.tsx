@@ -53,8 +53,7 @@ const AuthPage: React.FC = () => {
       ? '/api' 
       : 'https://deltahub-backend.onrender.com';
     
-    // Get the current origin for the callback URL
-    const callbackUrl = `${window.location.origin}/auth/callback`;
+    const callbackUrl = `${window.location.origin}/#/auth/callback`;
     
     // Redirect to backend OAuth endpoint with callback URL
     window.location.href = `${BASE_URL}/auth/google/login?user_type=${userType}&redirect_uri=${encodeURIComponent(callbackUrl)}`;

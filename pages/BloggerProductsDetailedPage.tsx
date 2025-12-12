@@ -69,12 +69,12 @@ const BloggerProductsDetailedPage: React.FC = () => {
                   <span className="font-medium">Партнёрская ссылка: </span>
                   <a 
                     className="text-primary-text underline break-all" 
-                    href={`${window.location.origin}/products/${p.affiliate_code}`} 
+                    href={`${window.location.origin}/#/products/${p.affiliate_code}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {`${window.location.origin}/products/${p.affiliate_code}`}
+                    {`${window.location.origin}/#/products/${p.affiliate_code}`}
                   </a>
                 </div>
               </div>

@@ -91,15 +91,15 @@ const BloggerProductDetailsPage: React.FC = () => {
 				<div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
 					<a
 						className="text-primary-text underline break-all flex-1"
-						href={`${window.location.origin}/products/${product.affiliate_code}`}
+						href={`${window.location.origin}/#/products/${product.affiliate_code}`}
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						{`${window.location.origin}/products/${product.affiliate_code}`}
+						{`${window.location.origin}/#/products/${product.affiliate_code}`}
 					</a>
 					<Button
 						onClick={() => {
-							navigator.clipboard.writeText(`${window.location.origin}/products/${product.affiliate_code}`);
+							navigator.clipboard.writeText(`${window.location.origin}/#/products/${product.affiliate_code}`);
 							alert('Ссылка скопирована в буфер обмена!');
 						}}
 						variant="secondary"
