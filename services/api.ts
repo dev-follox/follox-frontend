@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Shop, Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed } from '../types';
 
 // In development, use the proxy URL, in production use the actual URL
-const BASE_URL = '/api';
+const BASE_URL = '/v1';
 
 export const getImageUrl = (imageUrl: string) => {
   // If it's already a full URL, check if it's the backend URL and rewrite it
