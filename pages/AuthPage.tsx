@@ -55,15 +55,22 @@ const AuthPage: React.FC = () => {
       // Log redirect URI for debugging
       console.log('OAuth redirect_uri from backend:', redirect_uri);
       console.log('Current origin:', window.location.origin);
+      console.log('Current protocol:', window.location.protocol);
+      console.log('Current hostname:', window.location.hostname);
       console.log('Expected redirect URI:', `${window.location.origin}/auth/callback`);
       
       // Verify redirect_uri matches expected format
       const expectedRedirectUri = `${window.location.origin}/auth/callback`;
       if (redirect_uri !== expectedRedirectUri) {
-        console.warn('Redirect URI mismatch!', {
+        console.error('⚠️ Redirect URI mismatch detected!', {
           backend: redirect_uri,
-          expected: expectedRedirectUri
+          expected: expectedRedirectUri,
+          message: 'The backend is sending a different redirect_uri than expected. This will cause a redirect_uri_mismatch error from Google. Please ensure the backend FRONTEND_URL environment variable matches the current origin.',
         });
+        
+        // Show user-friendly error
+        setLoginError(`Несоответствие redirect URI. Ожидается: ${expectedRedirectUri}, получено: ${redirect_uri}. Пожалуйста, проверьте настройки бэкенда.`);
+        return;
       }
       
       // Store state and redirect_uri in sessionStorage for validation

@@ -24,6 +24,20 @@ const AuthCallbackPage: React.FC = () => {
         if (error) {
           console.error('OAuth error from Google:', error);
           const errorDescription = searchParams.get('error_description') || 'Ошибка авторизации';
+          
+          // Log redirect_uri mismatch details if that's the error
+          if (error === 'redirect_uri_mismatch') {
+            const storedRedirectUri = sessionStorage.getItem('oauth_redirect_uri');
+            console.error('Redirect URI mismatch error:', {
+              error,
+              errorDescription,
+              storedRedirectUri,
+              currentOrigin: window.location.origin,
+              expectedRedirectUri: `${window.location.origin}/auth/callback`,
+              message: 'The redirect URI sent to Google does not match what is registered in Google Cloud Console. Please check the backend FRONTEND_URL environment variable.',
+            });
+          }
+          
           // Clean up sessionStorage
           sessionStorage.removeItem('oauth_state');
           sessionStorage.removeItem('oauth_redirect_uri');

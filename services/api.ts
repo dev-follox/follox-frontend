@@ -5,7 +5,16 @@ import { Shop, Product, ProductCreate, ProductUpdate, Order, Analytics, OrderSta
 const BASE_URL = '/api';
 
 export const getImageUrl = (imageUrl: string) => {
-  if (imageUrl.startsWith('http')) return imageUrl;
+  // If it's already a full URL, check if it's the backend URL and rewrite it
+  if (imageUrl.startsWith('http')) {
+    // Rewrite backend URLs to use proxy
+    if (imageUrl.includes('api.follox.kz')) {
+      return imageUrl.replace(/https?:\/\/api\.follox\.kz/g, BASE_URL);
+    }
+    // External URLs (like CDN) can stay as-is
+    return imageUrl;
+  }
+  // Relative URL - extract filename and use proxy
   const filename = imageUrl.split('/').pop();
   return `${BASE_URL}/products/images/${filename}`;
 };
