@@ -6,12 +6,16 @@ import { HashRouter } from 'react-router-dom';
 
 // Handle OAuth callback redirects from backend
 // If backend redirects to /auth/callback (without hash), redirect to hash route
-if (window.location.pathname === '/auth/callback') {
+// This runs before React loads to catch the redirect immediately
+if (window.location.pathname === '/auth/callback' && !window.location.hash) {
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
   if (token) {
-    // Redirect to hash route with token
-    window.location.href = `/#/auth/callback?token=${encodeURIComponent(token)}`;
+    // Use replace to avoid adding to history
+    window.location.replace(`/#/auth/callback?token=${encodeURIComponent(token)}`);
+  } else {
+    // No token, redirect to home
+    window.location.replace('/#/');
   }
 }
 

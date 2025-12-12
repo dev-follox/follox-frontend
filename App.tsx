@@ -17,6 +17,7 @@ import BloggerProductsDetailedPage from './pages/BloggerProductsDetailedPage';
 import BloggerProductDetailsPage from './pages/BloggerProductDetailsPage';
 import AuthPage from './pages/AuthPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
+import OAuthRedirectHandler from './components/OAuthRedirectHandler';
 
 const ProtectedRoute: React.FC = () => {
   const { isLoggedIn, loading } = useAuth();
@@ -33,6 +34,7 @@ const AppContent: React.FC = () => {
   
   return (
     <>
+      <OAuthRedirectHandler />
       {!hideHeader && <Header />}
       <Routes>
             {/* Public Routes */}
