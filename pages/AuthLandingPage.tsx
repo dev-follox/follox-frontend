@@ -5,7 +5,7 @@ import Button from '../components/Button';
 
 const AuthLandingPage: React.FC = () => {
 	return (
-		<div className="max-w-4xl mx-auto">
+		<div className="auth-landing-container">
 			<h1 className="text-3xl font-bold text-gray-900 text-center mb-8">Добро пожаловать в Follox</h1>
 			<p className="text-center text-gray-600 mb-10">Выберите, как вы хотите продолжить</p>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -33,7 +33,7 @@ const AuthLandingPage: React.FC = () => {
 				</Card>
 			</div>
 			<div className="text-center mt-4">
-				<Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+				<Link to="/login" className="font-medium text-primary-text hover:text-primary-text-600">
 					Уже есть аккаунт? Войти
 				</Link>
 			</div>

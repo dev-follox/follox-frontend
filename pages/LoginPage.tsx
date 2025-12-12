@@ -6,7 +6,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import { useNavigate, Link } from 'react-router-dom';
 
-const ShopLoginPage: React.FC = () => {
+const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -36,7 +36,7 @@ const ShopLoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="h-full w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -67,7 +67,7 @@ const ShopLoginPage: React.FC = () => {
             <div className="text-center mt-4">
               <Link
                 to="/"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
+                className="font-medium text-primary-text hover:text-primary-text-600"
               >
                 Нет аккаунта? Зарегистрируйтесь
               </Link>
@@ -84,4 +84,4 @@ const ShopLoginPage: React.FC = () => {
   );
 };
 
-export default ShopLoginPage;
+export default LoginPage;

@@ -5,8 +5,9 @@ import Button from '../components/Button';
 
 const NotFoundPage: React.FC = () => {
   return (
+    <div className="h-full w-full flex items-center justify-center p-4">
     <div className="text-center">
-      <h1 className="text-6xl font-extrabold text-indigo-600">404</h1>
+      <h1 className="text-6xl font-extrabold text-primary">404</h1>
       <p className="text-2xl font-semibold text-gray-800 mt-4">Страница не найдена</p>
       <p className="text-gray-600 mt-2">
         Извините, запрашиваемая страница не существует.
@@ -15,6 +16,7 @@ const NotFoundPage: React.FC = () => {
         <Link to="/">
           <Button>На главную</Button>
         </Link>
+      </div>
       </div>
     </div>
   );

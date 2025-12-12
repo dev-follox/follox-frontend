@@ -141,7 +141,7 @@ const ShopProductDetailsPage: React.FC = () => {
 	}
 
 	return (
-		<div>
+		<div className="h-full w-full p-4 md:p-8">
 			<div className="flex justify-between items-start mb-6">
 				<div className="flex-1 pr-4">
 					<h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
@@ -178,7 +178,7 @@ const ShopProductDetailsPage: React.FC = () => {
 					{product.description.length > 150 && (
 						<button
 							onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-							className="mt-1 text-sm text-indigo-600 hover:text-indigo-800 font-medium relative z-10"
+							className="mt-1 text-sm text-primary-text hover:text-primary-text-600 font-medium relative z-10"
 						>
 							{isDescriptionExpanded ? 'Свернуть ↑' : 'Развернуть ↓'}
 						</button>
@@ -212,7 +212,7 @@ const ShopProductDetailsPage: React.FC = () => {
 						onClick={() => setActiveTab('orders')}
 						className={`${
 							activeTab === 'orders'
-								? 'border-indigo-500 text-indigo-600'
+								? 'border-primary text-primary-text'
 								: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
 						} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
 					>
@@ -222,7 +222,7 @@ const ShopProductDetailsPage: React.FC = () => {
 						onClick={() => setActiveTab('analytics')}
 						className={`${
 							activeTab === 'analytics'
-								? 'border-indigo-500 text-indigo-600'
+								? 'border-primary text-primary-text'
 								: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
 						} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
 					>

@@ -5,7 +5,6 @@ import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import ProductLandingPage from './pages/ProductLandingPage';
-import ShopLoginPage from './pages/ShopLoginPage';
 import ShopRegistrationPage from './pages/ShopRegistrationPage';
 import ShopDashboardPage from './pages/ShopDashboardPage';
 import ShopProductDetailsPage from './pages/ShopProductDetailsPage';
@@ -16,7 +15,8 @@ import PublicLayout from './components/PublicLayout';
 import BloggerRegistrationPage from './pages/BloggerRegistrationPage';
 import BloggerProductsDetailedPage from './pages/BloggerProductsDetailedPage';
 import BloggerProductDetailsPage from './pages/BloggerProductDetailsPage';
-import AuthLandingPage from './pages/AuthLandingPage';
+import AuthPage from './pages/AuthPage';
+import AuthCallbackPage from './pages/AuthCallbackPage';
 
 const ProtectedRoute: React.FC = () => {
   const { isLoggedIn, loading } = useAuth();
@@ -24,21 +24,23 @@ const ProtectedRoute: React.FC = () => {
   if (loading) {
     return <div>Loading...</div>; // Or a spinner component
   }
-  return isLoggedIn ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />;
+  return isLoggedIn ? <Outlet /> : <Navigate to="/" replace state={{ from: location }} />;
 };
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const hideHeader = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/auth/callback';
+  
   return (
-    <AuthProvider>
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow container mx-auto p-4 md:p-8">
-          <Routes>
+    <>
+      {!hideHeader && <Header />}
+      <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<AuthLandingPage />} />
+            <Route path="/" element={<AuthPage />} />
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route path="/products/:code" element={<PublicLayout><ProductLandingPage /></PublicLayout>} />
             
-            <Route path="/login" element={<ShopLoginPage />} />
             <Route path="/shop/register" element={<ShopRegistrationPage />} />
             <Route path="/blogger/register" element={<BloggerRegistrationPage />} />
 
@@ -55,9 +57,15 @@ const App: React.FC = () => {
 
             {/* Not Found Route */}
             <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </main>
-      </div>
+      </Routes>
+    </>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
     </AuthProvider>
   );
 };

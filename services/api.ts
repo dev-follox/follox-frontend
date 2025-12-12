@@ -46,7 +46,6 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Log response errors
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -56,6 +55,16 @@ axiosInstance.interceptors.response.use(
         data: error.response.data,
         headers: error.response.headers,
       });
+
+      if (error.response.status === 401) {
+        // Clear authentication data
+        localStorage.removeItem('auth_user');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('auth_token_payload');
+        
+        // Redirect to auth landing page
+        window.location.href = '/';
+      }
     }
     return Promise.reject(error);
   }

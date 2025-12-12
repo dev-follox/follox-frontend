@@ -40,7 +40,7 @@ const BloggerRegistrationPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="h-full w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="max-w-md w-full space-y-8">
         <div className="flex items-center justify-between">
           <Link to="/">
@@ -110,7 +110,7 @@ const BloggerRegistrationPage: React.FC = () => {
             <div className="text-center">
               <Link
                 to="/login"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
+                className="font-medium text-primary-text hover:text-primary-text-600"
               >
                 Уже есть аккаунт? Войти
               </Link>

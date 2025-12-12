@@ -112,7 +112,7 @@ const Header: React.FC = () => {
 										href="https://t.me/folloxKzBot"
 										target="_blank"
 										rel="noopener noreferrer"
-										className="text-indigo-600 underline hover:text-indigo-800 font-medium"
+										className="text-primary-text underline hover:text-primary-text-600 font-medium"
 									>
 										https://t.me/folloxKzBot
 										</a>

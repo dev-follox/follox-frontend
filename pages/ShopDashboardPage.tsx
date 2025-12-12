@@ -174,7 +174,7 @@ const ShopDashboardPage: React.FC = () => {
 
 	return (
 		<>
-			<div className="space-y-8">
+			<div className="h-full w-full p-4 md:p-8 space-y-8">
 				<div className="flex justify-between items-center">
 					<h1 className="text-xl font-bold text-gray-900">Ваши товары</h1>
 					<Button onClick={() => setIsDialogOpen(true)}>Добавить товар</Button>
@@ -212,7 +212,7 @@ const ShopDashboardPage: React.FC = () => {
 												e.stopPropagation();
 												setOpenDropdownId(openDropdownId === product.id ? null : product.id);
 											}}
-											className="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+											className="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
 											aria-label="Действия"
 										>
 											<svg
@@ -272,7 +272,7 @@ const ShopDashboardPage: React.FC = () => {
 												{product.description || 'Нет описания'}
 											</span>
 										</p>
-										<p className="mt-4 text-2xl font-bold text-indigo-600 flex-shrink-0">
+										<p className="mt-4 text-2xl font-bold text-primary flex-shrink-0">
 											₸{product.price.toFixed(2)}
 										</p>
 									</div>

@@ -35,7 +35,7 @@ const BloggerProductsDetailedPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="h-full w-full p-4 md:p-8 space-y-8">
       <h1 className="text-xl font-bold text-gray-900">Ваши товары</h1>
       {items.length === 0 ? (
         <p className="text-center text-gray-500">Пока нет товаров с партнёрскими ссылками.</p>
@@ -68,13 +68,13 @@ const BloggerProductsDetailedPage: React.FC = () => {
                 <div className="mt-4 text-sm flex-shrink-0">
                   <span className="font-medium">Партнёрская ссылка: </span>
                   <a 
-                    className="text-indigo-600 underline break-all" 
-                    href={`${window.location.origin}/#/products/${p.affiliate_code}`} 
+                    className="text-primary-text underline break-all" 
+                    href={`${window.location.origin}/products/${p.affiliate_code}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {`${window.location.origin}/#/products/${p.affiliate_code}`}
+                    {`${window.location.origin}/products/${p.affiliate_code}`}
                   </a>
                 </div>
               </div>

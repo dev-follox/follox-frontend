@@ -10,11 +10,23 @@ interface AuthUser {
   blogger?: Blogger | null;
 }
 
+interface GoogleOAuthResponse {
+  access_token: string;
+  token_type: string;
+  shop_id?: number | null;
+  blogger_id?: number | null;
+  email: string;
+  name: string;
+  role: UserRole;
+  is_new_user: boolean;
+}
+
 interface AuthContextType {
   user: AuthUser | null;
   isLoggedIn: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (googleResponse: GoogleOAuthResponse) => Promise<void>;
   logout: () => void;
   setShopData: (updated: Shop) => void;
 }
@@ -60,6 +72,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [navigate]);
 
+  const loginWithGoogle = useCallback(async (googleResponse: GoogleOAuthResponse) => {
+    // Store the token
+    localStorage.setItem('access_token', googleResponse.access_token);
+    localStorage.setItem('auth_token_payload', JSON.stringify(googleResponse));
+
+    // Fetch full entity data if needed
+    if (googleResponse.role === 'SHOP' && googleResponse.shop_id != null) {
+      try {
+        const shopResponse = await api.getMyShop(googleResponse.shop_id);
+        const authUser: AuthUser = { role: 'SHOP', shop: shopResponse };
+        setUser(authUser);
+        localStorage.setItem('auth_user', JSON.stringify(authUser));
+        navigate('/shop/dashboard', { replace: true });
+        return;
+      } catch (err) {
+        console.error('Failed to fetch shop data:', err);
+      }
+    }
+
+    if (googleResponse.role === 'BLOGGER') {
+      const blogger: Blogger = {
+        id: googleResponse.blogger_id || 0,
+        name: googleResponse.name,
+        email: googleResponse.email,
+        created_at: new Date().toISOString(),
+        updated_at: null,
+      };
+      const authUser: AuthUser = { role: 'BLOGGER', blogger };
+      setUser(authUser);
+      localStorage.setItem('auth_user', JSON.stringify(authUser));
+      navigate('/blogger/products', { replace: true });
+      return;
+    }
+  }, [navigate]);
+
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('auth_user');
@@ -81,6 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoggedIn: !!user,
     loading,
     login,
+    loginWithGoogle,
     logout,
     setShopData,
   };

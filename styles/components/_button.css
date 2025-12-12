@@ -1,0 +1,17 @@
+/* Button component custom styles */
+/* Use this for styles that can't be achieved with Tailwind utilities */
+
+/* Example: Custom button animation */
+.button-custom-animation {
+  transition: transform 0.2s ease-in-out;
+}
+
+.button-custom-animation:hover {
+  transform: scale(1.05);
+}
+
+/* Example: Custom button variant */
+.button-gradient {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+}
+
