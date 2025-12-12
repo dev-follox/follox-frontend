@@ -34,7 +34,7 @@ const AppContent: React.FC = () => {
   return (
     <>
       {!hideHeader && <Header />}
-      <Routes>
+          <Routes>
             {/* Public Routes */}
             <Route path="/" element={<AuthPage />} />
             <Route path="/login" element={<AuthPage />} />
@@ -57,7 +57,7 @@ const AppContent: React.FC = () => {
 
             {/* Not Found Route */}
             <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          </Routes>
     </>
   );
 };

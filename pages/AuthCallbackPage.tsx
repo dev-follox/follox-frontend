@@ -1,140 +1,176 @@
-import React, { useEffect } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import api from '../services/api';
 import Spinner from '../components/Spinner';
 
 const AuthCallbackPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [searchParams] = useSearchParams();
   const { loginWithGoogle } = useAuth();
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate execution (React StrictMode runs effects twice in dev)
+    if (hasProcessed.current) {
+      return;
+    }
+    hasProcessed.current = true;
+
     const handleCallback = async () => {
       try {
-        // Extract token from query parameter (may be URL encoded)
-        let token = searchParams.get('token');
-        
-        // Also try to get from window.location.search as fallback
-        if (!token) {
-          const urlParams = new URLSearchParams(window.location.search);
-          token = urlParams.get('token');
-        }
-        
-        console.log('Callback received');
-        console.log('Location pathname:', location.pathname);
-        console.log('Location search:', location.search);
-        console.log('Window location:', window.location.href);
-        console.log('Token present:', !!token);
-        console.log('Search params:', Array.from(searchParams.entries()));
-        
-        if (!token) {
-          console.error('No token found in callback URL');
+        // Check for OAuth errors from Google
+        const error = searchParams.get('error');
+        if (error) {
+          console.error('OAuth error from Google:', error);
+          const errorDescription = searchParams.get('error_description') || 'Ошибка авторизации';
+          // Clean up sessionStorage
+          sessionStorage.removeItem('oauth_state');
+          sessionStorage.removeItem('oauth_redirect_uri');
+          sessionStorage.removeItem('oauth_user_type');
           navigate('/', { replace: true });
           return;
         }
 
-        // URL decode the token in case it's encoded
-        token = decodeURIComponent(token);
-        console.log('Token extracted (first 50 chars):', token.substring(0, 50));
-
-        // Decode the base64 token
-        let decodedData;
-        try {
-          // Check if token is a JWT (has dots separating parts)
-          if (token.includes('.')) {
-            // It's a JWT token - extract the payload (middle part)
-            const parts = token.split('.');
-            if (parts.length === 3) {
-              // Decode the payload (second part)
-              const payload = parts[1];
-              // Handle base64url encoding
-              const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
-              const padded = base64 + '='.repeat((4 - base64.length % 4) % 4);
-              const decodedString = atob(padded);
-              decodedData = JSON.parse(decodedString);
-              // For JWT, the access_token is the full JWT token
-              decodedData.access_token = token;
-              console.log('Decoded JWT payload:', decodedData);
-            } else {
-              throw new Error('Invalid JWT format');
-            }
-          } else {
-            // It's a base64-encoded JSON string
-            // Handle base64url encoding
-            const base64 = token.replace(/-/g, '+').replace(/_/g, '/');
-            const padded = base64 + '='.repeat((4 - base64.length % 4) % 4);
-            const decodedString = atob(padded);
-            decodedData = JSON.parse(decodedString);
-            console.log('Decoded base64 JSON:', decodedData);
-          }
-        } catch (decodeError) {
-          console.error('Failed to decode token:', decodeError);
-          console.error('Token value (first 100 chars):', token.substring(0, 100));
-          // Try direct base64 decode as fallback
-          try {
-            const decodedString = atob(token);
-            decodedData = JSON.parse(decodedString);
-            console.log('Fallback decode successful');
-          } catch (fallbackError) {
-            console.error('Fallback decode also failed:', fallbackError);
-            navigate('/', { replace: true });
-            return;
-          }
+        // Extract code and state from query parameters
+        const code = searchParams.get('code');
+        const returnedState = searchParams.get('state');
+        
+        console.log('OAuth callback received');
+        console.log('Code present:', !!code);
+        console.log('State present:', !!returnedState);
+        
+        if (!code || !returnedState) {
+          console.error('Missing code or state in callback URL');
+          navigate('/', { replace: true });
+          return;
         }
 
-        // Extract data from decoded token
-        const {
-          access_token,
-          token_type,
-          shop_id,
-          blogger_id,
-          email,
-          name,
-          role,
-          is_new_user
-        } = decodedData;
-
-        console.log('Extracted fields:', { access_token: !!access_token, role, email, name });
-
-        if (!access_token || !role || !email || !name) {
-          console.error('Missing required fields in token:', {
-            hasAccessToken: !!access_token,
-            role,
-            email,
-            name
+        // Validate state
+        const storedState = sessionStorage.getItem('oauth_state');
+        const storedRedirectUri = sessionStorage.getItem('oauth_redirect_uri');
+        const storedUserType = sessionStorage.getItem('oauth_user_type') as 'shop' | 'blogger' | null;
+        
+        // Log state values for debugging
+        console.log('State validation:', {
+          returnedState,
+          storedState,
+          match: returnedState === storedState,
+          returnedLength: returnedState?.length,
+          storedLength: storedState?.length,
+        });
+        
+        // Check if returned state starts with stored state (might have :shop or :blogger suffix)
+        // Or if stored state is the base of returned state
+        const stateMatches = returnedState === storedState || 
+                            returnedState?.startsWith(storedState + ':') ||
+                            storedState === returnedState?.split(':')[0];
+        
+        if (!stateMatches) {
+          console.error('Invalid state parameter. Possible CSRF attack.', {
+            returnedState,
+            storedState,
+            returnedStateBase: returnedState?.split(':')[0],
+            storedStateBase: storedState?.split(':')[0],
           });
+          sessionStorage.removeItem('oauth_state');
+          sessionStorage.removeItem('oauth_redirect_uri');
+          sessionStorage.removeItem('oauth_user_type');
           navigate('/', { replace: true });
           return;
         }
+        
+        // Extract the base state (without suffix) for exchange
+        // The backend stores and expects the base state, not the full state with :shop/:blogger suffix
+        // Google returns the state with suffix, but backend validation uses the base state
+        const stateToUse = returnedState?.split(':')[0] || returnedState;
+        
+        console.log('State to use for exchange:', {
+          stateToUse,
+          returnedState,
+          storedState,
+          baseState: returnedState?.split(':')[0],
+          hasSuffix: returnedState?.includes(':'),
+        });
+
+        if (!storedRedirectUri || !storedUserType) {
+          console.error('Missing stored redirect_uri or user_type');
+          navigate('/', { replace: true });
+          return;
+        }
+
+        // Exchange code with backend
+        console.log('Exchanging code with backend...');
+        console.log('Request payload:', {
+          code: code?.substring(0, 20) + '...', // Log partial code for security
+          state: stateToUse,
+          redirect_uri: storedRedirectUri,
+          user_type: storedUserType,
+        });
+        
+        const tokenData = await api.exchangeGoogleCode({
+          code,
+          state: stateToUse,
+          redirect_uri: storedRedirectUri,
+          user_type: storedUserType,
+        });
+
+        console.log('Token exchange successful', { 
+          hasToken: !!tokenData.access_token,
+          role: tokenData.role,
+          email: tokenData.email 
+        });
+
+        // Clean up sessionStorage
+        sessionStorage.removeItem('oauth_state');
+        sessionStorage.removeItem('oauth_redirect_uri');
+        sessionStorage.removeItem('oauth_user_type');
 
         // Create Google OAuth response object
         const googleResponse = {
-          access_token,
-          token_type: token_type || 'bearer',
-          shop_id: shop_id ? parseInt(String(shop_id)) : null,
-          blogger_id: blogger_id ? parseInt(String(blogger_id)) : null,
-          email,
-          name,
-          role: role as 'SHOP' | 'BLOGGER',
-          is_new_user: is_new_user || false,
+          access_token: tokenData.access_token,
+          token_type: tokenData.token_type || 'bearer',
+          shop_id: tokenData.shop_id || null,
+          blogger_id: tokenData.blogger_id || null,
+          email: tokenData.email,
+          name: tokenData.name,
+          role: tokenData.role,
+          is_new_user: false, // Backend doesn't return this in TokenResponse, but we can infer if needed
         };
 
-        console.log('Calling loginWithGoogle...');
+        console.log('Calling loginWithGoogle with:', {
+          role: googleResponse.role,
+          shop_id: googleResponse.shop_id,
+          blogger_id: googleResponse.blogger_id,
+          email: googleResponse.email,
+        });
+        
         // Login with Google
         await loginWithGoogle(googleResponse);
-        console.log('loginWithGoogle completed');
+        console.log('loginWithGoogle completed successfully');
         
         // Navigation is handled inside loginWithGoogle
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to process OAuth callback:', error);
-        console.error('Error details:', error);
+        console.error('Error details:', {
+          message: error?.message,
+          stack: error?.stack,
+          response: error?.response?.data,
+        });
+        
+        // Clean up sessionStorage on error
+        sessionStorage.removeItem('oauth_state');
+        sessionStorage.removeItem('oauth_redirect_uri');
+        sessionStorage.removeItem('oauth_user_type');
+        
+        // Show error to user before redirecting
+        alert(`Ошибка входа: ${error?.message || 'Неизвестная ошибка'}`);
         navigate('/', { replace: true });
       }
     };
 
     handleCallback();
-  }, [searchParams, loginWithGoogle, navigate, location]);
+  }, [searchParams, loginWithGoogle, navigate]);
 
   return (
     <div className="h-full w-full flex items-center justify-center">

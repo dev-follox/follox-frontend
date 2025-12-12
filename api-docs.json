@@ -1007,7 +1007,7 @@
           "admin"
         ],
         "summary": "Run Migrations",
-        "description": "Run all pending database migrations",
+        "description": "Run all pending database migrations to head",
         "operationId": "run_migrations_admin_migrate_post",
         "responses": {
           "200": {
@@ -1146,6 +1146,188 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/google/login": {
+      "get": {
+        "tags": [
+          "oauth"
+        ],
+        "summary": "Google Login",
+        "description": "Initiate Google OAuth login",
+        "operationId": "google_login_auth_google_login_get",
+        "parameters": [
+          {
+            "name": "user_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "blogger",
+              "title": "User Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "tags": [
+          "oauth"
+        ],
+        "summary": "Google Callback",
+        "description": "Handle Google OAuth callback",
+        "operationId": "google_callback_auth_google_callback_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/google/authorize-url": {
+      "get": {
+        "tags": [
+          "oauth"
+        ],
+        "summary": "Get Google Authorize Url",
+        "description": "Get Google OAuth authorization URL for frontend flow.\nFrontend should redirect user to this URL.\n\nThis endpoint returns the Google OAuth URL with frontend redirect URI,\nso Google only sees the frontend domain, not the backend.",
+        "operationId": "get_google_authorize_url_auth_google_authorize_url_get",
+        "parameters": [
+          {
+            "name": "user_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "blogger",
+              "title": "User Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/google/exchange": {
+      "post": {
+        "tags": [
+          "oauth"
+        ],
+        "summary": "Exchange Google Code",
+        "description": "Exchange Google OAuth code for user session token.\n\nFrontend calls this after receiving the code from Google callback.\nBackend exchanges code → gets user info → creates/updates user → returns session token.\n\nThis keeps the backend URL hidden from Google.",
+        "operationId": "exchange_google_code_auth_google_exchange_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleExchangeRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1620,6 +1802,34 @@
           "image"
         ],
         "title": "Body_upload_product_image_products_upload_image_post"
+      },
+      "GoogleExchangeRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "redirect_uri": {
+            "type": "string",
+            "title": "Redirect Uri"
+          },
+          "user_type": {
+            "type": "string",
+            "title": "User Type",
+            "default": "blogger"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "state",
+          "redirect_uri"
+        ],
+        "title": "GoogleExchangeRequest"
       },
       "HTTPValidationError": {
         "properties": {

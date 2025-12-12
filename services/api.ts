@@ -4,7 +4,7 @@ import { Shop, Product, ProductCreate, ProductUpdate, Order, Analytics, OrderSta
 // In development, use the proxy URL, in production use the actual URL
 const BASE_URL = import.meta.env.MODE === 'development' 
   ? '/api' 
-  : 'https://deltahub-backend.onrender.com';
+  : 'https://api.follox.kz';
 
 export const getImageUrl = (imageUrl: string) => {
   if (imageUrl.startsWith('http')) return imageUrl;
@@ -236,6 +236,44 @@ const api = {
   getTelegramSetup: async (shopId: number): Promise<any> => {
     const response = await axiosInstance.get(`/shops/${shopId}/telegram/setup`);
     return response.data;
+  },
+
+  // OAuth endpoints (frontend-first flow)
+  getGoogleAuthorizeUrl: async (userType: 'shop' | 'blogger'): Promise<{
+    authorization_url: string;
+    state: string;
+    redirect_uri: string;
+  }> => {
+    // Backend uses FRONTEND_URL env var to construct redirect_uri
+    // Make sure FRONTEND_URL matches what's registered in Google OAuth Console
+    const response = await axiosInstance.get('/auth/google/authorize-url', {
+      params: { 
+        user_type: userType,
+      },
+    });
+    return response.data;
+  },
+
+  exchangeGoogleCode: async (data: {
+    code: string;
+    state: string;
+    redirect_uri: string;
+    user_type: 'shop' | 'blogger';
+  }): Promise<TokenResponse> => {
+    try {
+      const response = await axiosInstance.post('/auth/google/exchange', data);
+      return response.data;
+    } catch (error: any) {
+      console.error('exchangeGoogleCode error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        requestData: {
+          ...data,
+          code: data.code?.substring(0, 20) + '...', // Log partial code
+        },
+      });
+      throw error;
+    }
   },
 };
 

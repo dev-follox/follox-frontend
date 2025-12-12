@@ -47,21 +47,49 @@ const AuthPage: React.FC = () => {
     }
   }
 
-  const handleGoogleSignIn = (userType: 'shop' | 'blogger') => {
-    // Use the same BASE_URL logic as in api.ts
-    const BASE_URL = import.meta.env.MODE === 'development' 
-      ? '/api' 
-      : 'https://deltahub-backend.onrender.com';
-    
-    // Always use hash-based routing for callback
-    const callbackUrl = `${window.location.origin}/#/auth/callback`;
-    
-    console.log('Initiating Google OAuth with callback URL:', callbackUrl);
-    
-    // Redirect to backend OAuth endpoint with callback URL
-    const oauthUrl = `${BASE_URL}/auth/google/login?user_type=${userType}&redirect_uri=${encodeURIComponent(callbackUrl)}`;
-    console.log('OAuth URL:', oauthUrl);
-    window.location.href = oauthUrl;
+  const handleGoogleSignIn = async (userType: 'shop' | 'blogger') => {
+    try {
+      // Get authorization URL from backend
+      const { authorization_url, state, redirect_uri } = await api.getGoogleAuthorizeUrl(userType);
+      
+      // Log redirect URI for debugging
+      console.log('OAuth redirect_uri from backend:', redirect_uri);
+      console.log('Current origin:', window.location.origin);
+      console.log('Expected redirect URI:', `${window.location.origin}/auth/callback`);
+      
+      // Verify redirect_uri matches expected format
+      const expectedRedirectUri = `${window.location.origin}/auth/callback`;
+      if (redirect_uri !== expectedRedirectUri) {
+        console.warn('Redirect URI mismatch!', {
+          backend: redirect_uri,
+          expected: expectedRedirectUri
+        });
+      }
+      
+      // Store state and redirect_uri in sessionStorage for validation
+      console.log('Storing OAuth state:', {
+        state,
+        stateLength: state.length,
+        userType,
+        redirect_uri,
+      });
+      sessionStorage.setItem('oauth_state', state);
+      sessionStorage.setItem('oauth_redirect_uri', redirect_uri);
+      sessionStorage.setItem('oauth_user_type', userType);
+      
+      // Verify what we stored
+      console.log('Stored in sessionStorage:', {
+        oauth_state: sessionStorage.getItem('oauth_state'),
+        oauth_redirect_uri: sessionStorage.getItem('oauth_redirect_uri'),
+        oauth_user_type: sessionStorage.getItem('oauth_user_type'),
+      });
+      
+      // Redirect user to Google
+      window.location.href = authorization_url;
+    } catch (error) {
+      console.error('Failed to initiate Google OAuth:', error);
+      setLoginError('Не удалось инициировать вход через Google. Попробуйте снова.');
+    }
   };
 
   const handleLogin = async (e: FormEvent) => {

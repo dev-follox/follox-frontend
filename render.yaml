@@ -4,7 +4,7 @@ services:
     env: static
     envVars:
       - key: VITE_API_URL
-        value: https://deltahub-backend.onrender.com
+        value: https://api.follox.kz
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
     routes:

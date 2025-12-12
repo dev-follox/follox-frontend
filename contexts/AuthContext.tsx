@@ -73,24 +73,70 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [navigate]);
 
   const loginWithGoogle = useCallback(async (googleResponse: GoogleOAuthResponse) => {
+    console.log('loginWithGoogle called with:', {
+      role: googleResponse.role,
+      shop_id: googleResponse.shop_id,
+      blogger_id: googleResponse.blogger_id,
+      email: googleResponse.email,
+    });
+
     // Store the token
     localStorage.setItem('access_token', googleResponse.access_token);
     localStorage.setItem('auth_token_payload', JSON.stringify(googleResponse));
 
-    // Fetch full entity data if needed
-    if (googleResponse.role === 'SHOP' && googleResponse.shop_id != null) {
-      try {
-        const shopResponse = await api.getMyShop(googleResponse.shop_id);
-        const authUser: AuthUser = { role: 'SHOP', shop: shopResponse };
-        setUser(authUser);
-        localStorage.setItem('auth_user', JSON.stringify(authUser));
-        navigate('/shop/dashboard', { replace: true });
-        return;
-      } catch (err) {
-        console.error('Failed to fetch shop data:', err);
+    // Handle SHOP role
+    if (googleResponse.role === 'SHOP') {
+      if (googleResponse.shop_id != null) {
+        try {
+          console.log('Fetching shop data for shop_id:', googleResponse.shop_id);
+          console.log('Token stored:', !!localStorage.getItem('access_token'));
+          
+          const shopResponse = await api.getMyShop(googleResponse.shop_id);
+          const authUser: AuthUser = { role: 'SHOP', shop: shopResponse };
+          setUser(authUser);
+          localStorage.setItem('auth_user', JSON.stringify(authUser));
+          console.log('Shop login successful, navigating to dashboard');
+          navigate('/shop/dashboard', { replace: true });
+          return;
+        } catch (err: any) {
+          console.error('Failed to fetch shop data:', err);
+          console.error('Error details:', {
+            status: err?.response?.status,
+            data: err?.response?.data,
+            message: err?.message,
+          });
+          
+          // If 403 Forbidden, the backend says we're not authorized
+          // This might happen if the token's shop_id doesn't match, or token is invalid
+          // For now, create a minimal shop object from token data
+          if (err?.response?.status === 403) {
+            console.warn('403 Forbidden - creating minimal shop from token data');
+            const minimalShop: Shop = {
+              id: googleResponse.shop_id,
+              name: googleResponse.name,
+              email: googleResponse.email,
+              description: null,
+              telegram_chat_id: null,
+              created_at: new Date().toISOString(),
+              updated_at: null,
+            };
+            const authUser: AuthUser = { role: 'SHOP', shop: minimalShop };
+            setUser(authUser);
+            localStorage.setItem('auth_user', JSON.stringify(authUser));
+            console.log('Shop login successful (using minimal shop data), navigating to dashboard');
+            navigate('/shop/dashboard', { replace: true });
+            return;
+          }
+          
+          throw new Error(`Failed to fetch shop data: ${err?.response?.data?.detail || err?.message}`);
+        }
+      } else {
+        console.error('SHOP role but shop_id is null');
+        throw new Error('SHOP role but shop_id is null');
       }
     }
 
+    // Handle BLOGGER role
     if (googleResponse.role === 'BLOGGER') {
       const blogger: Blogger = {
         id: googleResponse.blogger_id || 0,
@@ -102,9 +148,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const authUser: AuthUser = { role: 'BLOGGER', blogger };
       setUser(authUser);
       localStorage.setItem('auth_user', JSON.stringify(authUser));
+      console.log('Blogger login successful, navigating to products');
       navigate('/blogger/products', { replace: true });
       return;
     }
+
+    // Unknown role
+    console.error('Unknown role in Google OAuth response:', googleResponse.role);
+    throw new Error(`Unknown role: ${googleResponse.role}`);
   }, [navigate]);
 
   const logout = useCallback(() => {

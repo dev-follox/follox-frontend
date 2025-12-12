@@ -199,13 +199,13 @@ const BloggersPage: React.FC = () => {
               <p className="text-sm text-green-800 font-medium">Партнёрская ссылка создана!</p>
               <div className="mt-2 flex items-center gap-2">
                 <p className="font-mono text-sm break-all flex-1">
-                  {`${window.location.origin}/#/products/${newLinkCode}`}
+                  {`${window.location.origin}/products/${newLinkCode}`}
                 </p>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => {
-                      const url = `${window.location.origin}/#/products/${newLinkCode}`;
+                      const url = `${window.location.origin}/products/${newLinkCode}`;
                       navigator.clipboard?.writeText(url).then(() => {
                         setCopied(true);
                         window.setTimeout(() => setCopied(false), 1500);
