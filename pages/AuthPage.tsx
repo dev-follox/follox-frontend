@@ -53,10 +53,15 @@ const AuthPage: React.FC = () => {
       ? '/api' 
       : 'https://deltahub-backend.onrender.com';
     
+    // Always use hash-based routing for callback
     const callbackUrl = `${window.location.origin}/#/auth/callback`;
     
+    console.log('Initiating Google OAuth with callback URL:', callbackUrl);
+    
     // Redirect to backend OAuth endpoint with callback URL
-    window.location.href = `${BASE_URL}/auth/google/login?user_type=${userType}&redirect_uri=${encodeURIComponent(callbackUrl)}`;
+    const oauthUrl = `${BASE_URL}/auth/google/login?user_type=${userType}&redirect_uri=${encodeURIComponent(callbackUrl)}`;
+    console.log('OAuth URL:', oauthUrl);
+    window.location.href = oauthUrl;
   };
 
   const handleLogin = async (e: FormEvent) => {

@@ -58,6 +58,20 @@
 </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Handle OAuth callback redirects before React loads
+      // This ensures we catch the redirect even if server returns 404
+      (function() {
+        if (window.location.pathname === '/auth/callback' && !window.location.hash) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const token = urlParams.get('token');
+          if (token) {
+            window.location.replace(window.location.origin + '/#/auth/callback?token=' + encodeURIComponent(token));
+            return;
+          }
+        }
+      })();
+    </script>
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>
