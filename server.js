@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use(
     '/v1',
     createProxyMiddleware({
-      target: 'https://api.follox.kz',
+      target: 'https://follox-backend.onrender.com',
       changeOrigin: true,
       pathRewrite: { '^/v1': '' },
       followRedirects: true,
@@ -22,7 +22,7 @@ app.use(
         // Prevent backend URLs from leaking on 30x redirects
         const location = proxyRes.headers['location'];
         if (location) {
-          proxyRes.headers['location'] = location.replace('https://api.follox.kz', '/v1');
+          proxyRes.headers['location'] = location.replace('https://follox-backend.onrender.com', '/v1');
         }
       }
     })

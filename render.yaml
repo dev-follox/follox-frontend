@@ -4,7 +4,7 @@ services:
     env: static
     envVars:
       - key: VITE_API_URL
-        value: https://api.follox.kz
+        value: https://follox-backend.onrender.com
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
     routes:
