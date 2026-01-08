@@ -8,7 +8,7 @@ export const getImageUrl = (imageUrl: string) => {
   // If it's already a full URL, check if it's the backend URL and rewrite it
   if (imageUrl.startsWith('http')) {
     // Rewrite backend URLs to use proxy
-    if (imageUrl.includes('https://follox-backend.onrender.com')) {
+    if (imageUrl.includes('https://api.follox.co')) {
       return imageUrl.replace(/https?:\/\/api\.follox\.kz/g, BASE_URL);
     }
     // External URLs (like CDN) can stay as-is
