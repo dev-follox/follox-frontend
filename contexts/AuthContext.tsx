@@ -1,19 +1,19 @@
 
 import React, { createContext, useState, useEffect, useCallback } from 'react';
-import { Shop, Blogger, UserRole } from '../types';
+import { Blogger, Company, UserRole } from '../types';
 import api from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
 interface AuthUser {
   role: UserRole;
-  shop?: Shop | null;
+  company?: Company | null;
   blogger?: Blogger | null;
 }
 
 interface GoogleOAuthResponse {
   access_token: string;
   token_type: string;
-  shop_id?: number | null;
+  company_id?: number | null;
   blogger_id?: number | null;
   email: string;
   name: string;
@@ -28,7 +28,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: (googleResponse: GoogleOAuthResponse) => Promise<void>;
   logout: () => void;
-  setShopData: (updated: Shop) => void;
+  setCompanyData: (updated: Company) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -53,10 +53,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const { token, shop, blogger } = await api.login(email, password);
+    const { token, company, blogger } = await api.login(email, password);
 
-    if (token.role === 'SHOP') {
-      const authUser: AuthUser = { role: 'SHOP', shop: shop || null };
+    if (token.role === 'COMPANY') {
+      const authUser: AuthUser = { role: 'COMPANY', company: company || null };
       setUser(authUser);
       localStorage.setItem('auth_user', JSON.stringify(authUser));
       navigate('/shop/dashboard', { replace: true });
@@ -84,22 +84,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('access_token', googleResponse.access_token);
     localStorage.setItem('auth_token_payload', JSON.stringify(googleResponse));
 
-    // Handle SHOP role
-    if (googleResponse.role === 'SHOP') {
-      if (googleResponse.shop_id != null) {
+    // Handle COMPANY role
+    if (googleResponse.role === 'COMPANY') {
+      if (googleResponse.company_id != null) {
         try {
-          console.log('Fetching shop data for shop_id:', googleResponse.shop_id);
+          console.log('Fetching company data for company_id:', googleResponse.company_id);
           console.log('Token stored:', !!localStorage.getItem('access_token'));
           
-          const shopResponse = await api.getMyShop(googleResponse.shop_id);
-          const authUser: AuthUser = { role: 'SHOP', shop: shopResponse };
+          const companyResponse = await api.getMyCompany(googleResponse.company_id);
+          const authUser: AuthUser = { role: 'COMPANY', company: companyResponse };
           setUser(authUser);
           localStorage.setItem('auth_user', JSON.stringify(authUser));
-          console.log('Shop login successful, navigating to dashboard');
+          console.log('Company login successful, navigating to dashboard');
           navigate('/shop/dashboard', { replace: true });
           return;
         } catch (err: any) {
-          console.error('Failed to fetch shop data:', err);
+          console.error('Failed to fetch company data:', err);
           console.error('Error details:', {
             status: err?.response?.status,
             data: err?.response?.data,
@@ -107,32 +107,76 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
           
           // If 403 Forbidden, the backend says we're not authorized
-          // This might happen if the token's shop_id doesn't match, or token is invalid
-          // For now, create a minimal shop object from token data
+          // For now, create a minimal company object from token data
           if (err?.response?.status === 403) {
-            console.warn('403 Forbidden - creating minimal shop from token data');
-            const minimalShop: Shop = {
-              id: googleResponse.shop_id,
-              name: googleResponse.name,
+            console.warn('403 Forbidden - creating minimal company from token data');
+            const minimalCompany: Company = {
+              id: googleResponse.company_id,
+              full_name: googleResponse.name,
               email: googleResponse.email,
+              company_name: googleResponse.name,
+              phone_number: null,
+              professional_profile_link: null,
+              stage: null,
               description: null,
               telegram_chat_id: null,
               created_at: new Date().toISOString(),
               updated_at: null,
             };
-            const authUser: AuthUser = { role: 'SHOP', shop: minimalShop };
+            const authUser: AuthUser = { role: 'COMPANY', company: minimalCompany };
             setUser(authUser);
             localStorage.setItem('auth_user', JSON.stringify(authUser));
-            console.log('Shop login successful (using minimal shop data), navigating to dashboard');
+            console.log('Company login successful (using minimal company data), navigating to dashboard');
             navigate('/shop/dashboard', { replace: true });
             return;
           }
           
-          throw new Error(`Failed to fetch shop data: ${err?.response?.data?.detail || err?.message}`);
+          throw new Error(`Failed to fetch company data: ${err?.response?.data?.detail || err?.message}`);
         }
       } else {
-        console.error('SHOP role but shop_id is null');
-        throw new Error('SHOP role but shop_id is null');
+        console.error('COMPANY role but company_id is null');
+        throw new Error('COMPANY role but company_id is null');
+      }
+    }
+
+    // Handle COMPANY role
+    if (googleResponse.role === 'COMPANY') {
+      if (googleResponse.company_id != null) {
+        try {
+          console.log('Fetching company data for company_id:', googleResponse.company_id);
+          const companyResponse = await api.getMyCompany(googleResponse.company_id);
+          const authUser: AuthUser = { role: 'COMPANY', company: companyResponse };
+          setUser(authUser);
+          localStorage.setItem('auth_user', JSON.stringify(authUser));
+          console.log('Company login successful, navigating to GTM Q&A');
+          navigate('/gtm/qa', { replace: true });
+          return;
+        } catch (err: any) {
+          console.error('Failed to fetch company data:', err);
+          // Create minimal company object from token data
+          const minimalCompany: Company = {
+            id: googleResponse.company_id,
+            full_name: googleResponse.name,
+            email: googleResponse.email,
+            company_name: googleResponse.name,
+            phone_number: null,
+            professional_profile_link: null,
+            stage: null,
+            description: null,
+            telegram_chat_id: null,
+            created_at: new Date().toISOString(),
+            updated_at: null,
+          };
+          const authUser: AuthUser = { role: 'COMPANY', company: minimalCompany };
+          setUser(authUser);
+          localStorage.setItem('auth_user', JSON.stringify(authUser));
+          console.log('Company login successful (using minimal data), navigating to GTM Q&A');
+          navigate('/gtm/qa', { replace: true });
+          return;
+        }
+      } else {
+        console.error('COMPANY role but company_id is null');
+        throw new Error('COMPANY role but company_id is null');
       }
     }
 
@@ -165,10 +209,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     navigate('/login', { replace: true });
   }, [navigate]);
 
-  const setShopData = useCallback((updated: Shop) => {
+  const setCompanyData = useCallback((updated: Company) => {
     setUser(prev => {
-      if (!prev || prev.role !== 'SHOP') return prev;
-      const updatedUser: AuthUser = { ...prev, shop: updated };
+      if (!prev || prev.role !== 'COMPANY') return prev;
+      const updatedUser: AuthUser = { ...prev, company: updated };
       localStorage.setItem('auth_user', JSON.stringify(updatedUser));
       return updatedUser;
     });
@@ -181,7 +225,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     loginWithGoogle,
     logout,
-    setShopData,
+    setCompanyData,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

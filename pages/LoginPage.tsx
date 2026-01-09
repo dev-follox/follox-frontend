@@ -15,7 +15,7 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   
   if (isLoggedIn) {
-      if (user?.role === 'SHOP') {
+      if (user?.role === 'COMPANY') {
         navigate('/shop/dashboard', { replace: true });
       } else if (user?.role === 'BLOGGER') {
         navigate('/blogger/products', { replace: true });

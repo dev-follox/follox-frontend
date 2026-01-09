@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Shop, Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed } from '../types';
+import { Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed, Company, CompanyCreate, CompanyUpdate, CompanyAnswers, CompanyAnswersUpdate, GTMStrategy, Validation, Forecast } from '../types';
 
 // In development, use the proxy URL, in production use the actual URL
 const BASE_URL = '/v1';
@@ -80,7 +80,7 @@ axiosInstance.interceptors.response.use(
 const api = {
   getImageUrl,
   // Auth endpoints
-  login: async (email: string, password: string): Promise<{ token: TokenResponse; shop?: Shop; blogger?: Blogger }> => {
+  login: async (email: string, password: string): Promise<{ token: TokenResponse; company?: Company; blogger?: Blogger }> => {
     const formData = new URLSearchParams();
     formData.append('username', email);
     formData.append('password', password);
@@ -101,10 +101,16 @@ const api = {
     localStorage.setItem('access_token', token);
     localStorage.setItem('auth_token_payload', JSON.stringify(response.data));
 
-    // Optionally fetch full entity data for shops
-    if (response.data.role === 'SHOP' && response.data.shop_id != null) {
-      const shopResponse = await axiosInstance.get(`/shops/me/${response.data.shop_id}`);
-      return { token: response.data, shop: shopResponse.data };
+    // For companies, fetch full company data
+    if (response.data.role === 'COMPANY' && response.data.company_id != null) {
+      try {
+        const companyResponse = await axiosInstance.get(`/companies/me/${response.data.company_id}`);
+        return { token: response.data, company: companyResponse.data };
+      } catch (err) {
+        console.error('Failed to fetch company data:', err);
+        // Return token without company data if fetch fails
+        return { token: response.data };
+      }
     }
 
     // For bloggers, token already includes name/email; we may not have a dedicated profile endpoint
@@ -120,11 +126,6 @@ const api = {
     }
 
     return { token: response.data };
-  },
-
-  register: async (shopData: { name: string; email: string; password: string; description?: string }): Promise<Shop> => {
-    const response = await axiosInstance.post('/shops/', shopData);
-    return response.data;
   },
 
   // Products endpoints
@@ -227,26 +228,26 @@ const api = {
     return response.data;
   },
 
-  // Shop endpoints
-  getMyShop: async (shopId: number): Promise<Shop> => {
-    const response = await axiosInstance.get(`/shops/me/${shopId}`);
-    return response.data;
-  },
-
-  linkTelegram: async (shopId: number, telegramChatId: string): Promise<Shop> => {
-    const response = await axiosInstance.post(`/shops/${shopId}/telegram`, {
+  // Company endpoints (for Telegram linking - part of affiliate module)
+  linkTelegram: async (companyId: number, telegramChatId: string): Promise<Company> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/telegram`, {
       telegram_chat_id: telegramChatId,
     });
     return response.data;
   },
 
-  getTelegramSetup: async (shopId: number): Promise<any> => {
-    const response = await axiosInstance.get(`/shops/${shopId}/telegram/setup`);
+  getTelegramSetup: async (companyId: number): Promise<any> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/telegram/setup`);
+    return response.data;
+  },
+
+  getCompanyAnalytics: async (companyId: number): Promise<Analytics[]> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/analytics`);
     return response.data;
   },
 
   // OAuth endpoints (frontend-first flow)
-  getGoogleAuthorizeUrl: async (userType: 'shop' | 'blogger'): Promise<{
+  getGoogleAuthorizeUrl: async (userType: 'company' | 'blogger'): Promise<{
     authorization_url: string;
     state: string;
     redirect_uri: string;
@@ -265,7 +266,7 @@ const api = {
     code: string;
     state: string;
     redirect_uri: string;
-    user_type: 'shop' | 'blogger';
+    user_type: 'company' | 'blogger';
   }): Promise<TokenResponse> => {
     try {
       const response = await axiosInstance.post('/auth/google/exchange', data);
@@ -281,6 +282,71 @@ const api = {
       });
       throw error;
     }
+  },
+
+  // Company endpoints
+  createCompany: async (companyData: CompanyCreate): Promise<Company> => {
+    const response = await axiosInstance.post('/companies/', companyData);
+    return response.data;
+  },
+
+  getCompany: async (companyId: number): Promise<Company> => {
+    const response = await axiosInstance.get(`/companies/${companyId}`);
+    return response.data;
+  },
+
+  getMyCompany: async (companyId: number): Promise<Company> => {
+    const response = await axiosInstance.get(`/companies/me/${companyId}`);
+    return response.data;
+  },
+
+  updateCompany: async (companyId: number, companyData: CompanyUpdate): Promise<Company> => {
+    const response = await axiosInstance.put(`/companies/${companyId}`, companyData);
+    return response.data;
+  },
+
+  // Company Answers endpoints
+  getCompanyAnswers: async (companyId: number): Promise<CompanyAnswers> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/answers`);
+    return response.data;
+  },
+
+  updateCompanyAnswers: async (companyId: number, answers: CompanyAnswersUpdate): Promise<CompanyAnswers> => {
+    const response = await axiosInstance.put(`/companies/${companyId}/answers`, answers);
+    return response.data;
+  },
+
+  // GTM Strategy endpoints
+  generateGTMStrategy: async (companyId: number): Promise<GTMStrategy> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/gtm-strategy/generate`);
+    return response.data;
+  },
+
+  getGTMStrategyHistory: async (companyId: number): Promise<GTMStrategy[]> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/gtm-strategy/history`);
+    return response.data;
+  },
+
+  // Validation endpoints
+  generateValidation: async (companyId: number): Promise<Validation> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/validation/generate`);
+    return response.data;
+  },
+
+  getValidationHistory: async (companyId: number): Promise<Validation[]> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/validation/history`);
+    return response.data;
+  },
+
+  // Forecast endpoints
+  generateForecast: async (companyId: number): Promise<Forecast> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/forecast/generate`);
+    return response.data;
+  },
+
+  getForecastHistory: async (companyId: number): Promise<Forecast[]> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/forecast/history`);
+    return response.data;
   },
 };
 

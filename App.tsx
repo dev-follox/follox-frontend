@@ -17,6 +17,9 @@ import BloggerProductsDetailedPage from './pages/BloggerProductsDetailedPage';
 import BloggerProductDetailsPage from './pages/BloggerProductDetailsPage';
 import AuthPage from './pages/AuthPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
+import HomePage from './pages/HomePage';
+import CompanyQAPage from './pages/CompanyQAPage';
+import GTMStrategyPage from './pages/GTMStrategyPage';
 
 const ProtectedRoute: React.FC = () => {
   const { isLoggedIn, loading } = useAuth();
@@ -29,14 +32,15 @@ const ProtectedRoute: React.FC = () => {
 
 const AppContent: React.FC = () => {
   const location = useLocation();
-  const hideHeader = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/auth/callback';
+  const hideHeader = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/auth/callback' || location.pathname === '/home';
   
   return (
     <>
       {!hideHeader && <Header />}
           <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<AuthPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/login" element={<AuthPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route path="/products/:code" element={<PublicLayout><ProductLandingPage /></PublicLayout>} />
@@ -46,13 +50,16 @@ const AppContent: React.FC = () => {
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
-              {/* Shop */}
+              {/* Shop/Company - Affiliate Sales Module */}
               <Route path="/shop/dashboard" element={<ShopDashboardPage />} />
               <Route path="/shop/products/:productId" element={<ShopProductDetailsPage />} />
               <Route path="/shop/bloggers" element={<BloggersPage />} />
               {/* Blogger */}
               <Route path="/blogger/products" element={<BloggerProductsDetailedPage />} />
               <Route path="/blogger/products/:productId" element={<BloggerProductDetailsPage />} />
+              {/* GTM Strategy Module */}
+              <Route path="/gtm/qa" element={<CompanyQAPage />} />
+              <Route path="/gtm/strategy" element={<GTMStrategyPage />} />
             </Route>
 
             {/* Not Found Route */}

@@ -12,7 +12,7 @@
 @import './components/_header.css';
 
 /* Import page styles */
-@import './pages/_auth-landing.css';
+@import './pages/_auth-landing.scss';
 @import './pages/_login.css';
 @import './pages/_dashboard.css';
 

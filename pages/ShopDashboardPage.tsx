@@ -11,7 +11,7 @@ import ProductForm from '../components/ProductForm';
 
 const ShopDashboardPage: React.FC = () => {
 	const { user } = useAuth();
-	const shop = user?.shop;
+	const company = user?.company;
 	const navigate = useNavigate();
 	const [products, setProducts] = useState<Product[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -27,7 +27,7 @@ const ShopDashboardPage: React.FC = () => {
 	const dropdownRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
 	useEffect(() => {
-		if (shop?.id) {
+		if (company?.id) {
 			const fetchProducts = async () => {
 				try {
 					setLoading(true);
@@ -41,7 +41,7 @@ const ShopDashboardPage: React.FC = () => {
 			};
 			fetchProducts();
 		}
-	}, [shop]);
+	}, [company]);
 
 	// Close dropdown when clicking outside
 	useEffect(() => {
@@ -79,13 +79,13 @@ const ShopDashboardPage: React.FC = () => {
 		price: number;
 		image_url?: string;
 	}) => {
-		if (!shop?.id) return;
+		if (!company?.id) return;
 
 		setIsCreating(true);
 		try {
 			const createdProduct = await api.createProduct({
 				...data,
-				shop_id: shop.id
+				company_id: company.id
 			});
 			setProducts(prev => [createdProduct, ...prev]);
 			setIsDialogOpen(false);

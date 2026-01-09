@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Button from './Button';
 import Dialog from './Dialog';
@@ -9,6 +9,7 @@ import Card from './Card';
 
 const Header: React.FC = () => {
 	const { isLoggedIn, logout, user } = useAuth();
+	const location = useLocation();
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [chatId, setChatId] = useState<string>('');
@@ -31,8 +32,8 @@ const Header: React.FC = () => {
 		setLinkLoading(true);
 		setError('');
 		try {
-			if (user?.role === 'SHOP' && user.shop) {
-				await api.linkTelegram(user.shop.id, chatId.trim());
+			if (user?.role === 'COMPANY' && user.company) {
+				await api.linkTelegram(user.company.id, chatId.trim());
 				setLinkSuccess(true);
 			}
 		} catch (err) {
@@ -47,19 +48,45 @@ const Header: React.FC = () => {
 			<header className="bg-white shadow-md">
 				<nav className="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
 					<div className="flex items-center space-x-4">
-						<Link to={isLoggedIn ? (user?.role === 'SHOP' ? '/shop/dashboard' : '/blogger/products') : '/'} className="text-2xl font-bold text-gray-800">
+						<Link 
+							to={
+								isLoggedIn 
+									? (user?.role === 'COMPANY' 
+										? '/shop/dashboard' 
+										: '/blogger/products')
+									: '/'
+							} 
+							className="text-2xl font-bold text-gray-800"
+						>
 							Follox
 						</Link>
-						{isLoggedIn && user?.role === 'SHOP' && user.shop && (
-								<span className="text-gray-600 hidden sm:block">Добро пожаловать, {user.shop.name}</span>
+						{isLoggedIn && user?.role === 'COMPANY' && user.company && (
+							<span className="text-gray-600 hidden sm:block">Добро пожаловать, {user.company.company_name}</span>
 						)}
 					</div>
 					<div className="flex items-center space-x-4">
-						{isLoggedIn && user?.role === 'SHOP' && user.shop && (
+						{isLoggedIn && user?.role === 'COMPANY' && user.company && (
 							<>
 								<div className="flex items-center space-x-4">
-									<Link to="/shop/dashboard" className="text-gray-600 hover:text-gray-900">
-										Товары
+									<Link 
+										to="/shop/dashboard" 
+										className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+											location.pathname.startsWith('/shop') 
+												? 'bg-primary text-white' 
+												: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+										}`}
+									>
+										Affiliate Sales
+									</Link>
+									<Link 
+										to="/gtm/qa" 
+										className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+											location.pathname.startsWith('/gtm') 
+												? 'bg-primary text-white' 
+												: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+										}`}
+									>
+										GTM Strategy
 									</Link>
 									<Link to="/shop/bloggers" className="text-gray-600 hover:text-gray-900">
 										Блогеры

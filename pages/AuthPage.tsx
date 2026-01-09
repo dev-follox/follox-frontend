@@ -8,21 +8,25 @@ import Toggle from '../components/Toggle';
 import api from '../services/api';
 
 type AuthMode = 'signup' | 'login';
-type UserType = 'shop' | 'blogger';
+type UserType = 'company' | 'blogger';
 
 const AuthPage: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
-  const [userType, setUserType] = useState<UserType>('shop');
+  const [userType, setUserType] = useState<UserType>('company');
   
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   
-  const [shopFormData, setShopFormData] = useState({
-    name: '',
+  const [companyFormData, setCompanyFormData] = useState({
+    full_name: '',
     email: '',
     password: '',
+    phone_number: '',
+    professional_profile_link: '',
+    company_name: '',
+    stage: '' as 'idea' | 'pre-revenue' | 'post-PMF' | 'scaling' | '',
     description: ''
   });
   
@@ -40,14 +44,14 @@ const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   
   if (isLoggedIn) {
-    if (user?.role === 'SHOP') {
+    if (user?.role === 'COMPANY') {
       navigate('/shop/dashboard', { replace: true });
     } else if (user?.role === 'BLOGGER') {
       navigate('/blogger/products', { replace: true });
     }
   }
 
-  const handleGoogleSignIn = async (userType: 'shop' | 'blogger') => {
+  const handleGoogleSignIn = async (userType: 'company' | 'blogger') => {
     try {
       // Get authorization URL from backend
       const { authorization_url, state, redirect_uri } = await api.getGoogleAuthorizeUrl(userType);
@@ -117,13 +121,22 @@ const AuthPage: React.FC = () => {
     setIsSignupLoading(true);
 
     try {
-      if (userType === 'shop') {
-        await api.register(shopFormData);
+      if (userType === 'company') {
+        await api.createCompany({
+          full_name: companyFormData.full_name,
+          email: companyFormData.email,
+          password: companyFormData.password,
+          phone_number: companyFormData.phone_number || null,
+          professional_profile_link: companyFormData.professional_profile_link || null,
+          company_name: companyFormData.company_name,
+          stage: companyFormData.stage || null,
+          description: companyFormData.description || null,
+        });
       } else {
         await api.createBlogger(bloggerFormData);
       }
       setMode('login');
-      setLoginEmail(userType === 'shop' ? shopFormData.email : bloggerFormData.email);
+      setLoginEmail(userType === 'company' ? companyFormData.email : bloggerFormData.email);
     } catch (err) {
       setSignupError('Не удалось зарегистрироваться. Проверьте данные и попробуйте снова.');
     } finally {
@@ -131,9 +144,9 @@ const AuthPage: React.FC = () => {
     }
   };
 
-  const handleShopFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleCompanyFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setShopFormData(prev => ({
+    setCompanyFormData(prev => ({
       ...prev,
       [name]: value
     }));
@@ -148,19 +161,19 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="auth-landing-container">
+    <div className={mode === 'signup' ? "auth-landing-container auth-landing-container--start" : "auth-landing-container"}>
       <div className="max-w-2xl w-full">
-        <div className="mb-8 text-left">
-          <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">Добро пожаловать в Follox</h1>
-          <p className="text-center text-gray-600">{mode === 'signup' ? 'Выберите, как вы хотите продолжить' : 'Вход в систему'}</p>
-        </div>
         
         <Card className="p-8 w-full">
+            <div className="mb-8 text-left">
+              <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">Добро пожаловать в Follox</h1>
+              <p className="text-center text-gray-600">Выберите, как вы хотите продолжить</p>
+            </div>
           {mode === 'signup' ? (
             <>
               <Toggle
                 options={[
-                  { value: 'shop', label: 'Магазин' },
+                  { value: 'company', label: 'Компания' },
                   { value: 'blogger', label: 'Блогер' }
                 ]}
                 selected={userType}
@@ -170,45 +183,88 @@ const AuthPage: React.FC = () => {
               <form className="mt-6 space-y-6" onSubmit={handleSignup}>
                 {signupError && <p className="text-center text-sm text-red-600">{signupError}</p>}
                 
-                {userType === 'shop' ? (
+                {userType === 'company' ? (
                   <>
                     <Input
-                      id="shop-name"
-                      name="name"
-                      label="Название магазина"
+                      id="company-full-name"
+                      name="full_name"
+                      label="Полное имя"
                       type="text"
                       required
-                      value={shopFormData.name}
-                      onChange={handleShopFormChange}
+                      value={companyFormData.full_name}
+                      onChange={handleCompanyFormChange}
                     />
                     <Input
-                      id="shop-email"
+                      id="company-email"
                       name="email"
                       label="Электронная почта"
                       type="email"
                       autoComplete="email"
                       required
-                      value={shopFormData.email}
-                      onChange={handleShopFormChange}
+                      value={companyFormData.email}
+                      onChange={handleCompanyFormChange}
                     />
                     <Input
-                      id="shop-password"
+                      id="company-phone"
+                      name="phone_number"
+                      label="Номер телефона (необязательно)"
+                      type="tel"
+                      value={companyFormData.phone_number}
+                      onChange={handleCompanyFormChange}
+                    />
+                    <Input
+                      id="company-profile-link"
+                      name="professional_profile_link"
+                      label="Ссылка на LinkedIn (необязательно)"
+                      type="url"
+                      value={companyFormData.professional_profile_link}
+                      onChange={handleCompanyFormChange}
+                    />
+                    <Input
+                      id="company-name"
+                      name="company_name"
+                      label="Название компании"
+                      type="text"
+                      required
+                      value={companyFormData.company_name}
+                      onChange={handleCompanyFormChange}
+                    />
+                    <div>
+                      <label htmlFor="company-stage" className="block text-sm font-medium text-gray-700 mb-1">
+                        Стадия компании (необязательно)
+                      </label>
+                      <select
+                        id="company-stage"
+                        name="stage"
+                        value={companyFormData.stage}
+                        onChange={handleCompanyFormChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                      >
+                        <option value="">Выберите стадию</option>
+                        <option value="idea">Идея</option>
+                        <option value="pre-revenue">Pre-revenue</option>
+                        <option value="post-PMF">Post-PMF</option>
+                        <option value="scaling">Scaling</option>
+                      </select>
+                    </div>
+                    <Input
+                      id="company-description"
+                      name="description"
+                      label="Описание (необязательно)"
+                      multiline
+                      rows={3}
+                      value={companyFormData.description}
+                      onChange={handleCompanyFormChange}
+                    />
+                    <Input
+                      id="company-password"
                       name="password"
                       label="Пароль"
                       type="password"
                       autoComplete="new-password"
                       required
-                      value={shopFormData.password}
-                      onChange={handleShopFormChange}
-                    />
-                    <Input
-                      id="shop-description"
-                      name="description"
-                      label="Описание (необязательно)"
-                      multiline
-                      rows={3}
-                      value={shopFormData.description}
-                      onChange={handleShopFormChange}
+                      value={companyFormData.password}
+                      onChange={handleCompanyFormChange}
                     />
                   </>
                 ) : (
