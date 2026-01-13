@@ -1,0 +1,35 @@
+// Not Found Page Styles
+.not-found-page {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+}
+
+.not-found-content {
+  text-align: center;
+  
+  &__code {
+    font-size: 3.75rem;
+    font-weight: 800;
+    color: var(--color-primary);
+  }
+  
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: var(--spacing-md);
+  }
+  
+  &__message {
+    color: #4b5563;
+    margin-top: var(--spacing-sm);
+  }
+  
+  &__action {
+    margin-top: var(--spacing-lg);
+  }
+}

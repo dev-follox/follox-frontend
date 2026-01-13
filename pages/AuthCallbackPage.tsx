@@ -189,10 +189,10 @@ const AuthCallbackPage: React.FC = () => {
   }, [searchParams, loginWithGoogle, navigate]);
 
   return (
-    <div className="h-full w-full flex items-center justify-center">
-      <div className="text-center">
+    <div className="auth-callback-page">
+      <div className="auth-callback-content">
         <Spinner size="large" />
-        <p className="mt-4 text-gray-600">{t('authCallback.processing')}</p>
+        <p className="auth-callback-content__message">{t('authCallback.processing')}</p>
       </div>
     </div>
   );

@@ -10,7 +10,6 @@ import ShopDashboardPage from './pages/ShopDashboardPage';
 import ShopProductDetailsPage from './pages/ShopProductDetailsPage';
 import BloggersPage from './pages/BloggersPage';
 import NotFoundPage from './pages/NotFoundPage';
-import Header from './components/Header';
 import PublicLayout from './components/PublicLayout';
 import MainLayout from './components/MainLayout';
 import BloggerRegistrationPage from './pages/BloggerRegistrationPage';

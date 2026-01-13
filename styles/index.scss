@@ -1,0 +1,43 @@
+// Main styles entry point
+// Note: Tailwind is loaded via CDN in index.html
+// Custom styles that extend or complement Tailwind
+
+// Import base styles
+@import './base/_variables.scss';
+@import './base/_typography.scss';
+
+// Import component styles
+@import './components/_button.scss';
+@import './components/_card.scss';
+@import './components/_header.scss';
+@import './components/_language-switcher.scss';
+
+// Import layout utilities
+@import './utilities/_layout.scss';
+@import './utilities/_helpers.scss';
+
+// Import layout styles
+@import './layouts/_public-layout.scss';
+
+// Import page styles
+@import './pages/_auth-landing.scss';
+@import './pages/_home.scss';
+@import './pages/_dashboard.scss';
+@import './pages/_company-dashboard.scss';
+@import './pages/_bloggers.scss';
+@import './pages/_qa.scss';
+@import './pages/_gtm-strategy.scss';
+@import './pages/_product-details.scss';
+@import './pages/_product-landing.scss';
+@import './pages/_registration.scss';
+@import './pages/_not-found.scss';
+@import './pages/_auth-callback.scss';
+@import './pages/_blogger-products.scss';
+
+// Global base styles - must come after all @import statements
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}

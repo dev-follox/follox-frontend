@@ -9,25 +9,25 @@ const HomePage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="auth-landing-container">
-      <div className="max-w-4xl w-full">
-        <div className="mb-8 text-center">
-          <div className="flex justify-end mb-4">
+    <div className="home-container">
+      <div className="container container--lg">
+        <div className="home-header">
+          <div className="home-header__language-switcher">
             <LanguageSwitcher />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('home.title')}</h1>
-          <p className="text-lg text-gray-600">{t('home.subtitle')}</p>
+          <h1 className="home-header__title">{t('home.title')}</h1>
+          <p className="home-header__subtitle">{t('home.subtitle')}</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="p-8 flex flex-col hover:shadow-xl transition-shadow">
-            <div className="mb-4">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">{t('home.affiliateSales.title')}</h2>
-              <p className="text-gray-600">
+        <div className="home-modules">
+          <Card className="home-module-card">
+            <div className="home-module-card__content">
+              <h2 className="home-module-card__title">{t('home.affiliateSales.title')}</h2>
+              <p className="home-module-card__description">
                 {t('home.affiliateSales.description')}
               </p>
             </div>
-            <div className="mt-auto pt-4">
+            <div className="home-module-card__action">
               <Link 
                 to="/login"
                 onClick={() => localStorage.setItem('selectedModule', 'affiliateSales')}
@@ -37,14 +37,14 @@ const HomePage: React.FC = () => {
             </div>
           </Card>
 
-          <Card className="p-8 flex flex-col hover:shadow-xl transition-shadow">
-            <div className="mb-4">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-2">{t('home.gtmStrategy.title')}</h2>
-              <p className="text-gray-600">
+          <Card className="home-module-card">
+            <div className="home-module-card__content">
+              <h2 className="home-module-card__title">{t('home.gtmStrategy.title')}</h2>
+              <p className="home-module-card__description">
                 {t('home.gtmStrategy.description')}
               </p>
             </div>
-            <div className="mt-auto pt-4">
+            <div className="home-module-card__action">
               <Link 
                 to="/login"
                 onClick={() => localStorage.setItem('selectedModule', 'gtmStrategy')}

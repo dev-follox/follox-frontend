@@ -57,9 +57,9 @@ const ShopRegistrationPage: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="flex items-center justify-between">
+    <div className="registration-page">
+      <div className="registration-container">
+        <div className="registration-header">
           <Link to="/">
             <Button variant="secondary" size="sm" aria-label={t('common.back')}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -67,13 +67,13 @@ const ShopRegistrationPage: React.FC = () => {
               </svg>
             </Button>
           </Link>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="registration-header__title">
             {t('registration.companyTitle')}
           </h2>
-          <span className="w-9" />
+          <span className="registration-header__spacer" />
         </div>
-        <Card className="p-8">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+        <Card className="panel panel--padded">
+          <form className="registration-form" onSubmit={handleSubmit}>
             {error && <p className="text-center text-sm text-red-600">{error}</p>}
             
             <Input

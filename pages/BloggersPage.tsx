@@ -95,10 +95,10 @@ const BloggersPage: React.FC = () => {
   }
 
   return (
-    <div className="h-full w-full space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-bold text-gray-900">{t('bloggers.title')}</h1>
-        <div className="flex gap-2">
+    <div className="bloggers-page">
+      <div className="bloggers-header">
+        <h1 className="bloggers-header__title">{t('bloggers.title')}</h1>
+        <div className="bloggers-header__actions">
           <Button onClick={() => setIsDialogOpen(true)}>{t('bloggers.addBlogger')}</Button>
           <Button onClick={() => setIsLinkDialogOpen(true)} variant="secondary">{t('bloggers.createAffiliateLink')}</Button>
         </div>
@@ -235,31 +235,31 @@ const BloggersPage: React.FC = () => {
       </Dialog>
 
       {/* Bloggers List */}
-      <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+      <div className="bloggers-table">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bloggers-table__header">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('bloggers.table.name')}</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('bloggers.table.email')}</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('bloggers.table.bio')}</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('bloggers.table.created')}</th>
+              <th scope="col">{t('bloggers.table.name')}</th>
+              <th scope="col">{t('bloggers.table.email')}</th>
+              <th scope="col">{t('bloggers.table.bio')}</th>
+              <th scope="col">{t('bloggers.table.created')}</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bloggers-table__body">
             {bloggers.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={4} className="bloggers-table__empty">
                   {t('bloggers.noBloggers')}
                 </td>
               </tr>
             ) : bloggers.map((blogger) => (
               <tr key={blogger.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{blogger.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{blogger.email}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">
+                <td className="whitespace-nowrap text-sm font-medium text-gray-900">{blogger.name}</td>
+                <td className="whitespace-nowrap text-sm text-gray-500">{blogger.email}</td>
+                <td className="text-sm text-gray-500">
                   {blogger.bio || '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="whitespace-nowrap text-sm text-gray-500">
                   {new Date(blogger.created_at).toLocaleDateString()}
                 </td>
               </tr>

@@ -112,26 +112,26 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="h-full w-full p-4 md:p-8 space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">{t('dashboard.title')}</h1>
+    <div className="dashboard-page">
+      <div className="dashboard-header">
+        <h1 className="dashboard-header__title">{t('dashboard.title')}</h1>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="dashboard-steps">
         {/* Step 1: Answer the questions */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-primary text-white text-sm font-semibold rounded">
+        <Card className="dashboard-step">
+          <div className="dashboard-step__header">
+            <div className="flex flex--align-center flex--gap-sm">
+              <span className="dashboard-step__badge">
                 {t('dashboard.step')} 1
               </span>
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="dashboard-step__title">
                 {t('dashboard.steps.answerQuestions.title')}
               </h2>
             </div>
             <button
               onClick={() => navigate('/gtm/qa')}
-              className="text-primary hover:text-primary-600 transition-colors"
+              className="dashboard-step__arrow"
               title={t('dashboard.steps.answerQuestions.goTo')}
             >
               <svg
@@ -150,18 +150,18 @@ const DashboardPage: React.FC = () => {
               </svg>
             </button>
           </div>
-          <p className="text-gray-600 mb-4">{t('dashboard.steps.answerQuestions.description')}</p>
-          <div className="space-y-2">
+          <p className="dashboard-step__description">{t('dashboard.steps.answerQuestions.description')}</p>
+          <div className="dashboard-step__items">
             {answerSections.map(({ key, label }) => {
               const isAnswered = isSectionAnswered(key as keyof typeof answers);
               return (
                 <div
                   key={key}
-                  className="flex items-center gap-2 text-sm"
+                  className={`dashboard-step__item ${isAnswered ? 'dashboard-step__item--checked' : 'dashboard-step__item--unchecked'}`}
                 >
                   {isAnswered ? (
                     <svg
-                      className="h-5 w-5 text-primary flex-shrink-0"
+                      className="dashboard-step__checkmark"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -172,11 +172,9 @@ const DashboardPage: React.FC = () => {
                       />
                     </svg>
                   ) : (
-                    <div className="h-5 w-5 border-2 border-gray-300 rounded flex-shrink-0" />
+                    <div className="dashboard-step__checkbox" />
                   )}
-                  <span className={isAnswered ? 'text-gray-800' : 'text-gray-500'}>
-                    {label}
-                  </span>
+                  <span>{label}</span>
                 </div>
               );
             })}
@@ -184,19 +182,19 @@ const DashboardPage: React.FC = () => {
         </Card>
 
         {/* Step 2: Generate GTM Strategy */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-primary text-white text-sm font-semibold rounded">
+        <Card className="dashboard-step">
+          <div className="dashboard-step__header">
+            <div className="flex flex--align-center flex--gap-sm">
+              <span className="dashboard-step__badge">
                 {t('dashboard.step')} 2
               </span>
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="dashboard-step__title">
                 {t('dashboard.steps.generateStrategy.title')}
               </h2>
             </div>
             <button
               onClick={() => navigate('/gtm/strategy')}
-              className="text-primary hover:text-primary-600 transition-colors"
+              className="dashboard-step__arrow"
               title={t('dashboard.steps.generateStrategy.goTo')}
             >
               <svg
@@ -215,8 +213,8 @@ const DashboardPage: React.FC = () => {
               </svg>
             </button>
           </div>
-          <p className="text-gray-600 mb-4">{t('dashboard.steps.generateStrategy.description')}</p>
-          <div className="space-y-2">
+          <p className="dashboard-step__description">{t('dashboard.steps.generateStrategy.description')}</p>
+          <div className="dashboard-step__items">
             {[
               { key: 'strategy', label: t('dashboard.steps.generateStrategy.strategy'), checked: hasStrategy },
               { key: 'validation', label: t('dashboard.steps.generateStrategy.validation'), checked: hasValidation },
@@ -224,11 +222,11 @@ const DashboardPage: React.FC = () => {
             ].map(({ key, label, checked }) => (
               <div
                 key={key}
-                className="flex items-center gap-2 text-sm"
+                className={`dashboard-step__item ${checked ? 'dashboard-step__item--checked' : 'dashboard-step__item--unchecked'}`}
               >
                 {checked ? (
                   <svg
-                    className="h-5 w-5 text-primary flex-shrink-0"
+                    className="dashboard-step__checkmark"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -239,11 +237,9 @@ const DashboardPage: React.FC = () => {
                     />
                   </svg>
                 ) : (
-                  <div className="h-5 w-5 border-2 border-gray-300 rounded flex-shrink-0" />
+                  <div className="dashboard-step__checkbox" />
                 )}
-                <span className={checked ? 'text-gray-800' : 'text-gray-500'}>
-                  {label}
-                </span>
+                <span>{label}</span>
               </div>
             ))}
           </div>

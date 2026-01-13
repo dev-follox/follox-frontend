@@ -108,31 +108,31 @@ const CompanyQAPage: React.FC = () => {
   }
 
   return (
-    <div className="h-full w-full p-4 md:p-8 space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">{t('qa.title')}</h1>
+    <div className="qa-page">
+      <div className="qa-header">
+        <h1 className="qa-header__title">{t('qa.title')}</h1>
         <Button onClick={() => navigate('/gtm/strategy')} variant="secondary">
           {t('qa.goToStrategy')}
         </Button>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="qa-alert qa-alert--error">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+        <div className="qa-alert qa-alert--success">
           {t('qa.answersSaved')}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="qa-sections">
         {/* Product Section */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.product.title')}</h2>
-          <div className="space-y-4">
+        <Card className="qa-section">
+          <h2 className="qa-section__title">{t('qa.sections.product.title')}</h2>
+          <div className="qa-section__fields">
             <Input
               id="product-name"
               label={t('qa.sections.product.name')}
@@ -163,9 +163,9 @@ const CompanyQAPage: React.FC = () => {
         </Card>
 
         {/* Market Section */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.market.title')}</h2>
-          <div className="space-y-4">
+        <Card className="qa-section">
+          <h2 className="qa-section__title">{t('qa.sections.market.title')}</h2>
+          <div className="qa-section__fields">
             <Input
               id="market-target"
               label={t('qa.sections.market.targetMarket')}
@@ -188,9 +188,9 @@ const CompanyQAPage: React.FC = () => {
         </Card>
 
         {/* Customer Section */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.customer.title')}</h2>
-          <div className="space-y-4">
+        <Card className="qa-section">
+          <h2 className="qa-section__title">{t('qa.sections.customer.title')}</h2>
+          <div className="qa-section__fields">
             <Input
               id="customer-role"
               label={t('qa.sections.customer.role')}
@@ -213,9 +213,9 @@ const CompanyQAPage: React.FC = () => {
         </Card>
 
         {/* Problem Section */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.problem.title')}</h2>
-          <div className="space-y-4">
+        <Card className="qa-section">
+          <h2 className="qa-section__title">{t('qa.sections.problem.title')}</h2>
+          <div className="qa-section__fields">
             <Input
               id="problem-main-pain"
               label={t('qa.sections.problem.mainPain')}
@@ -242,9 +242,9 @@ const CompanyQAPage: React.FC = () => {
         </Card>
 
         {/* Solution Section */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.solution.title')}</h2>
-          <div className="space-y-4">
+        <Card className="qa-section">
+          <h2 className="qa-section__title">{t('qa.sections.solution.title')}</h2>
+          <div className="qa-section__fields">
             <Input
               id="solution-core-value"
               label={`${t('qa.sections.solution.coreValue')} (${t('common.optional')})`}
@@ -265,9 +265,9 @@ const CompanyQAPage: React.FC = () => {
         </Card>
 
         {/* Distribution Section */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.distribution.title')}</h2>
-          <div className="space-y-4">
+        <Card className="qa-section">
+          <h2 className="qa-section__title">{t('qa.sections.distribution.title')}</h2>
+          <div className="qa-section__fields">
             <Input
               id="distribution-channels"
               label={`${t('qa.sections.distribution.knownChannels')} (${t('common.optional')})`}
@@ -284,9 +284,9 @@ const CompanyQAPage: React.FC = () => {
         </Card>
 
         {/* Pricing Section */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.pricing.title')}</h2>
-          <div className="space-y-4">
+        <Card className="qa-section">
+          <h2 className="qa-section__title">{t('qa.sections.pricing.title')}</h2>
+          <div className="qa-section__fields">
             <Input
               id="pricing-model"
               label={`${t('qa.sections.pricing.model')} (${t('common.optional')})`}
@@ -304,9 +304,9 @@ const CompanyQAPage: React.FC = () => {
         </Card>
 
         {/* Traction Section */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.traction.title')}</h2>
-          <div className="space-y-4">
+        <Card className="qa-section">
+          <h2 className="qa-section__title">{t('qa.sections.traction.title')}</h2>
+          <div className="qa-section__fields">
             <Input
               id="traction-users"
               label={`${t('qa.sections.traction.users')} (${t('common.optional')})`}
@@ -333,9 +333,9 @@ const CompanyQAPage: React.FC = () => {
         </Card>
 
         {/* Constraints Section */}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.constraints.title')}</h2>
-          <div className="space-y-4">
+        <Card className="qa-section">
+          <h2 className="qa-section__title">{t('qa.sections.constraints.title')}</h2>
+          <div className="qa-section__fields">
             <Input
               id="constraints-budget"
               label={`${t('qa.sections.constraints.budget')} (${t('common.optional')})`}
@@ -357,7 +357,7 @@ const CompanyQAPage: React.FC = () => {
           </div>
         </Card>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex flex--end flex--gap-md">
           <Button type="submit" isLoading={saving}>
             {t('qa.saveAnswers')}
           </Button>

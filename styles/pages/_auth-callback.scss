@@ -1,0 +1,17 @@
+// Auth Callback Page Styles
+.auth-callback-page {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-callback-content {
+  text-align: center;
+  
+  &__message {
+    margin-top: var(--spacing-md);
+    color: #4b5563;
+  }
+}

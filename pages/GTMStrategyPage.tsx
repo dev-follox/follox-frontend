@@ -117,9 +117,9 @@ const GTMStrategyPage: React.FC = () => {
 
     if (activeTab === 'strategy') {
       return (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">{t('gtmStrategy.tabs.strategy')}</h2>
+        <div className="gtm-strategy-history">
+          <div className="gtm-strategy-section">
+            <h2 className="gtm-strategy-section__title">{t('gtmStrategy.tabs.strategy')}</h2>
             <Button
               onClick={() => handleGenerate('strategy')}
               isLoading={generating === 'strategy'}
@@ -129,16 +129,18 @@ const GTMStrategyPage: React.FC = () => {
           </div>
 
           {strategyHistory.length === 0 ? (
-            <Card className="p-8 text-center text-gray-500">
-              <p>{t('gtmStrategy.noHistory.strategy')}</p>
+            <Card className="gtm-strategy-item">
+              <div className="gtm-strategy-item__empty">
+                <p>{t('gtmStrategy.noHistory.strategy')}</p>
+              </div>
             </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="gtm-strategy-history">
               {strategyHistory.map((strategy) => (
-                <Card key={strategy.id} className="p-6">
-                  <div className="flex justify-between items-start mb-4">
+                <Card key={strategy.id} className="gtm-strategy-item">
+                  <div className="gtm-strategy-item__header">
                     <div>
-                      <h3 className="font-semibold text-lg mb-2">
+                      <h3 className="gtm-strategy-item__title">
                         {t('gtmStrategy.generatedAt')} {formatDate(strategy.created_at)}
                       </h3>
                     </div>
@@ -151,10 +153,8 @@ const GTMStrategyPage: React.FC = () => {
                       {t('gtmStrategy.regenerate')}
                     </Button>
                   </div>
-                  <div className="prose max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded">
-                      {strategy.content}
-                    </pre>
+                  <div className="gtm-strategy-item__content">
+                    {strategy.content}
                   </div>
                   {strategy.output_data && (
                     <details className="mt-4">
@@ -296,35 +296,30 @@ const GTMStrategyPage: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full p-4 md:p-8 space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">{t('gtmStrategy.title')}</h1>
+    <div className="gtm-strategy-page">
+      <div className="gtm-strategy-header">
+        <h1 className="gtm-strategy-header__title">{t('gtmStrategy.title')}</h1>
         <Button onClick={() => navigate('/gtm/qa')} variant="secondary">
           {t('gtmStrategy.editAnswers')}
         </Button>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="qa-alert qa-alert--error">
           {error}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
+      <div className="gtm-strategy-tabs">
+        <nav className="gtm-strategy-tabs__nav">
           {(['strategy', 'validation', 'forecast'] as TabType[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`
-                py-4 px-1 border-b-2 font-medium text-sm
-                ${
-                  activeTab === tab
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }
-              `}
+              className={`gtm-strategy-tabs__tab ${
+                activeTab === tab ? 'gtm-strategy-tabs__tab--active' : ''
+              }`}
             >
               {tab === 'strategy' && t('gtmStrategy.tabs.strategy')}
               {tab === 'validation' && t('gtmStrategy.tabs.validation')}
@@ -335,7 +330,9 @@ const GTMStrategyPage: React.FC = () => {
       </div>
 
       {/* Content */}
-      {renderContent()}
+      <div className="gtm-strategy-content">
+        {renderContent()}
+      </div>
     </div>
   );
 };

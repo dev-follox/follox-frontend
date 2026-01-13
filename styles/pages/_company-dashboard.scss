@@ -1,0 +1,143 @@
+// Company Dashboard (Products) Page Styles
+.company-dashboard {
+  height: 100%;
+  width: 100%;
+  padding: var(--spacing-md);
+  
+  @media (min-width: 768px) {
+    padding: var(--spacing-xl);
+  }
+}
+
+.company-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+  }
+}
+
+.company-dashboard-tabs {
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: var(--spacing-xl);
+  
+  &__nav {
+    display: flex;
+    gap: var(--spacing-xl);
+  }
+  
+  &__tab {
+    padding: var(--spacing-md) 0.25rem;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    font-size: 0.875rem;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    
+    &:hover {
+      color: #374151;
+      border-bottom-color: #d1d5db;
+    }
+    
+    &--active {
+      color: var(--color-primary-text);
+      border-bottom-color: var(--color-primary);
+    }
+  }
+}
+
+.company-products-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.company-product-card {
+  height: 24rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  &__image {
+    height: 12rem;
+    width: 100%;
+    flex-shrink: 0;
+    
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+  }
+  
+  &__content {
+    padding: var(--spacing-lg);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  
+  &__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  &__description {
+    color: #4b5563;
+    font-size: 0.875rem;
+    flex-grow: 1;
+    overflow: hidden;
+    
+    span {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+  
+  &__price {
+    margin-top: var(--spacing-md);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary-text);
+    flex-shrink: 0;
+  }
+  
+  &__actions {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    z-index: 10;
+  }
+}
+
+.company-empty-state {
+  text-align: center;
+  color: #6b7280;
+  padding: var(--spacing-xl);
+}

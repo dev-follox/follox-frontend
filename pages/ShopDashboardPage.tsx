@@ -24,7 +24,10 @@ const ShopDashboardPage: React.FC = () => {
 	useEffect(() => {
 		if (location.pathname === '/company/bloggers') {
 			setActiveTab('bloggers');
-		} else if (location.pathname.startsWith('/company/dashboard') || location.pathname.startsWith('/company/products')) {
+		} else if (
+			location.pathname.startsWith('/company/dashboard') ||
+			location.pathname.startsWith('/company/products')
+		) {
 			setActiveTab('products');
 		}
 	}, [location.pathname]);
@@ -49,7 +52,7 @@ const ShopDashboardPage: React.FC = () => {
 					const data = await api.getProducts();
 					setProducts(data);
 				} catch (err) {
-					setError(t('dashboard.loadError'));
+					setError(t('company.loadError'));
 				} finally {
 					setLoading(false);
 				}
@@ -105,7 +108,7 @@ const ShopDashboardPage: React.FC = () => {
 			setProducts(prev => [createdProduct, ...prev]);
 			setIsDialogOpen(false);
 		} catch (err) {
-			setError(t('dashboard.createError'));
+			setError(t('company.createError'));
 		} finally {
 			setIsCreating(false);
 		}
@@ -143,7 +146,7 @@ const ShopDashboardPage: React.FC = () => {
 			setIsEditDialogOpen(false);
 			setEditingProduct(null);
 		} catch (err) {
-			setError(t('dashboard.updateError'));
+			setError(t('company.updateError'));
 		} finally {
 			setIsCreating(false);
 		}
@@ -170,7 +173,7 @@ const ShopDashboardPage: React.FC = () => {
 			setIsDeleteDialogOpen(false);
 			setProductToDelete(null);
 		} catch (err) {
-			setError(t('dashboard.deleteError'));
+			setError(t('company.deleteError'));
 			setIsDeleteDialogOpen(false);
 			setProductToDelete(null);
 		} finally {
@@ -189,40 +192,11 @@ const ShopDashboardPage: React.FC = () => {
 
 	return (
 		<>
-			<div className="h-full w-full p-4 md:p-8 space-y-8">
-				{/* Tabs */}
-				<div className="border-b border-gray-200">
-					<nav className="-mb-px flex space-x-8">
-						<button
-							onClick={() => setActiveTab('products')}
-							className={`${
-								activeTab === 'products'
-									? 'border-primary text-primary'
-									: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-							} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-						>
-							{t('sidebar.products')}
-						</button>
-						<button
-							onClick={() => navigate('/company/bloggers')}
-							className={`${
-								activeTab === 'bloggers'
-									? 'border-primary text-primary'
-									: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-							} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
-						>
-							{t('sidebar.bloggers')}
-						</button>
-					</nav>
+			<div className="company-dashboard">
+				<div className="company-dashboard-header">
+					<h1 className="company-dashboard-header__title">{t('company.yourProducts')}</h1>
+					<Button onClick={() => setIsDialogOpen(true)}>{t('company.addProduct')}</Button>
 				</div>
-
-				{/* Tab Content */}
-				{activeTab === 'products' && (
-					<>
-						<div className="flex justify-between items-center">
-							<h1 className="text-xl font-bold text-gray-900">{t('dashboard.yourProducts')}</h1>
-							<Button onClick={() => setIsDialogOpen(true)}>{t('dashboard.addProduct')}</Button>
-						</div>
 
 				<ConfirmDialog
 					isOpen={isDeleteDialogOpen}
@@ -231,8 +205,8 @@ const ShopDashboardPage: React.FC = () => {
 						setProductToDelete(null);
 					}}
 					onConfirm={handleDeleteConfirm}
-					title={t('dashboard.deleteProduct')}
-					message={t('dashboard.deleteConfirm')}
+					title={t('company.deleteProduct')}
+					message={t('company.deleteConfirm')}
 					confirmLabel={t('common.delete')}
 					cancelLabel={t('common.cancel')}
 					confirmVariant="danger"
@@ -240,16 +214,16 @@ const ShopDashboardPage: React.FC = () => {
 				/>
 
 				{products.length === 0 ? (
-					<p className="text-center text-gray-500">{t('dashboard.noProducts')}</p>
+					<p className="company-empty-state">{t('company.noProducts')}</p>
 				) : (
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+					<div className="company-products-grid">
 						{products.map(product => (
 							<Card
 								key={product.id}
-								className="h-96 flex flex-col hover:shadow-xl transition-shadow duration-300 cursor-pointer relative"
+								className="company-product-card"
 								onClick={e => handleCardClick(product.id, e)}
 							>
-								<div className="absolute top-2 right-2 z-10 dropdown-container">
+								<div className="company-product-card__actions dropdown-container">
 									<div className="relative" ref={el => (dropdownRefs.current[product.id] = el)}>
 										<button
 											onClick={e => {
@@ -299,35 +273,22 @@ const ShopDashboardPage: React.FC = () => {
 										)}
 									</div>
 								</div>
-								<div className="flex flex-col h-full">
-									{product.image_url && (
-										<div className="h-48 w-full flex-shrink-0">
-											<img
-												src={api.getImageUrl(product.image_url)}
-												alt={product.name}
-												className="h-full w-full object-cover rounded-t-lg"
-											/>
-										</div>
-									)}
-									<div className="p-6 flex-grow flex flex-col min-h-0">
-										<h2 className="text-lg font-semibold text-gray-800 mb-2">{product.name}</h2>
-										<p className="text-gray-600 text-sm flex-grow overflow-hidden">
-											<span className="line-clamp-3">
-												{product.description || t('dashboard.noDescription')}
-											</span>
-										</p>
-										<p className="mt-4 text-2xl font-bold text-primary-text flex-shrink-0">
-											₸{product.price.toFixed(2)}
-										</p>
+								{product.image_url && (
+									<div className="company-product-card__image">
+										<img src={api.getImageUrl(product.image_url)} alt={product.name} />
 									</div>
+								)}
+								<div className="company-product-card__content">
+									<h2 className="company-product-card__title">{product.name}</h2>
+									<p className="company-product-card__description">
+										<span>{product.description || t('company.noDescription')}</span>
+									</p>
+									<p className="company-product-card__price">₸{product.price.toFixed(2)}</p>
 								</div>
 							</Card>
 						))}
 					</div>
 				)}
-					</>
-				)}
-
 			</div>
 			<ProductForm
 				isOpen={isDialogOpen}
