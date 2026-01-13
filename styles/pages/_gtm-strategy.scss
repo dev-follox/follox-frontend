@@ -102,10 +102,13 @@
   }
   
   &__title {
-    font-weight: 600;
-    font-size: 1.125rem;
+    font-size: 1rem;
     margin-bottom: var(--spacing-sm);
     color: #1f2937;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   
   &__content {

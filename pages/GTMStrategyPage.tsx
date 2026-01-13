@@ -141,7 +141,20 @@ const GTMStrategyPage: React.FC = () => {
                   <div className="gtm-strategy-item__header">
                     <div>
                       <h3 className="gtm-strategy-item__title">
-                        {t('gtmStrategy.generatedAt')} {formatDate(strategy.created_at)}
+                        <svg
+                          className="inline-block w-4 h-4 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        {formatDate(strategy.created_at)}
                       </h3>
                     </div>
                   </div>
@@ -179,8 +192,21 @@ const GTMStrategyPage: React.FC = () => {
                 <Card key={validation.id} className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="font-semibold text-lg mb-2">
-                        {t('gtmStrategy.validationAt')} {formatDate(validation.created_at)}
+                      <h3 className="font-semibold text-lg mb-2 flex items-center">
+                        <svg
+                          className="w-5 h-5 mr-2 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        {formatDate(validation.created_at)}
                       </h3>
                     </div>
                   </div>
@@ -220,8 +246,21 @@ const GTMStrategyPage: React.FC = () => {
                 <Card key={forecast.id} className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="font-semibold text-lg mb-2">
-                        {t('gtmStrategy.forecastAt')} {formatDate(forecast.created_at)}
+                      <h3 className="font-semibold text-lg mb-2 flex items-center">
+                        <svg
+                          className="w-5 h-5 mr-2 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        {formatDate(forecast.created_at)}
                       </h3>
                     </div>
                   </div>
