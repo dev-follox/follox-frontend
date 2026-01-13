@@ -89,7 +89,7 @@ const GTMStrategyPage: React.FC = () => {
   };
 
   const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleString('ru-RU', {
+    return new Date(dateString).toLocaleString(t.language, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -144,28 +144,10 @@ const GTMStrategyPage: React.FC = () => {
                         {t('gtmStrategy.generatedAt')} {formatDate(strategy.created_at)}
                       </h3>
                     </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => handleGenerate('strategy')}
-                      isLoading={generating === 'strategy'}
-                    >
-                      {t('gtmStrategy.regenerate')}
-                    </Button>
                   </div>
                   <div className="gtm-strategy-item__content">
                     {strategy.content}
                   </div>
-                  {strategy.output_data && (
-                    <details className="mt-4">
-                      <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
-                        {t('gtmStrategy.showStructuredData')}
-                      </summary>
-                      <pre className="mt-2 text-xs bg-gray-50 p-4 rounded overflow-auto">
-                        {JSON.stringify(strategy.output_data, null, 2)}
-                      </pre>
-                    </details>
-                  )}
                 </Card>
               ))}
             </div>
@@ -201,30 +183,12 @@ const GTMStrategyPage: React.FC = () => {
                         {t('gtmStrategy.validationAt')} {formatDate(validation.created_at)}
                       </h3>
                     </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => handleGenerate('validation')}
-                      isLoading={generating === 'validation'}
-                    >
-                      {t('gtmStrategy.regenerate')}
-                    </Button>
                   </div>
                   <div className="prose max-w-none">
                     <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded">
                       {validation.content}
                     </pre>
                   </div>
-                  {validation.output_data && (
-                    <details className="mt-4">
-                      <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
-                        {t('gtmStrategy.showStructuredData')}
-                      </summary>
-                      <pre className="mt-2 text-xs bg-gray-50 p-4 rounded overflow-auto">
-                        {JSON.stringify(validation.output_data, null, 2)}
-                      </pre>
-                    </details>
-                  )}
                 </Card>
               ))}
             </div>
@@ -260,30 +224,12 @@ const GTMStrategyPage: React.FC = () => {
                         {t('gtmStrategy.forecastAt')} {formatDate(forecast.created_at)}
                       </h3>
                     </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => handleGenerate('forecast')}
-                      isLoading={generating === 'forecast'}
-                    >
-                      {t('gtmStrategy.regenerate')}
-                    </Button>
                   </div>
                   <div className="prose max-w-none">
                     <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded">
                       {forecast.content}
                     </pre>
                   </div>
-                  {forecast.output_data && (
-                    <details className="mt-4">
-                      <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
-                        {t('gtmStrategy.showStructuredData')}
-                      </summary>
-                      <pre className="mt-2 text-xs bg-gray-50 p-4 rounded overflow-auto">
-                        {JSON.stringify(forecast.output_data, null, 2)}
-                      </pre>
-                    </details>
-                  )}
                 </Card>
               ))}
             </div>
