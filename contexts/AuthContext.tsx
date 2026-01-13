@@ -85,6 +85,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       navigate('/admin/companies', { replace: true });
       return;
     }
+
+    // Unknown role
+    console.error('Unknown role in login response:', token.role);
+    throw new Error(`Unknown role: ${token.role}`);
   }, [navigate]);
 
   const loginWithGoogle = useCallback(async (googleResponse: GoogleOAuthResponse) => {

@@ -47,7 +47,7 @@ const AdminCompanyDetailsPage: React.FC = () => {
       
       if (activeTab === 'answers') {
         try {
-          const answersData = await api.getCompanyAnswers(Number(companyId));
+          const answersData = await api.getCompanyAnswersAdmin(Number(companyId));
           setAnswers(answersData);
         } catch (err: any) {
           // Answers might not exist, that's okay
@@ -57,9 +57,9 @@ const AdminCompanyDetailsPage: React.FC = () => {
         }
       } else if (activeTab === 'generations') {
         const [strategiesData, validationsData, forecastsData] = await Promise.all([
-          api.getCompanyGTMStrategies(Number(companyId)),
-          api.getCompanyValidations(Number(companyId)),
-          api.getCompanyForecasts(Number(companyId)),
+          api.getCompanyGTMStrategiesAdmin(Number(companyId)),
+          api.getCompanyValidationsAdmin(Number(companyId)),
+          api.getCompanyForecastsAdmin(Number(companyId)),
         ]);
         setStrategies(strategiesData);
         setValidations(validationsData);

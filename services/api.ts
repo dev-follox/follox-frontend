@@ -125,6 +125,13 @@ const api = {
       return { token: response.data, blogger };
     }
 
+    // For admin, just return the token (no additional data needed)
+    if (response.data.role === 'ADMIN') {
+      return { token: response.data };
+    }
+
+    // Unknown role - still return token but log warning
+    console.warn('Unknown role in login response:', response.data.role);
     return { token: response.data };
   },
 
@@ -368,22 +375,23 @@ const api = {
     return response.data;
   },
 
-  getCompanyAnswers: async (companyId: number): Promise<CompanyAnswers> => {
+  // Admin endpoints - get company data as admin
+  getCompanyAnswersAdmin: async (companyId: number): Promise<CompanyAnswers> => {
     const response = await axiosInstance.get(`/admin/companies/${companyId}/answers`);
     return response.data;
   },
 
-  getCompanyGTMStrategies: async (companyId: number): Promise<GTMStrategy[]> => {
+  getCompanyGTMStrategiesAdmin: async (companyId: number): Promise<GTMStrategy[]> => {
     const response = await axiosInstance.get(`/admin/companies/${companyId}/gtm-strategies`);
     return response.data;
   },
 
-  getCompanyValidations: async (companyId: number): Promise<Validation[]> => {
+  getCompanyValidationsAdmin: async (companyId: number): Promise<Validation[]> => {
     const response = await axiosInstance.get(`/admin/companies/${companyId}/validations`);
     return response.data;
   },
 
-  getCompanyForecasts: async (companyId: number): Promise<Forecast[]> => {
+  getCompanyForecastsAdmin: async (companyId: number): Promise<Forecast[]> => {
     const response = await axiosInstance.get(`/admin/companies/${companyId}/forecasts`);
     return response.data;
   },
