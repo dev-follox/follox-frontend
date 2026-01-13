@@ -139,7 +139,7 @@
         "expectedPrice": "Ожидаемая цена"
       },
       "traction": {
-        "title": "Тракция",
+        "title": "Traction",
         "users": "Количество пользователей",
         "revenue": "Выручка",
         "signals": "Сигналы"
@@ -329,7 +329,7 @@
         "solution": "Решение",
         "distribution": "Распределение",
         "pricing": "Ценообразование",
-        "traction": "Тяга",
+        "traction": "Traction",
         "constraints": "Ограничения"
       },
       "generateStrategy": {
