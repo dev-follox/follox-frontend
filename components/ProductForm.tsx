@@ -3,6 +3,7 @@ import { Product } from '../types';
 import api from '../services/api';
 import Input from './Input';
 import Button from './Button';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface ProductFormData {
   name: string;
@@ -34,6 +35,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
   onSubmit,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     description: '',
@@ -87,7 +89,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         const uploadResult = await api.uploadProductImage(formData.image);
         imageUrl = uploadResult.image_url;
       } catch (err) {
-        alert('Не удалось загрузить изображение.');
+        alert(t('productForm.uploadError'));
         return;
       }
     } else if (product?.image_url) {
@@ -106,7 +108,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   if (!isOpen) return null;
 
-  const title = product ? 'Редактировать товар' : 'Добавить новый товар';
+  const title = product ? t('productForm.editProduct') : t('productForm.addProduct');
 
   const handleClose = () => {
     setFormData({
@@ -136,7 +138,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
               <form onSubmit={handleSubmit} className="space-y-4">
                 <Input
                   id={product ? "edit-name" : "name"}
-                  label="Название"
+                  label={t('productForm.productName')}
                   type="text"
                   required
                   value={formData.name}
@@ -144,7 +146,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 />
                 <Input
                   id={product ? "edit-description" : "description"}
-                  label="Описание"
+                  label={t('productForm.description')}
                   multiline
                   rows={3}
                   value={formData.description}
@@ -152,7 +154,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 />
                 <Input
                   id={product ? "edit-blogger_task_description" : "blogger_task_description"}
-                  label="ТЗ для блогера"
+                  label={t('productForm.bloggerTask')}
                   multiline
                   rows={3}
                   value={formData.bloggerTaskDescription}
@@ -160,7 +162,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 />
                 <Input
                   id={product ? "edit-price" : "price"}
-                  label="Цена"
+                  label={t('productForm.price')}
                   type="number"
                   step="0.01"
                   required
@@ -169,7 +171,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Изображение товара
+                    {t('productForm.productImage')}
                   </label>
                   <input
                     type="file"
@@ -186,7 +188,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                     <div className="mt-2">
                       <img
                         src={formData.imagePreview}
-                        alt="Предпросмотр товара"
+                        alt={t('productForm.imagePreview')}
                         className="h-32 w-32 object-cover rounded-md"
                       />
                     </div>
@@ -194,10 +196,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 </div>
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
                   <Button type="submit" isLoading={isLoading}>
-                    Сохранить
+                    {t('common.save')}
                   </Button>
                   <Button type="button" variant="secondary" onClick={handleClose} disabled={isLoading}>
-                    Отмена
+                    {t('common.cancel')}
                   </Button>
                 </div>
               </form>

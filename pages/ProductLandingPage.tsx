@@ -7,8 +7,10 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import Spinner from '../components/Spinner';
+import { useTranslation } from '../hooks/useTranslation';
 
 const ProductLandingPage: React.FC = () => {
+  const { t } = useTranslation();
   const { code } = useParams<{ code: string }>();
   const [affiliateLink, setAffiliateLink] = useState<AffiliateLink | null>(null);
 
@@ -23,7 +25,7 @@ const ProductLandingPage: React.FC = () => {
 
   useEffect(() => {
     if (!code) {
-      setError('Отсутствует код партнёрской ссылки.');
+      setError(t('productLanding.missingCode'));
       setLoading(false);
       return;
     }
@@ -42,7 +44,7 @@ const ProductLandingPage: React.FC = () => {
         );
         setProduct(productResponse);
       } catch (err) {
-        setError('Не удалось загрузить данные товара.');
+        setError(t('productLanding.loadError'));
       } finally {
         setLoading(false);
       }
@@ -54,7 +56,7 @@ const ProductLandingPage: React.FC = () => {
   const handleOrderSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!affiliateLink || !phoneNumber || quantity < 1) {
-      alert('Пожалуйста, заполните поля корректно.');
+      alert(t('productLanding.validationError'));
       return;
     }
     setIsOrdering(true);
@@ -68,7 +70,7 @@ const ProductLandingPage: React.FC = () => {
       });
       setOrderSuccess(true);
     } catch (err) {
-      alert('Не удалось оформить заказ.');
+      alert(t('productLanding.orderError'));
     } finally {
       setIsOrdering(false);
     }
@@ -83,7 +85,7 @@ const ProductLandingPage: React.FC = () => {
   }
 
   if (!product) {
-    return <div className="text-center text-gray-500 text-xl">Товар не найден.</div>;
+    return <div className="text-center text-gray-500 text-xl">{t('productLanding.notFound')}</div>;
   }
 
   return (
@@ -112,23 +114,23 @@ const ProductLandingPage: React.FC = () => {
           
           {orderSuccess ? (
             <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md" role="alert">
-              <p className="font-bold">Заказ оформлен!</p>
-              <p>Спасибо! Ваш заказ принят и скоро будет обработан.</p>
+              <p className="font-bold">{t('productLanding.orderSuccess')}</p>
+              <p>{t('productLanding.orderSuccessMessage')}</p>
             </div>
           ) : (
             <form onSubmit={handleOrderSubmit} className="space-y-4">
               <Input
                 id="phone"
-                label="Номер телефона"
+                label={t('productLanding.phoneNumber')}
                 type="tel"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="например, 8 777 123 4567"
+                placeholder={t('productLanding.phonePlaceholder')}
                 required
               />
               <Input
                 id="quantity"
-                label="Количество"
+                label={t('productLanding.quantity')}
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
@@ -136,7 +138,7 @@ const ProductLandingPage: React.FC = () => {
                 required
               />
               <Button type="submit" isLoading={isOrdering} className="w-full">
-                Оформить заказ
+                {t('productLanding.placeOrder')}
               </Button>
             </form>
           )}

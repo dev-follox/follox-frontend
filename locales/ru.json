@@ -1,0 +1,306 @@
+{
+  "common": {
+    "welcome": "Добро пожаловать",
+    "welcomeTo": "Добро пожаловать в Follox",
+    "loading": "Загрузка...",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "submit": "Отправить",
+    "close": "Закрыть",
+    "back": "Назад",
+    "next": "Далее",
+    "confirm": "Подтвердить",
+    "logout": "Выйти",
+    "login": "Войти",
+    "signup": "Зарегистрироваться",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "name": "Имя",
+    "description": "Описание",
+    "optional": "необязательно",
+    "required": "обязательно",
+    "error": "Ошибка",
+    "success": "Успешно",
+    "company": "Компания",
+    "blogger": "Блогер"
+  },
+  "home": {
+    "title": "Добро пожаловать в DeltaHub",
+    "subtitle": "Выберите модуль для работы",
+    "affiliateSales": {
+      "title": "Affiliate Sales & Analytics",
+      "description": "Управляйте продажами через партнёрскую программу. Добавляйте товары, отслеживайте аналитику, управляйте заказами, работайте с блогерами и создавайте партнёрские ссылки."
+    },
+    "gtmStrategy": {
+      "title": "GTM Strategy Generator",
+      "description": "Генерируйте стратегии выхода на рынок, валидируйте гипотезы и создавайте прогнозы. Ответьте на вопросы о вашем продукте и получите персонализированные рекомендации."
+    },
+    "goToModule": "Перейти к модулю"
+  },
+  "auth": {
+    "welcome": "Добро пожаловать в Follox",
+    "chooseHowToContinue": "Выберите, как вы хотите продолжить",
+    "loginTitle": "Вход в систему",
+    "signupTitle": "Регистрация",
+    "alreadyHaveAccount": "Уже есть аккаунт? Войти",
+    "noAccount": "Нет аккаунта? Зарегистрируйтесь",
+    "loginWithGoogle": "Войти через Google",
+    "createAccount": "Создать аккаунт",
+    "email": "Электронная почта",
+    "fullName": "Полное имя",
+    "phoneNumber": "Номер телефона",
+    "linkedinLink": "Ссылка на LinkedIn",
+    "companyName": "Название компании",
+    "stage": "Стадия компании",
+    "selectStage": "Выберите стадию",
+    "stageOptions": {
+      "idea": "Идея",
+      "preRevenue": "Pre-revenue",
+      "postPMF": "Post-PMF",
+      "scaling": "Scaling"
+    },
+    "bio": "О себе",
+    "loginError": "Не удалось войти. Проверьте почту и пароль.",
+    "signupError": "Не удалось зарегистрироваться. Проверьте данные и попробуйте снова.",
+    "googleAuthError": "Не удалось инициировать вход через Google. Попробуйте снова."
+  },
+  "header": {
+    "affiliateSales": "Affiliate Sales",
+    "gtmStrategy": "GTM Strategy",
+    "bloggers": "Блогеры",
+    "linkTelegram": "Прикрепить Telegram",
+    "products": "Товары"
+  },
+  "dashboard": {
+    "yourProducts": "Ваши товары",
+    "addProduct": "Добавить товар",
+    "noProducts": "Вы еще не добавили ни одного товара.",
+    "productName": "Название товара",
+    "price": "Цена",
+    "image": "Изображение",
+    "bloggerTaskDescription": "Описание задачи для блогера",
+    "deleteProduct": "Удалить товар",
+    "deleteConfirm": "Вы уверены, что хотите удалить этот товар? Это действие нельзя отменить.",
+    "createError": "Не удалось создать товар.",
+    "updateError": "Не удалось обновить товар.",
+    "deleteError": "Не удалось удалить товар.",
+    "loadError": "Не удалось загрузить товары."
+  },
+  "qa": {
+    "title": "Вопросы и ответы",
+    "goToStrategy": "Перейти к генерации стратегии",
+    "editAnswers": "Редактировать ответы",
+    "saveAnswers": "Сохранить ответы",
+    "answersSaved": "Ответы успешно сохранены!",
+    "saveError": "Не удалось сохранить ответы. Попробуйте снова.",
+    "companyNotFound": "Компания не найдена. Пожалуйста, войдите в систему.",
+    "sections": {
+      "product": {
+        "title": "Продукт",
+        "name": "Название продукта",
+        "description": "Описание продукта",
+        "category": "Категория",
+        "stage": "Стадия продукта"
+      },
+      "market": {
+        "title": "Рынок",
+        "targetMarket": "Целевой рынок",
+        "geography": "География",
+        "alternatives": "Альтернативы (через запятую)"
+      },
+      "customer": {
+        "title": "Клиент",
+        "role": "Роль клиента",
+        "companyStage": "Стадия компании клиента",
+        "teamSize": "Размер команды"
+      },
+      "problem": {
+        "title": "Проблема",
+        "mainPain": "Основная боль",
+        "frequency": "Частота проблемы",
+        "currentSolution": "Текущее решение"
+      },
+      "solution": {
+        "title": "Решение",
+        "coreValue": "Основная ценность",
+        "differentiator": "Отличительная особенность"
+      },
+      "distribution": {
+        "title": "Распределение",
+        "knownChannels": "Известные каналы (через запятую)",
+        "preferredChannel": "Предпочтительный канал"
+      },
+      "pricing": {
+        "title": "Ценообразование",
+        "model": "Модель ценообразования",
+        "expectedPrice": "Ожидаемая цена"
+      },
+      "traction": {
+        "title": "Тракция",
+        "users": "Количество пользователей",
+        "revenue": "Выручка",
+        "signals": "Сигналы"
+      },
+      "constraints": {
+        "title": "Ограничения",
+        "budget": "Бюджет",
+        "time": "Время",
+        "team": "Команда"
+      }
+    }
+  },
+  "gtmStrategy": {
+    "title": "GTM Strategy Generator",
+    "editAnswers": "Редактировать ответы",
+    "tabs": {
+      "strategy": "GTM Стратегия",
+      "validation": "Валидация",
+      "forecast": "Прогноз"
+    },
+    "generate": "Сгенерировать",
+    "regenerate": "Регенерировать",
+    "noHistory": {
+      "strategy": "История GTM стратегий пуста. Нажмите \"Сгенерировать\" для создания первой стратегии.",
+      "validation": "История валидаций пуста. Нажмите \"Сгенерировать\" для создания первой валидации.",
+      "forecast": "История прогнозов пуста. Нажмите \"Сгенерировать\" для создания первого прогноза."
+    },
+    "generatedAt": "Стратегия от",
+    "validationAt": "Валидация от",
+    "forecastAt": "Прогноз от",
+    "showStructuredData": "Показать структурированные данные",
+    "generateError": {
+      "strategy": "Не удалось сгенерировать GTM стратегию. Попробуйте снова.",
+      "validation": "Не удалось сгенерировать валидацию. Попробуйте снова.",
+      "forecast": "Не удалось сгенерировать прогноз. Попробуйте снова."
+    },
+    "loadHistoryError": "Не удалось загрузить историю. Попробуйте снова."
+  },
+  "telegram": {
+    "linkTitle": "Привязать Telegram",
+    "instructions": "Чтобы получать уведомления о заказах в Telegram:",
+    "step1": "Откройте Telegram‑бота",
+    "step2": "Запустите бота.",
+    "step3": "Скопируйте Chat ID и вставьте его в поле ниже.",
+    "chatId": "ID чата",
+    "chatIdPlaceholder": "например, 123456789 или -1001234567890",
+    "linked": "Telegram привязан!",
+    "linkedMessage": "Вы будете получать уведомления о новых заказах.",
+    "linkError": "Не удалось привязать Telegram. Проверьте ID чата.",
+    "chatIdRequired": "Укажите ID чата"
+  },
+  "notFound": {
+    "title": "Страница не найдена",
+    "message": "Запрашиваемая страница не существует.",
+    "goHome": "На главную"
+  },
+  "registration": {
+    "companyTitle": "Создайте аккаунт компании",
+    "bloggerTitle": "Создайте аккаунт блогера",
+    "signupError": "Не удалось зарегистрироваться. Проверьте данные и попробуйте снова."
+  },
+  "bloggers": {
+    "title": "Блогеры",
+    "addBlogger": "Добавить блогера",
+    "createAffiliateLink": "Создать партнёрскую ссылку",
+    "addNewBlogger": "Добавить нового блогера",
+    "selectBlogger": "Выберите блогера",
+    "selectProduct": "Выберите товар",
+    "generate": "Сгенерировать",
+    "linkCreated": "Партнёрская ссылка создана!",
+    "copyLink": "Скопировать ссылку",
+    "linkCopied": "Ссылка скопирована",
+    "noBloggers": "Вы еще не добавили ни одного блогера.",
+    "table": {
+      "name": "Имя",
+      "email": "Email",
+      "bio": "О себе",
+      "created": "Создан"
+    },
+    "loadError": "Не удалось загрузить данные",
+    "createError": "Не удалось создать блогера",
+    "linkError": "Не удалось создать партнёрскую ссылку"
+  },
+  "productForm": {
+    "addProduct": "Добавить новый товар",
+    "editProduct": "Редактировать товар",
+    "productName": "Название",
+    "description": "Описание",
+    "bloggerTask": "ТЗ для блогера",
+    "price": "Цена",
+    "productImage": "Изображение товара",
+    "imagePreview": "Предпросмотр товара",
+    "uploadError": "Не удалось загрузить изображение."
+  },
+  "bloggerProducts": {
+    "title": "Ваши товары",
+    "noProducts": "Пока нет товаров с партнёрскими ссылками.",
+    "taskFromShop": "Задача от магазина",
+    "affiliateLink": "Партнёрская ссылка:",
+    "loadError": "Не удалось загрузить товары."
+  },
+  "bloggerProductDetails": {
+    "backToList": "← Назад к списку",
+    "description": "Описание",
+    "taskFromShop": "Задача от магазина",
+    "affiliateLink": "Партнёрская ссылка",
+    "copy": "Копировать",
+    "linkCopied": "Ссылка скопирована в буфер обмена!",
+    "notFound": "Товар не найден.",
+    "loadError": "Не удалось загрузить данные товара."
+  },
+  "productDetails": {
+    "edit": "Редактировать",
+    "expand": "Развернуть ↓",
+    "collapse": "Свернуть ↑",
+    "deleteTitle": "Удалить товар",
+    "deleteMessage": "Вы уверены, что хотите удалить этот товар? Это действие нельзя отменить.",
+    "tabs": {
+      "orders": "Заказы",
+      "analytics": "Аналитика"
+    },
+    "orders": {
+      "created": "Создан",
+      "clientPhone": "Телефон клиента",
+      "quantity": "Количество",
+      "total": "Итого",
+      "status": "Статус",
+      "actions": "Действия",
+      "process": "Обработать",
+      "cancel": "Отменить",
+      "noOrders": "Заказов пока нет"
+    },
+    "analytics": {
+      "blogger": "Блогер",
+      "visits": "Визиты",
+      "orders": "Заказы",
+      "sold": "Продано",
+      "revenue": "Выручка",
+      "noData": "Данных аналитики пока нет"
+    },
+    "notFound": "Товар не найден.",
+    "loadError": "Не удалось загрузить данные товара.",
+    "updateError": "Не удалось обновить товар.",
+    "deleteError": "Не удалось удалить товар.",
+    "statusUpdateError": "Не удалось обновить статус заказа."
+  },
+  "productLanding": {
+    "phoneNumber": "Номер телефона",
+    "phonePlaceholder": "например, 8 777 123 4567",
+    "quantity": "Количество",
+    "placeOrder": "Оформить заказ",
+    "orderSuccess": "Заказ оформлен!",
+    "orderSuccessMessage": "Спасибо! Ваш заказ принят и скоро будет обработан.",
+    "orderError": "Не удалось оформить заказ.",
+    "validationError": "Пожалуйста, заполните поля корректно.",
+    "missingCode": "Отсутствует код партнёрской ссылки.",
+    "loadError": "Не удалось загрузить данные товара.",
+    "notFound": "Товар не найден."
+  },
+  "authCallback": {
+    "processing": "Обработка входа...",
+    "error": "Ошибка входа: {message}",
+    "unknownError": "Неизвестная ошибка"
+  }
+}

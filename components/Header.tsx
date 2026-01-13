@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from '../hooks/useTranslation';
 import Button from './Button';
 import Dialog from './Dialog';
 import Input from './Input';
+import LanguageSwitcher from './LanguageSwitcher';
 import api from '@/services/api';
 import Card from './Card';
 
 const Header: React.FC = () => {
 	const { isLoggedIn, logout, user } = useAuth();
+	const { t } = useTranslation();
 	const location = useLocation();
 
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -26,7 +29,7 @@ const Header: React.FC = () => {
 	const handleSubmitLink = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!chatId.trim()) {
-			setError('Укажите ID чата');
+			setError(t('telegram.chatIdRequired'));
 			return;
 		}
 		setLinkLoading(true);
@@ -37,7 +40,7 @@ const Header: React.FC = () => {
 				setLinkSuccess(true);
 			}
 		} catch (err) {
-			setError('Не удалось привязать Telegram. Проверьте ID чата.');
+			setError(t('telegram.linkError'));
 		} finally {
 			setLinkLoading(false);
 		}
@@ -61,7 +64,7 @@ const Header: React.FC = () => {
 							Follox
 						</Link>
 						{isLoggedIn && user?.role === 'COMPANY' && user.company && (
-							<span className="text-gray-600 hidden sm:block">Добро пожаловать, {user.company.company_name}</span>
+							<span className="text-gray-600 hidden sm:block">{t('common.welcome')}, {user.company.company_name}</span>
 						)}
 					</div>
 					<div className="flex items-center space-x-4">
@@ -76,7 +79,7 @@ const Header: React.FC = () => {
 												: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
 										}`}
 									>
-										Affiliate Sales
+										{t('header.affiliateSales')}
 									</Link>
 									<Link 
 										to="/gtm/qa" 
@@ -86,20 +89,24 @@ const Header: React.FC = () => {
 												: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
 										}`}
 									>
-										GTM Strategy
+										{t('header.gtmStrategy')}
 									</Link>
 									<Link to="/shop/bloggers" className="text-gray-600 hover:text-gray-900">
-										Блогеры
+										{t('header.bloggers')}
 									</Link>
-									<Button onClick={handleOpenLinkTelegramDialog}>Прикрепить Telegram</Button>
+									<Button onClick={handleOpenLinkTelegramDialog}>{t('header.linkTelegram')}</Button>
+									<LanguageSwitcher />
 									<Button onClick={logout} variant="secondary">
-										Выйти
+										{t('common.logout')}
 									</Button>
 								</div>
 							</>
 						)}
 						{isLoggedIn && user?.role === 'BLOGGER' && (
-							<Button onClick={logout} variant="secondary">Выйти</Button>
+							<>
+								<LanguageSwitcher />
+								<Button onClick={logout} variant="secondary">{t('common.logout')}</Button>
+							</>
 						)}
 					</div>
 				</nav>
@@ -108,12 +115,12 @@ const Header: React.FC = () => {
 				<Dialog
 					isOpen={isDialogOpen}
 					onClose={() => setIsDialogOpen(false)}
-							title="Привязать Telegram"
+					title={t('telegram.linkTitle')}
 					onSubmit={handleSubmitLink}
 					actions={linkSuccess
 						? [
 							{
-								label: 'Закрыть',
+								label: t('common.close'),
 								variant: 'secondary',
 								onClick: () => {
 									setIsDialogOpen(false);
@@ -122,8 +129,8 @@ const Header: React.FC = () => {
 							},
 						]
 						: [
-							{ label: 'Отмена', variant: 'secondary', onClick: () => setIsDialogOpen(false) },
-							{ label: 'Привязать', variant: 'primary', type: 'submit' },
+							{ label: t('common.cancel'), variant: 'secondary', onClick: () => setIsDialogOpen(false) },
+							{ label: t('telegram.linkTitle'), variant: 'primary', type: 'submit' },
 						]}
 				>
 					<div
@@ -131,10 +138,10 @@ const Header: React.FC = () => {
 						role="alert"
 					>
 						<>
-							<p className="font-bold">Чтобы получать уведомления о заказах в Telegram:</p>
+							<p className="font-bold">{t('telegram.instructions')}</p>
 							<ol className="list-decimal list-inside space-y-1">
 								<li>
-									Откройте Telegram‑бота{' '}
+									{t('telegram.step1')}{' '}
 									<a
 										href="https://t.me/folloxKzBot"
 										target="_blank"
@@ -142,27 +149,27 @@ const Header: React.FC = () => {
 										className="text-primary-text underline hover:text-primary-text-600 font-medium"
 									>
 										https://t.me/folloxKzBot
-										</a>
-										.
+									</a>
+									.
 								</li>
 								<li>
-									Запустите бота.
+									{t('telegram.step2')}
 								</li>
-								<li>Скопируйте Chat ID и вставьте его в поле ниже.</li>
+								<li>{t('telegram.step3')}</li>
 							</ol>
 						</>
 					</div>
 					{linkSuccess && (
 						<div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md" role="alert">
-							<p className="font-bold">Telegram привязан!</p>
-							<p>Вы будете получать уведомления о новых заказах.</p>
+							<p className="font-bold">{t('telegram.linked')}</p>
+							<p>{t('telegram.linkedMessage')}</p>
 						</div>
 					)}
 					{error && <div className="text-red-600 text-sm">{error}</div>}
 					<Input
 						id="telegram_chat_id"
-							label="ID чата"
-							placeholder="например, 123456789 или -1001234567890"
+						label={t('telegram.chatId')}
+						placeholder={t('telegram.chatIdPlaceholder')}
 						value={chatId}
 						onChange={e => setChatId(e.target.value)}
 					/>

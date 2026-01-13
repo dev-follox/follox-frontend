@@ -4,8 +4,10 @@ import api from '../services/api';
 import { BloggerProductDetailed } from '../types';
 import Card from '../components/Card';
 import Spinner from '../components/Spinner';
+import { useTranslation } from '../hooks/useTranslation';
 
 const BloggerProductsDetailedPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [items, setItems] = useState<BloggerProductDetailed[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +20,7 @@ const BloggerProductsDetailedPage: React.FC = () => {
         const data = await api.getProductsForMeDetailed();
         setItems(data);
       } catch (err) {
-        setError('Не удалось загрузить товары.');
+        setError(t('bloggerProducts.loadError'));
       } finally {
         setLoading(false);
       }
@@ -36,9 +38,9 @@ const BloggerProductsDetailedPage: React.FC = () => {
 
   return (
     <div className="h-full w-full p-4 md:p-8 space-y-8">
-      <h1 className="text-xl font-bold text-gray-900">Ваши товары</h1>
+      <h1 className="text-xl font-bold text-gray-900">{t('bloggerProducts.title')}</h1>
       {items.length === 0 ? (
-        <p className="text-center text-gray-500">Пока нет товаров с партнёрскими ссылками.</p>
+        <p className="text-center text-gray-500">{t('bloggerProducts.noProducts')}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {items.map((p) => (
@@ -61,12 +63,12 @@ const BloggerProductsDetailedPage: React.FC = () => {
                 )}
                 {p.blogger_task_description && (
                   <div className="mt-3 p-3 bg-blue-50 text-blue-800 rounded flex-shrink-0 overflow-hidden">
-                    <div className="text-sm font-semibold mb-1">Задача от магазина</div>
+                    <div className="text-sm font-semibold mb-1">{t('bloggerProducts.taskFromShop')}</div>
                     <div className="text-sm line-clamp-2">{p.blogger_task_description}</div>
                   </div>
                 )}
                 <div className="mt-4 text-sm flex-shrink-0">
-                  <span className="font-medium">Партнёрская ссылка: </span>
+                  <span className="font-medium">{t('bloggerProducts.affiliateLink')} </span>
                   <a 
                     className="text-primary-text underline break-all" 
                     href={`${window.location.origin}/products/${p.affiliate_code}`} 

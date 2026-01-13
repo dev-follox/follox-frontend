@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from '../hooks/useTranslation';
 import { Product } from '../types';
 import api from '../services/api';
 import Card from '../components/Card';
@@ -11,6 +12,7 @@ import ProductForm from '../components/ProductForm';
 
 const ShopDashboardPage: React.FC = () => {
 	const { user } = useAuth();
+	const { t } = useTranslation();
 	const company = user?.company;
 	const navigate = useNavigate();
 	const [products, setProducts] = useState<Product[]>([]);
@@ -34,7 +36,7 @@ const ShopDashboardPage: React.FC = () => {
 					const data = await api.getProducts();
 					setProducts(data);
 				} catch (err) {
-					setError('Не удалось загрузить товары.');
+					setError(t('dashboard.loadError'));
 				} finally {
 					setLoading(false);
 				}
@@ -90,7 +92,7 @@ const ShopDashboardPage: React.FC = () => {
 			setProducts(prev => [createdProduct, ...prev]);
 			setIsDialogOpen(false);
 		} catch (err) {
-			setError('Не удалось создать товар.');
+			setError(t('dashboard.createError'));
 		} finally {
 			setIsCreating(false);
 		}
@@ -128,7 +130,7 @@ const ShopDashboardPage: React.FC = () => {
 			setIsEditDialogOpen(false);
 			setEditingProduct(null);
 		} catch (err) {
-			setError('Не удалось обновить товар.');
+			setError(t('dashboard.updateError'));
 		} finally {
 			setIsCreating(false);
 		}
@@ -155,7 +157,7 @@ const ShopDashboardPage: React.FC = () => {
 			setIsDeleteDialogOpen(false);
 			setProductToDelete(null);
 		} catch (err) {
-			setError('Не удалось удалить товар.');
+			setError(t('dashboard.deleteError'));
 			setIsDeleteDialogOpen(false);
 			setProductToDelete(null);
 		} finally {
@@ -176,8 +178,8 @@ const ShopDashboardPage: React.FC = () => {
 		<>
 			<div className="h-full w-full p-4 md:p-8 space-y-8">
 				<div className="flex justify-between items-center">
-					<h1 className="text-xl font-bold text-gray-900">Ваши товары</h1>
-					<Button onClick={() => setIsDialogOpen(true)}>Добавить товар</Button>
+					<h1 className="text-xl font-bold text-gray-900">{t('dashboard.yourProducts')}</h1>
+					<Button onClick={() => setIsDialogOpen(true)}>{t('dashboard.addProduct')}</Button>
 				</div>
 
 				<ConfirmDialog
@@ -187,16 +189,16 @@ const ShopDashboardPage: React.FC = () => {
 						setProductToDelete(null);
 					}}
 					onConfirm={handleDeleteConfirm}
-					title="Удалить товар"
-					message="Вы уверены, что хотите удалить этот товар? Это действие нельзя отменить."
-					confirmLabel="Удалить"
-					cancelLabel="Отмена"
+					title={t('dashboard.deleteProduct')}
+					message={t('dashboard.deleteConfirm')}
+					confirmLabel={t('common.delete')}
+					cancelLabel={t('common.cancel')}
 					confirmVariant="danger"
 					isLoading={isDeleting}
 				/>
 
 				{products.length === 0 ? (
-					<p className="text-center text-gray-500">Вы еще не добавили ни одного товара.</p>
+					<p className="text-center text-gray-500">{t('dashboard.noProducts')}</p>
 				) : (
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 						{products.map(product => (
@@ -239,7 +241,7 @@ const ShopDashboardPage: React.FC = () => {
 														}}
 														className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
 													>
-														Редактировать
+														{t('common.edit')}
 													</button>
 													<button
 														onClick={e => {
@@ -248,7 +250,7 @@ const ShopDashboardPage: React.FC = () => {
 														}}
 														className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
 													>
-														Удалить
+														{t('common.delete')}
 													</button>
 												</div>
 											</div>

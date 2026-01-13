@@ -3,8 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import Spinner from '../components/Spinner';
+import { useTranslation } from '../hooks/useTranslation';
 
 const AuthCallbackPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { loginWithGoogle } = useAuth();
@@ -23,7 +25,7 @@ const AuthCallbackPage: React.FC = () => {
         const error = searchParams.get('error');
         if (error) {
           console.error('OAuth error from Google:', error);
-          const errorDescription = searchParams.get('error_description') || 'Ошибка авторизации';
+          const errorDescription = searchParams.get('error_description') || t('authCallback.error', { message: error });
           
           // Log redirect_uri mismatch details if that's the error
           if (error === 'redirect_uri_mismatch') {
@@ -178,7 +180,7 @@ const AuthCallbackPage: React.FC = () => {
         sessionStorage.removeItem('oauth_user_type');
         
         // Show error to user before redirecting
-        alert(`Ошибка входа: ${error?.message || 'Неизвестная ошибка'}`);
+        alert(t('authCallback.error', { message: error?.message || t('authCallback.unknownError') }));
         navigate('/', { replace: true });
       }
     };
@@ -190,7 +192,7 @@ const AuthCallbackPage: React.FC = () => {
     <div className="h-full w-full flex items-center justify-center">
       <div className="text-center">
         <Spinner size="large" />
-        <p className="mt-4 text-gray-600">Обработка входа...</p>
+        <p className="mt-4 text-gray-600">{t('authCallback.processing')}</p>
       </div>
     </div>
   );

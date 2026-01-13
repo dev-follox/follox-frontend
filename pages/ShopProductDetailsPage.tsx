@@ -7,6 +7,7 @@ import Button from '../components/Button';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ProductForm from '../components/ProductForm';
 import { format } from 'date-fns';
+import { useTranslation } from '../hooks/useTranslation';
 
 type Tab = 'orders' | 'analytics';
 
@@ -24,6 +25,7 @@ const StatusBadge: React.FC<{ status: keyof typeof OrderStatus }> = ({ status })
 };
 
 const ShopProductDetailsPage: React.FC = () => {
+	const { t } = useTranslation();
 	const { productId } = useParams<{ productId: string }>();
 	const navigate = useNavigate();
 	const [product, setProduct] = useState<Product | null>(null);
@@ -52,7 +54,7 @@ const ShopProductDetailsPage: React.FC = () => {
 			setOrders(ordersData);
 			setAnalytics(analyticsData);
 		} catch (err) {
-			setError('Failed to load product details.');
+			setError(t('productDetails.loadError'));
 		} finally {
 			setLoading(false);
 		}
@@ -68,7 +70,7 @@ const ShopProductDetailsPage: React.FC = () => {
 			await api.updateOrderStatus(orderId, status);
 			await fetchData(); // Refresh all data
 		} catch (err) {
-			alert('Failed to update order status.');
+			alert(t('productDetails.statusUpdateError'));
 		} finally {
 			setUpdatingOrderId(null);
 		}
@@ -100,7 +102,7 @@ const ShopProductDetailsPage: React.FC = () => {
 			setProduct(updatedProduct);
 			setIsEditDialogOpen(false);
 		} catch (err) {
-			alert('Не удалось обновить товар.');
+			alert(t('productDetails.updateError'));
 		} finally {
 			setIsUpdating(false);
 		}
@@ -116,9 +118,9 @@ const ShopProductDetailsPage: React.FC = () => {
 		setIsDeleting(true);
 		try {
 			await api.deleteProduct(product.id);
-			navigate('/shop/dashboard');
+			navigate('/company/dashboard');
 		} catch (err) {
-			alert('Не удалось удалить товар.');
+			alert(t('productDetails.deleteError'));
 			setIsDeleting(false);
 			setIsDeleteDialogOpen(false);
 		}
@@ -137,7 +139,7 @@ const ShopProductDetailsPage: React.FC = () => {
 	}
 
 	if (!product) {
-		return <div className="text-center text-gray-500">Product not found.</div>;
+		return <div className="text-center text-gray-500">{t('productDetails.notFound')}</div>;
 	}
 
 	return (
@@ -149,10 +151,10 @@ const ShopProductDetailsPage: React.FC = () => {
 				</div>
 				<div className="flex space-x-2 flex-shrink-0">
 					<Button onClick={handleEditClick} variant="secondary" size="sm">
-						Редактировать
+						{t('productDetails.edit')}
 					</Button>
 					<Button onClick={handleDeleteClick} variant="danger" size="sm">
-						Удалить
+						{t('common.delete')}
 					</Button>
 				</div>
 			</div>
@@ -180,7 +182,7 @@ const ShopProductDetailsPage: React.FC = () => {
 							onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
 							className="mt-1 text-sm text-primary-text hover:text-primary-text-600 font-medium relative z-10"
 						>
-							{isDescriptionExpanded ? 'Свернуть ↑' : 'Развернуть ↓'}
+							{isDescriptionExpanded ? t('productDetails.collapse') : t('productDetails.expand')}
 						</button>
 					)}
 				</div>
@@ -198,10 +200,10 @@ const ShopProductDetailsPage: React.FC = () => {
 				isOpen={isDeleteDialogOpen}
 				onClose={() => setIsDeleteDialogOpen(false)}
 				onConfirm={handleDeleteConfirm}
-				title="Удалить товар"
-				message="Вы уверены, что хотите удалить этот товар? Это действие нельзя отменить."
-				confirmLabel="Удалить"
-				cancelLabel="Отмена"
+				title={t('productDetails.deleteTitle')}
+				message={t('productDetails.deleteMessage')}
+				confirmLabel={t('common.delete')}
+				cancelLabel={t('common.cancel')}
 				confirmVariant="danger"
 				isLoading={isDeleting}
 			/>
@@ -216,7 +218,7 @@ const ShopProductDetailsPage: React.FC = () => {
 								: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
 						} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
 					>
-						Заказы
+						{t('productDetails.tabs.orders')}
 					</button>
 					<button
 						onClick={() => setActiveTab('analytics')}
@@ -226,7 +228,7 @@ const ShopProductDetailsPage: React.FC = () => {
 								: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
 						} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
 					>
-						Аналитика
+						{t('productDetails.tabs.analytics')}
 					</button>
 				</nav>
 			</div>
@@ -244,34 +246,34 @@ const ShopProductDetailsPage: React.FC = () => {
 													scope="col"
 													className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 												>
-													Создан
+													{t('productDetails.orders.created')}
 												</th>
 												<th
 													scope="col"
 													className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 												>
-													Телефон клиента
+													{t('productDetails.orders.clientPhone')}
 												</th>
 												<th
 													scope="col"
 													className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 												>
-													Количество
+													{t('productDetails.orders.quantity')}
 												</th>
 												<th
 													scope="col"
 													className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 												>
-													Итого
+													{t('productDetails.orders.total')}
 												</th>
 												<th
 													scope="col"
 													className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 												>
-													Статус
+													{t('productDetails.orders.status')}
 												</th>
 												<th scope="col" className="relative px-6 py-3">
-													<span className="sr-only">Действия</span>
+													<span className="sr-only">{t('productDetails.orders.actions')}</span>
 												</th>
 											</tr>
 										</thead>
@@ -279,7 +281,7 @@ const ShopProductDetailsPage: React.FC = () => {
 											{orders.length === 0 ? (
 												<tr>
 													<td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-														Заказов пока нет
+														{t('productDetails.orders.noOrders')}
 													</td>
 												</tr>
 											) : (
@@ -313,7 +315,7 @@ const ShopProductDetailsPage: React.FC = () => {
 																		size="sm"
 																		isLoading={updatingOrderId === order.id}
 																	>
-																		Обработать
+																		{t('productDetails.orders.process')}
 																	</Button>
 																	<Button
 																		onClick={() =>
@@ -323,7 +325,7 @@ const ShopProductDetailsPage: React.FC = () => {
 																		size="sm"
 																		isLoading={updatingOrderId === order.id}
 																	>
-																		Отменить
+																		{t('productDetails.orders.cancel')}
 																	</Button>
 																</div>
 															)}
@@ -347,31 +349,31 @@ const ShopProductDetailsPage: React.FC = () => {
 										scope="col"
 										className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 									>
-										Блогер
+										{t('productDetails.analytics.blogger')}
 									</th>
 									<th
 										scope="col"
 										className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 									>
-										Визиты
+										{t('productDetails.analytics.visits')}
 									</th>
 									<th
 										scope="col"
 										className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 									>
-										Заказы
+										{t('productDetails.analytics.orders')}
 									</th>
 									<th
 										scope="col"
 										className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 									>
-										Продано
+										{t('productDetails.analytics.sold')}
 									</th>
 									<th
 										scope="col"
 										className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
 									>
-										Выручка
+										{t('productDetails.analytics.revenue')}
 									</th>
 								</tr>
 							</thead>
@@ -379,14 +381,14 @@ const ShopProductDetailsPage: React.FC = () => {
 								{analytics.length === 0 ? (
 									<tr>
 										<td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-											Данных аналитики пока нет
+											{t('productDetails.analytics.noData')}
 										</td>
 									</tr>
 								) : (
 									analytics.map(analytic => (
 										<tr key={analytic.id}>
 											<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-												{analytic.blogger?.name || `Блогер ${analytic.blogger_id}`}
+												{analytic.blogger?.name || `${t('common.blogger')} ${analytic.blogger_id}`}
 											</td>
 											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 												{analytic.visit_count}

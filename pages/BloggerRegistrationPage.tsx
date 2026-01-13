@@ -4,8 +4,10 @@ import Card from '../components/Card';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import api from '../services/api';
+import { useTranslation } from '../hooks/useTranslation';
 
 const BloggerRegistrationPage: React.FC = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,7 +27,7 @@ const BloggerRegistrationPage: React.FC = () => {
       await api.createBlogger(formData);
       navigate('/login');
     } catch (err) {
-      setError('Не удалось зарегистрироваться. Проверьте данные и попробуйте снова.');
+      setError(t('registration.signupError'));
     } finally {
       setIsLoading(false);
     }
@@ -44,14 +46,14 @@ const BloggerRegistrationPage: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div className="flex items-center justify-between">
           <Link to="/">
-            <Button variant="secondary" size="sm" aria-label="Назад">
+            <Button variant="secondary" size="sm" aria-label={t('common.back')}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M12.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L8.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
               </svg>
             </Button>
           </Link>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Создайте аккаунт блогера
+            {t('registration.bloggerTitle')}
           </h2>
           <span className="w-9" />
         </div>
@@ -62,7 +64,7 @@ const BloggerRegistrationPage: React.FC = () => {
             <Input
               id="name"
               name="name"
-              label="Имя"
+              label={t('common.name')}
               type="text"
               required
               value={formData.name}
@@ -72,7 +74,7 @@ const BloggerRegistrationPage: React.FC = () => {
             <Input
               id="email"
               name="email"
-              label="Электронная почта"
+              label={t('common.email')}
               type="email"
               autoComplete="email"
               required
@@ -83,7 +85,7 @@ const BloggerRegistrationPage: React.FC = () => {
             <Input
               id="password"
               name="password"
-              label="Пароль"
+              label={t('common.password')}
               type="password"
               autoComplete="new-password"
               required
@@ -94,7 +96,7 @@ const BloggerRegistrationPage: React.FC = () => {
             <Input
               id="bio"
               name="bio"
-              label="О себе (необязательно)"
+              label={`${t('auth.bio')} (${t('common.optional')})`}
               multiline
               rows={3}
               value={formData.bio}
@@ -103,7 +105,7 @@ const BloggerRegistrationPage: React.FC = () => {
 
             <div>
               <Button type="submit" isLoading={isLoading} className="w-full">
-                Создать аккаунт
+                {t('auth.createAccount')}
               </Button>
             </div>
 
@@ -112,7 +114,7 @@ const BloggerRegistrationPage: React.FC = () => {
                 to="/login"
                 className="font-medium text-primary-text hover:text-primary-text-600"
               >
-                Уже есть аккаунт? Войти
+                {t('auth.alreadyHaveAccount')}
               </Link>
             </div>
           </form>

@@ -3,6 +3,7 @@ import React from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 // FIX: The useAuth hook is exported from './hooks/useAuth', not from './contexts/AuthContext'.
 import { AuthProvider } from './contexts/AuthContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { useAuth } from './hooks/useAuth';
 import ProductLandingPage from './pages/ProductLandingPage';
 import ShopRegistrationPage from './pages/ShopRegistrationPage';
@@ -20,12 +21,14 @@ import AuthCallbackPage from './pages/AuthCallbackPage';
 import HomePage from './pages/HomePage';
 import CompanyQAPage from './pages/CompanyQAPage';
 import GTMStrategyPage from './pages/GTMStrategyPage';
+import { useTranslation } from './hooks/useTranslation';
 
 const ProtectedRoute: React.FC = () => {
   const { isLoggedIn, loading } = useAuth();
   const location = useLocation();
+  const { t } = useTranslation();
   if (loading) {
-    return <div>Loading...</div>; // Or a spinner component
+    return <div>{t('common.loading')}</div>;
   }
   return isLoggedIn ? <Outlet /> : <Navigate to="/" replace state={{ from: location }} />;
 };
@@ -71,9 +74,11 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </LanguageProvider>
   );
 };
 

@@ -1,10 +1,12 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from '../hooks/useTranslation';
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Toggle from '../components/Toggle';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import api from '../services/api';
 
 type AuthMode = 'signup' | 'login';
@@ -41,6 +43,7 @@ const AuthPage: React.FC = () => {
   const [isSignupLoading, setIsSignupLoading] = useState(false);
   
   const { login, isLoggedIn, user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   
   if (isLoggedIn) {
@@ -99,7 +102,7 @@ const AuthPage: React.FC = () => {
       window.location.href = authorization_url;
     } catch (error) {
       console.error('Failed to initiate Google OAuth:', error);
-      setLoginError('Не удалось инициировать вход через Google. Попробуйте снова.');
+      setLoginError(t('auth.googleAuthError'));
     }
   };
 
@@ -110,7 +113,7 @@ const AuthPage: React.FC = () => {
     try {
       await login(loginEmail, loginPassword);
     } catch (err) {
-      setLoginError('Не удалось войти. Проверьте почту и пароль.');
+      setLoginError(t('auth.loginError'));
       setIsLoginLoading(false);
     }
   };
@@ -138,7 +141,7 @@ const AuthPage: React.FC = () => {
       setMode('login');
       setLoginEmail(userType === 'company' ? companyFormData.email : bloggerFormData.email);
     } catch (err) {
-      setSignupError('Не удалось зарегистрироваться. Проверьте данные и попробуйте снова.');
+      setSignupError(t('auth.signupError'));
     } finally {
       setIsSignupLoading(false);
     }
@@ -166,15 +169,18 @@ const AuthPage: React.FC = () => {
         
         <Card className="p-8 w-full">
             <div className="mb-8 text-left">
-              <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">Добро пожаловать в Follox</h1>
-              <p className="text-center text-gray-600">Выберите, как вы хотите продолжить</p>
+              <div className="flex justify-end mb-4">
+                <LanguageSwitcher />
+              </div>
+              <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">{t('auth.welcome')}</h1>
+              <p className="text-center text-gray-600">{t('auth.chooseHowToContinue')}</p>
             </div>
           {mode === 'signup' ? (
             <>
               <Toggle
                 options={[
-                  { value: 'company', label: 'Компания' },
-                  { value: 'blogger', label: 'Блогер' }
+                  { value: 'company', label: t('common.company') },
+                  { value: 'blogger', label: t('common.blogger') }
                 ]}
                 selected={userType}
                 onChange={(value) => setUserType(value as UserType)}
@@ -188,7 +194,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="company-full-name"
                       name="full_name"
-                      label="Полное имя"
+                      label={t('auth.fullName')}
                       type="text"
                       required
                       value={companyFormData.full_name}
@@ -197,7 +203,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="company-email"
                       name="email"
-                      label="Электронная почта"
+                      label={t('auth.email')}
                       type="email"
                       autoComplete="email"
                       required
@@ -207,7 +213,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="company-phone"
                       name="phone_number"
-                      label="Номер телефона (необязательно)"
+                      label={`${t('auth.phoneNumber')} (${t('common.optional')})`}
                       type="tel"
                       value={companyFormData.phone_number}
                       onChange={handleCompanyFormChange}
@@ -215,7 +221,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="company-profile-link"
                       name="professional_profile_link"
-                      label="Ссылка на LinkedIn (необязательно)"
+                      label={`${t('auth.linkedinLink')} (${t('common.optional')})`}
                       type="url"
                       value={companyFormData.professional_profile_link}
                       onChange={handleCompanyFormChange}
@@ -223,7 +229,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="company-name"
                       name="company_name"
-                      label="Название компании"
+                      label={t('auth.companyName')}
                       type="text"
                       required
                       value={companyFormData.company_name}
@@ -231,7 +237,7 @@ const AuthPage: React.FC = () => {
                     />
                     <div>
                       <label htmlFor="company-stage" className="block text-sm font-medium text-gray-700 mb-1">
-                        Стадия компании (необязательно)
+                        {t('auth.stage')} ({t('common.optional')})
                       </label>
                       <select
                         id="company-stage"
@@ -240,17 +246,17 @@ const AuthPage: React.FC = () => {
                         onChange={handleCompanyFormChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                       >
-                        <option value="">Выберите стадию</option>
-                        <option value="idea">Идея</option>
-                        <option value="pre-revenue">Pre-revenue</option>
-                        <option value="post-PMF">Post-PMF</option>
-                        <option value="scaling">Scaling</option>
+                        <option value="">{t('auth.selectStage')}</option>
+                        <option value="idea">{t('auth.stageOptions.idea')}</option>
+                        <option value="pre-revenue">{t('auth.stageOptions.preRevenue')}</option>
+                        <option value="post-PMF">{t('auth.stageOptions.postPMF')}</option>
+                        <option value="scaling">{t('auth.stageOptions.scaling')}</option>
                       </select>
                     </div>
                     <Input
                       id="company-description"
                       name="description"
-                      label="Описание (необязательно)"
+                      label={`${t('common.description')} (${t('common.optional')})`}
                       multiline
                       rows={3}
                       value={companyFormData.description}
@@ -259,7 +265,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="company-password"
                       name="password"
-                      label="Пароль"
+                      label={t('common.password')}
                       type="password"
                       autoComplete="new-password"
                       required
@@ -272,7 +278,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="blogger-name"
                       name="name"
-                      label="Имя"
+                      label={t('common.name')}
                       type="text"
                       required
                       value={bloggerFormData.name}
@@ -281,7 +287,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="blogger-email"
                       name="email"
-                      label="Электронная почта"
+                      label={t('auth.email')}
                       type="email"
                       autoComplete="email"
                       required
@@ -291,7 +297,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="blogger-password"
                       name="password"
-                      label="Пароль"
+                      label={t('common.password')}
                       type="password"
                       autoComplete="new-password"
                       required
@@ -301,7 +307,7 @@ const AuthPage: React.FC = () => {
                     <Input
                       id="blogger-bio"
                       name="bio"
-                      label="О себе (необязательно)"
+                      label={`${t('auth.bio')} (${t('common.optional')})`}
                       multiline
                       rows={3}
                       value={bloggerFormData.bio}
@@ -311,7 +317,7 @@ const AuthPage: React.FC = () => {
                 )}
                 
                 <Button type="submit" isLoading={isSignupLoading} className="w-full">
-                  Создать аккаунт
+                  {t('auth.createAccount')}
                 </Button>
               </form>
               
@@ -336,7 +342,7 @@ const AuthPage: React.FC = () => {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
-                  Войти через Google
+                  {t('auth.loginWithGoogle')}
                 </button>
               </div>
               
@@ -346,7 +352,7 @@ const AuthPage: React.FC = () => {
                   onClick={() => setMode('login')}
                   className="font-medium text-primary-text hover:text-primary-text-600"
                 >
-                  Уже есть аккаунт? Войти
+                  {t('auth.alreadyHaveAccount')}
                 </button>
               </div>
             </>
@@ -357,7 +363,7 @@ const AuthPage: React.FC = () => {
                 
                 <Input
                   id="login-email"
-                  label="Электронная почта"
+                  label={t('auth.email')}
                   type="email"
                   autoComplete="email"
                   required
@@ -366,7 +372,7 @@ const AuthPage: React.FC = () => {
                 />
                 <Input
                   id="login-password"
-                  label="Пароль"
+                  label={t('common.password')}
                   type="password"
                   autoComplete="current-password"
                   required
@@ -375,7 +381,7 @@ const AuthPage: React.FC = () => {
                 />
                 
                 <Button type="submit" isLoading={isLoginLoading} className="w-full">
-                  Войти
+                  {t('common.login')}
                 </Button>
               </form>
               
@@ -400,7 +406,7 @@ const AuthPage: React.FC = () => {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
-                  Войти через Google
+                  {t('auth.loginWithGoogle')}
                 </button>
               </div>
               
@@ -410,7 +416,7 @@ const AuthPage: React.FC = () => {
                   onClick={() => setMode('signup')}
                   className="font-medium text-primary-text hover:text-primary-text-600"
                 >
-                  Нет аккаунта? Зарегистрируйтесь
+                  {t('auth.noAccount')}
                 </button>
               </div>
             </>

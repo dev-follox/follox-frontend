@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from '../hooks/useTranslation';
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/Card';
 import Input from '../components/Input';
@@ -10,6 +11,7 @@ import { CompanyAnswers } from '../types';
 
 const CompanyQAPage: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -30,7 +32,7 @@ const CompanyQAPage: React.FC = () => {
   useEffect(() => {
     const fetchAnswers = async () => {
       if (!user?.company?.id) {
-        setError('Компания не найдена');
+        setError(t('qa.companyNotFound'));
         setLoading(false);
         return;
       }
@@ -82,7 +84,7 @@ const CompanyQAPage: React.FC = () => {
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
-      setError('Не удалось сохранить ответы. Попробуйте снова.');
+      setError(t('qa.saveError'));
       console.error('Failed to save answers:', err);
     } finally {
       setSaving(false);
@@ -100,7 +102,7 @@ const CompanyQAPage: React.FC = () => {
   if (!user?.company?.id) {
     return (
       <div className="text-center text-red-500 p-8">
-        Компания не найдена. Пожалуйста, войдите в систему.
+        {t('qa.companyNotFound')}
       </div>
     );
   }
@@ -108,9 +110,9 @@ const CompanyQAPage: React.FC = () => {
   return (
     <div className="h-full w-full p-4 md:p-8 space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Вопросы и ответы</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('qa.title')}</h1>
         <Button onClick={() => navigate('/gtm/strategy')} variant="secondary">
-          Перейти к генерации стратегии
+          {t('qa.goToStrategy')}
         </Button>
       </div>
 
@@ -122,24 +124,24 @@ const CompanyQAPage: React.FC = () => {
 
       {success && (
         <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-          Ответы успешно сохранены!
+          {t('qa.answersSaved')}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Product Section */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Продукт</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.product.title')}</h2>
           <div className="space-y-4">
             <Input
               id="product-name"
-              label="Название продукта"
+              label={t('qa.sections.product.name')}
               value={answers.product?.name || ''}
               onChange={(e) => handleChange('product', 'name', e.target.value)}
             />
             <Input
               id="product-description"
-              label="Описание продукта"
+              label={t('qa.sections.product.description')}
               multiline
               rows={3}
               value={answers.product?.description || ''}
@@ -147,13 +149,13 @@ const CompanyQAPage: React.FC = () => {
             />
             <Input
               id="product-category"
-              label="Категория (необязательно)"
+              label={`${t('qa.sections.product.category')} (${t('common.optional')})`}
               value={answers.product?.category || ''}
               onChange={(e) => handleChange('product', 'category', e.target.value)}
             />
             <Input
               id="product-stage"
-              label="Стадия продукта (необязательно)"
+              label={`${t('qa.sections.product.stage')} (${t('common.optional')})`}
               value={answers.product?.stage || ''}
               onChange={(e) => handleChange('product', 'stage', e.target.value)}
             />
@@ -162,23 +164,23 @@ const CompanyQAPage: React.FC = () => {
 
         {/* Market Section */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Рынок</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.market.title')}</h2>
           <div className="space-y-4">
             <Input
               id="market-target"
-              label="Целевой рынок"
+              label={t('qa.sections.market.targetMarket')}
               value={answers.market?.target_market || ''}
               onChange={(e) => handleChange('market', 'target_market', e.target.value)}
             />
             <Input
               id="market-geography"
-              label="География (необязательно)"
+              label={`${t('qa.sections.market.geography')} (${t('common.optional')})`}
               value={answers.market?.geography || ''}
               onChange={(e) => handleChange('market', 'geography', e.target.value)}
             />
             <Input
               id="market-alternatives"
-              label="Альтернативы (через запятую, необязательно)"
+              label={`${t('qa.sections.market.alternatives')} (${t('common.optional')})`}
               value={answers.market?.alternatives?.join(', ') || ''}
               onChange={(e) => handleArrayChange('market', 'alternatives', e.target.value)}
             />
@@ -187,23 +189,23 @@ const CompanyQAPage: React.FC = () => {
 
         {/* Customer Section */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Клиент</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.customer.title')}</h2>
           <div className="space-y-4">
             <Input
               id="customer-role"
-              label="Роль клиента"
+              label={t('qa.sections.customer.role')}
               value={answers.customer?.role || ''}
               onChange={(e) => handleChange('customer', 'role', e.target.value)}
             />
             <Input
               id="customer-company-stage"
-              label="Стадия компании клиента (необязательно)"
+              label={`${t('qa.sections.customer.companyStage')} (${t('common.optional')})`}
               value={answers.customer?.company_stage || ''}
               onChange={(e) => handleChange('customer', 'company_stage', e.target.value)}
             />
             <Input
               id="customer-team-size"
-              label="Размер команды (необязательно)"
+              label={`${t('qa.sections.customer.teamSize')} (${t('common.optional')})`}
               value={answers.customer?.team_size || ''}
               onChange={(e) => handleChange('customer', 'team_size', e.target.value)}
             />
@@ -212,11 +214,11 @@ const CompanyQAPage: React.FC = () => {
 
         {/* Problem Section */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Проблема</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.problem.title')}</h2>
           <div className="space-y-4">
             <Input
               id="problem-main-pain"
-              label="Основная боль"
+              label={t('qa.sections.problem.mainPain')}
               multiline
               rows={3}
               value={answers.problem?.main_pain || ''}
@@ -224,13 +226,13 @@ const CompanyQAPage: React.FC = () => {
             />
             <Input
               id="problem-frequency"
-              label="Частота проблемы (необязательно)"
+              label={`${t('qa.sections.problem.frequency')} (${t('common.optional')})`}
               value={answers.problem?.frequency || ''}
               onChange={(e) => handleChange('problem', 'frequency', e.target.value)}
             />
             <Input
               id="problem-current-solution"
-              label="Текущее решение (необязательно)"
+              label={`${t('qa.sections.problem.currentSolution')} (${t('common.optional')})`}
               multiline
               rows={2}
               value={answers.problem?.current_solution || ''}
@@ -241,11 +243,11 @@ const CompanyQAPage: React.FC = () => {
 
         {/* Solution Section */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Решение</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.solution.title')}</h2>
           <div className="space-y-4">
             <Input
               id="solution-core-value"
-              label="Основная ценность (необязательно)"
+              label={`${t('qa.sections.solution.coreValue')} (${t('common.optional')})`}
               multiline
               rows={3}
               value={answers.solution?.core_value || ''}
@@ -253,7 +255,7 @@ const CompanyQAPage: React.FC = () => {
             />
             <Input
               id="solution-differentiator"
-              label="Отличительная особенность (необязательно)"
+              label={`${t('qa.sections.solution.differentiator')} (${t('common.optional')})`}
               multiline
               rows={2}
               value={answers.solution?.differentiator || ''}
@@ -264,17 +266,17 @@ const CompanyQAPage: React.FC = () => {
 
         {/* Distribution Section */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Распределение</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.distribution.title')}</h2>
           <div className="space-y-4">
             <Input
               id="distribution-channels"
-              label="Известные каналы (через запятую, необязательно)"
+              label={`${t('qa.sections.distribution.knownChannels')} (${t('common.optional')})`}
               value={answers.distribution?.known_channels?.join(', ') || ''}
               onChange={(e) => handleArrayChange('distribution', 'known_channels', e.target.value)}
             />
             <Input
               id="distribution-preferred"
-              label="Предпочтительный канал (необязательно)"
+              label={`${t('qa.sections.distribution.preferredChannel')} (${t('common.optional')})`}
               value={answers.distribution?.preferred_channel || ''}
               onChange={(e) => handleChange('distribution', 'preferred_channel', e.target.value)}
             />
@@ -283,17 +285,17 @@ const CompanyQAPage: React.FC = () => {
 
         {/* Pricing Section */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Ценообразование</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.pricing.title')}</h2>
           <div className="space-y-4">
             <Input
               id="pricing-model"
-              label="Модель ценообразования (необязательно)"
+              label={`${t('qa.sections.pricing.model')} (${t('common.optional')})`}
               value={answers.pricing?.model || ''}
               onChange={(e) => handleChange('pricing', 'model', e.target.value)}
             />
             <Input
               id="pricing-expected"
-              label="Ожидаемая цена (необязательно)"
+              label={`${t('qa.sections.pricing.expectedPrice')} (${t('common.optional')})`}
               type="number"
               value={answers.pricing?.expected_price || ''}
               onChange={(e) => handleChange('pricing', 'expected_price', e.target.value ? Number(e.target.value) : '')}
@@ -303,25 +305,25 @@ const CompanyQAPage: React.FC = () => {
 
         {/* Traction Section */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Тракция</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.traction.title')}</h2>
           <div className="space-y-4">
             <Input
               id="traction-users"
-              label="Количество пользователей (необязательно)"
+              label={`${t('qa.sections.traction.users')} (${t('common.optional')})`}
               type="number"
               value={answers.traction?.users || ''}
               onChange={(e) => handleChange('traction', 'users', e.target.value ? Number(e.target.value) : undefined)}
             />
             <Input
               id="traction-revenue"
-              label="Выручка (необязательно)"
+              label={`${t('qa.sections.traction.revenue')} (${t('common.optional')})`}
               type="number"
               value={answers.traction?.revenue || ''}
               onChange={(e) => handleChange('traction', 'revenue', e.target.value ? Number(e.target.value) : undefined)}
             />
             <Input
               id="traction-signals"
-              label="Сигналы (необязательно)"
+              label={`${t('qa.sections.traction.signals')} (${t('common.optional')})`}
               multiline
               rows={2}
               value={answers.traction?.signals || ''}
@@ -332,23 +334,23 @@ const CompanyQAPage: React.FC = () => {
 
         {/* Constraints Section */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Ограничения</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('qa.sections.constraints.title')}</h2>
           <div className="space-y-4">
             <Input
               id="constraints-budget"
-              label="Бюджет (необязательно)"
+              label={`${t('qa.sections.constraints.budget')} (${t('common.optional')})`}
               value={answers.constraints?.budget || ''}
               onChange={(e) => handleChange('constraints', 'budget', e.target.value)}
             />
             <Input
               id="constraints-time"
-              label="Время (необязательно)"
+              label={`${t('qa.sections.constraints.time')} (${t('common.optional')})`}
               value={answers.constraints?.time || ''}
               onChange={(e) => handleChange('constraints', 'time', e.target.value)}
             />
             <Input
               id="constraints-team"
-              label="Команда (необязательно)"
+              label={`${t('qa.sections.constraints.team')} (${t('common.optional')})`}
               value={answers.constraints?.team || ''}
               onChange={(e) => handleChange('constraints', 'team', e.target.value)}
             />
@@ -357,7 +359,7 @@ const CompanyQAPage: React.FC = () => {
 
         <div className="flex justify-end gap-4">
           <Button type="submit" isLoading={saving}>
-            Сохранить ответы
+            {t('qa.saveAnswers')}
           </Button>
         </div>
       </form>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from '../hooks/useTranslation';
 import { useNavigate } from 'react-router-dom';
 import Card from '../components/Card';
 import Button from '../components/Button';
@@ -11,6 +12,7 @@ type TabType = 'strategy' | 'validation' | 'forecast';
 
 const GTMStrategyPage: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('strategy');
   const [loading, setLoading] = useState(false);
@@ -45,7 +47,7 @@ const GTMStrategyPage: React.FC = () => {
         setForecastHistory(history);
       }
     } catch (err: any) {
-      setError('Не удалось загрузить историю. Попробуйте снова.');
+      setError(t('gtmStrategy.loadHistoryError'));
       console.error('Failed to load history:', err);
     } finally {
       setLoading(false);
@@ -70,7 +72,7 @@ const GTMStrategyPage: React.FC = () => {
         setForecastHistory(prev => [newForecast, ...prev]);
       }
     } catch (err: any) {
-      setError(`Не удалось сгенерировать ${getTypeLabel(type)}. Попробуйте снова.`);
+      setError(getTypeLabel(type));
       console.error(`Failed to generate ${type}:`, err);
     } finally {
       setGenerating(null);
@@ -79,9 +81,9 @@ const GTMStrategyPage: React.FC = () => {
 
   const getTypeLabel = (type: TabType): string => {
     switch (type) {
-      case 'strategy': return 'GTM стратегию';
-      case 'validation': return 'валидацию';
-      case 'forecast': return 'прогноз';
+      case 'strategy': return t('gtmStrategy.generateError.strategy');
+      case 'validation': return t('gtmStrategy.generateError.validation');
+      case 'forecast': return t('gtmStrategy.generateError.forecast');
       default: return '';
     }
   };
@@ -99,7 +101,7 @@ const GTMStrategyPage: React.FC = () => {
   if (!user?.company?.id) {
     return (
       <div className="text-center text-red-500 p-8">
-        Компания не найдена. Пожалуйста, войдите в систему.
+        {t('qa.companyNotFound')}
       </div>
     );
   }
@@ -117,18 +119,18 @@ const GTMStrategyPage: React.FC = () => {
       return (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">GTM Стратегия</h2>
+            <h2 className="text-xl font-semibold">{t('gtmStrategy.tabs.strategy')}</h2>
             <Button
               onClick={() => handleGenerate('strategy')}
               isLoading={generating === 'strategy'}
             >
-              {strategyHistory.length > 0 ? 'Регенерировать' : 'Сгенерировать'}
+              {strategyHistory.length > 0 ? t('gtmStrategy.regenerate') : t('gtmStrategy.generate')}
             </Button>
           </div>
 
           {strategyHistory.length === 0 ? (
             <Card className="p-8 text-center text-gray-500">
-              <p>История GTM стратегий пуста. Нажмите "Сгенерировать" для создания первой стратегии.</p>
+              <p>{t('gtmStrategy.noHistory.strategy')}</p>
             </Card>
           ) : (
             <div className="space-y-4">
@@ -137,7 +139,7 @@ const GTMStrategyPage: React.FC = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="font-semibold text-lg mb-2">
-                        Стратегия от {formatDate(strategy.created_at)}
+                        {t('gtmStrategy.generatedAt')} {formatDate(strategy.created_at)}
                       </h3>
                     </div>
                     <Button
@@ -146,7 +148,7 @@ const GTMStrategyPage: React.FC = () => {
                       onClick={() => handleGenerate('strategy')}
                       isLoading={generating === 'strategy'}
                     >
-                      Регенерировать
+                      {t('gtmStrategy.regenerate')}
                     </Button>
                   </div>
                   <div className="prose max-w-none">
@@ -157,7 +159,7 @@ const GTMStrategyPage: React.FC = () => {
                   {strategy.output_data && (
                     <details className="mt-4">
                       <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
-                        Показать структурированные данные
+                        {t('gtmStrategy.showStructuredData')}
                       </summary>
                       <pre className="mt-2 text-xs bg-gray-50 p-4 rounded overflow-auto">
                         {JSON.stringify(strategy.output_data, null, 2)}
@@ -176,18 +178,18 @@ const GTMStrategyPage: React.FC = () => {
       return (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Валидация гипотез</h2>
+            <h2 className="text-xl font-semibold">{t('gtmStrategy.tabs.validation')}</h2>
             <Button
               onClick={() => handleGenerate('validation')}
               isLoading={generating === 'validation'}
             >
-              {validationHistory.length > 0 ? 'Регенерировать' : 'Сгенерировать'}
+              {validationHistory.length > 0 ? t('gtmStrategy.regenerate') : t('gtmStrategy.generate')}
             </Button>
           </div>
 
           {validationHistory.length === 0 ? (
             <Card className="p-8 text-center text-gray-500">
-              <p>История валидаций пуста. Нажмите "Сгенерировать" для создания первой валидации.</p>
+              <p>{t('gtmStrategy.noHistory.validation')}</p>
             </Card>
           ) : (
             <div className="space-y-4">
@@ -196,7 +198,7 @@ const GTMStrategyPage: React.FC = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="font-semibold text-lg mb-2">
-                        Валидация от {formatDate(validation.created_at)}
+                        {t('gtmStrategy.validationAt')} {formatDate(validation.created_at)}
                       </h3>
                     </div>
                     <Button
@@ -205,7 +207,7 @@ const GTMStrategyPage: React.FC = () => {
                       onClick={() => handleGenerate('validation')}
                       isLoading={generating === 'validation'}
                     >
-                      Регенерировать
+                      {t('gtmStrategy.regenerate')}
                     </Button>
                   </div>
                   <div className="prose max-w-none">
@@ -216,7 +218,7 @@ const GTMStrategyPage: React.FC = () => {
                   {validation.output_data && (
                     <details className="mt-4">
                       <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
-                        Показать структурированные данные
+                        {t('gtmStrategy.showStructuredData')}
                       </summary>
                       <pre className="mt-2 text-xs bg-gray-50 p-4 rounded overflow-auto">
                         {JSON.stringify(validation.output_data, null, 2)}
@@ -235,18 +237,18 @@ const GTMStrategyPage: React.FC = () => {
       return (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Прогноз</h2>
+            <h2 className="text-xl font-semibold">{t('gtmStrategy.tabs.forecast')}</h2>
             <Button
               onClick={() => handleGenerate('forecast')}
               isLoading={generating === 'forecast'}
             >
-              {forecastHistory.length > 0 ? 'Регенерировать' : 'Сгенерировать'}
+              {forecastHistory.length > 0 ? t('gtmStrategy.regenerate') : t('gtmStrategy.generate')}
             </Button>
           </div>
 
           {forecastHistory.length === 0 ? (
             <Card className="p-8 text-center text-gray-500">
-              <p>История прогнозов пуста. Нажмите "Сгенерировать" для создания первого прогноза.</p>
+              <p>{t('gtmStrategy.noHistory.forecast')}</p>
             </Card>
           ) : (
             <div className="space-y-4">
@@ -255,7 +257,7 @@ const GTMStrategyPage: React.FC = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="font-semibold text-lg mb-2">
-                        Прогноз от {formatDate(forecast.created_at)}
+                        {t('gtmStrategy.forecastAt')} {formatDate(forecast.created_at)}
                       </h3>
                     </div>
                     <Button
@@ -264,7 +266,7 @@ const GTMStrategyPage: React.FC = () => {
                       onClick={() => handleGenerate('forecast')}
                       isLoading={generating === 'forecast'}
                     >
-                      Регенерировать
+                      {t('gtmStrategy.regenerate')}
                     </Button>
                   </div>
                   <div className="prose max-w-none">
@@ -275,7 +277,7 @@ const GTMStrategyPage: React.FC = () => {
                   {forecast.output_data && (
                     <details className="mt-4">
                       <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800">
-                        Показать структурированные данные
+                        {t('gtmStrategy.showStructuredData')}
                       </summary>
                       <pre className="mt-2 text-xs bg-gray-50 p-4 rounded overflow-auto">
                         {JSON.stringify(forecast.output_data, null, 2)}
@@ -296,9 +298,9 @@ const GTMStrategyPage: React.FC = () => {
   return (
     <div className="h-full w-full p-4 md:p-8 space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">GTM Strategy Generator</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('gtmStrategy.title')}</h1>
         <Button onClick={() => navigate('/gtm/qa')} variant="secondary">
-          Редактировать ответы
+          {t('gtmStrategy.editAnswers')}
         </Button>
       </div>
 
@@ -324,9 +326,9 @@ const GTMStrategyPage: React.FC = () => {
                 }
               `}
             >
-              {tab === 'strategy' && 'GTM Стратегия'}
-              {tab === 'validation' && 'Валидация'}
-              {tab === 'forecast' && 'Прогноз'}
+              {tab === 'strategy' && t('gtmStrategy.tabs.strategy')}
+              {tab === 'validation' && t('gtmStrategy.tabs.validation')}
+              {tab === 'forecast' && t('gtmStrategy.tabs.forecast')}
             </button>
           ))}
         </nav>

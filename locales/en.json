@@ -1,0 +1,306 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "welcomeTo": "Welcome to Follox",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "submit": "Submit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "logout": "Logout",
+    "login": "Login",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "description": "Description",
+    "optional": "optional",
+    "required": "required",
+    "error": "Error",
+    "success": "Success",
+    "company": "Company",
+    "blogger": "Blogger"
+  },
+  "home": {
+    "title": "Welcome to DeltaHub",
+    "subtitle": "Choose a module to work with",
+    "affiliateSales": {
+      "title": "Affiliate Sales & Analytics",
+      "description": "Manage sales through affiliate program. Add products, track analytics, manage orders, work with bloggers and create affiliate links."
+    },
+    "gtmStrategy": {
+      "title": "GTM Strategy Generator",
+      "description": "Generate go-to-market strategies, validate hypotheses and create forecasts. Answer questions about your product and get personalized recommendations."
+    },
+    "goToModule": "Go to Module"
+  },
+  "auth": {
+    "welcome": "Welcome to Follox",
+    "chooseHowToContinue": "Choose how you want to continue",
+    "loginTitle": "Login",
+    "signupTitle": "Sign Up",
+    "alreadyHaveAccount": "Already have an account? Login",
+    "noAccount": "Don't have an account? Sign up",
+    "loginWithGoogle": "Login with Google",
+    "createAccount": "Create Account",
+    "email": "Email",
+    "fullName": "Full Name",
+    "phoneNumber": "Phone Number",
+    "linkedinLink": "LinkedIn Profile Link",
+    "companyName": "Company Name",
+    "stage": "Company Stage",
+    "selectStage": "Select Stage",
+    "stageOptions": {
+      "idea": "Idea",
+      "preRevenue": "Pre-revenue",
+      "postPMF": "Post-PMF",
+      "scaling": "Scaling"
+    },
+    "bio": "About",
+    "loginError": "Failed to login. Check your email and password.",
+    "signupError": "Failed to register. Check your data and try again.",
+    "googleAuthError": "Failed to initiate Google login. Try again."
+  },
+  "header": {
+    "affiliateSales": "Affiliate Sales",
+    "gtmStrategy": "GTM Strategy",
+    "bloggers": "Bloggers",
+    "linkTelegram": "Link Telegram",
+    "products": "Products"
+  },
+  "dashboard": {
+    "yourProducts": "Your Products",
+    "addProduct": "Add Product",
+    "noProducts": "You haven't added any products yet.",
+    "productName": "Product Name",
+    "price": "Price",
+    "image": "Image",
+    "bloggerTaskDescription": "Blogger Task Description",
+    "deleteProduct": "Delete Product",
+    "deleteConfirm": "Are you sure you want to delete this product? This action cannot be undone.",
+    "createError": "Failed to create product.",
+    "updateError": "Failed to update product.",
+    "deleteError": "Failed to delete product.",
+    "loadError": "Failed to load products."
+  },
+  "qa": {
+    "title": "Questions & Answers",
+    "goToStrategy": "Go to Strategy Generation",
+    "editAnswers": "Edit Answers",
+    "saveAnswers": "Save Answers",
+    "answersSaved": "Answers saved successfully!",
+    "saveError": "Failed to save answers. Try again.",
+    "companyNotFound": "Company not found. Please log in.",
+    "sections": {
+      "product": {
+        "title": "Product",
+        "name": "Product Name",
+        "description": "Product Description",
+        "category": "Category",
+        "stage": "Product Stage"
+      },
+      "market": {
+        "title": "Market",
+        "targetMarket": "Target Market",
+        "geography": "Geography",
+        "alternatives": "Alternatives (comma-separated)"
+      },
+      "customer": {
+        "title": "Customer",
+        "role": "Customer Role",
+        "companyStage": "Customer Company Stage",
+        "teamSize": "Team Size"
+      },
+      "problem": {
+        "title": "Problem",
+        "mainPain": "Main Pain Point",
+        "frequency": "Problem Frequency",
+        "currentSolution": "Current Solution"
+      },
+      "solution": {
+        "title": "Solution",
+        "coreValue": "Core Value",
+        "differentiator": "Differentiator"
+      },
+      "distribution": {
+        "title": "Distribution",
+        "knownChannels": "Known Channels (comma-separated)",
+        "preferredChannel": "Preferred Channel"
+      },
+      "pricing": {
+        "title": "Pricing",
+        "model": "Pricing Model",
+        "expectedPrice": "Expected Price"
+      },
+      "traction": {
+        "title": "Traction",
+        "users": "Number of Users",
+        "revenue": "Revenue",
+        "signals": "Signals"
+      },
+      "constraints": {
+        "title": "Constraints",
+        "budget": "Budget",
+        "time": "Time",
+        "team": "Team"
+      }
+    }
+  },
+  "gtmStrategy": {
+    "title": "GTM Strategy Generator",
+    "editAnswers": "Edit Answers",
+    "tabs": {
+      "strategy": "GTM Strategy",
+      "validation": "Validation",
+      "forecast": "Forecast"
+    },
+    "generate": "Generate",
+    "regenerate": "Regenerate",
+    "noHistory": {
+      "strategy": "GTM strategy history is empty. Click \"Generate\" to create the first strategy.",
+      "validation": "Validation history is empty. Click \"Generate\" to create the first validation.",
+      "forecast": "Forecast history is empty. Click \"Generate\" to create the first forecast."
+    },
+    "generatedAt": "Strategy from",
+    "validationAt": "Validation from",
+    "forecastAt": "Forecast from",
+    "showStructuredData": "Show Structured Data",
+    "generateError": {
+      "strategy": "Failed to generate GTM strategy. Try again.",
+      "validation": "Failed to generate validation. Try again.",
+      "forecast": "Failed to generate forecast. Try again."
+    },
+    "loadHistoryError": "Failed to load history. Try again."
+  },
+  "telegram": {
+    "linkTitle": "Link Telegram",
+    "instructions": "To receive order notifications in Telegram:",
+    "step1": "Open the Telegram bot",
+    "step2": "Start the bot.",
+    "step3": "Copy the Chat ID and paste it in the field below.",
+    "chatId": "Chat ID",
+    "chatIdPlaceholder": "e.g., 123456789 or -1001234567890",
+    "linked": "Telegram linked!",
+    "linkedMessage": "You will receive notifications about new orders.",
+    "linkError": "Failed to link Telegram. Check the Chat ID.",
+    "chatIdRequired": "Enter Chat ID"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "message": "The requested page does not exist.",
+    "goHome": "Go to Home"
+  },
+  "registration": {
+    "companyTitle": "Create Company Account",
+    "bloggerTitle": "Create Blogger Account",
+    "signupError": "Failed to register. Check your data and try again."
+  },
+  "bloggers": {
+    "title": "Bloggers",
+    "addBlogger": "Add Blogger",
+    "createAffiliateLink": "Create Affiliate Link",
+    "addNewBlogger": "Add New Blogger",
+    "selectBlogger": "Select Blogger",
+    "selectProduct": "Select Product",
+    "generate": "Generate",
+    "linkCreated": "Affiliate link created!",
+    "copyLink": "Copy Link",
+    "linkCopied": "Link Copied",
+    "noBloggers": "You haven't added any bloggers yet.",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "bio": "About",
+      "created": "Created"
+    },
+    "loadError": "Failed to load data",
+    "createError": "Failed to create blogger",
+    "linkError": "Failed to create affiliate link"
+  },
+  "productForm": {
+    "addProduct": "Add New Product",
+    "editProduct": "Edit Product",
+    "productName": "Product Name",
+    "description": "Description",
+    "bloggerTask": "Task for Blogger",
+    "price": "Price",
+    "productImage": "Product Image",
+    "imagePreview": "Product Preview",
+    "uploadError": "Failed to upload image."
+  },
+  "bloggerProducts": {
+    "title": "Your Products",
+    "noProducts": "No products with affiliate links yet.",
+    "taskFromShop": "Task from Shop",
+    "affiliateLink": "Affiliate Link:",
+    "loadError": "Failed to load products."
+  },
+  "bloggerProductDetails": {
+    "backToList": "← Back to List",
+    "description": "Description",
+    "taskFromShop": "Task from Shop",
+    "affiliateLink": "Affiliate Link",
+    "copy": "Copy",
+    "linkCopied": "Link copied to clipboard!",
+    "notFound": "Product not found.",
+    "loadError": "Failed to load product data."
+  },
+  "productDetails": {
+    "edit": "Edit",
+    "expand": "Expand ↓",
+    "collapse": "Collapse ↑",
+    "deleteTitle": "Delete Product",
+    "deleteMessage": "Are you sure you want to delete this product? This action cannot be undone.",
+    "tabs": {
+      "orders": "Orders",
+      "analytics": "Analytics"
+    },
+    "orders": {
+      "created": "Created",
+      "clientPhone": "Client Phone",
+      "quantity": "Quantity",
+      "total": "Total",
+      "status": "Status",
+      "actions": "Actions",
+      "process": "Process",
+      "cancel": "Cancel",
+      "noOrders": "No orders yet"
+    },
+    "analytics": {
+      "blogger": "Blogger",
+      "visits": "Visits",
+      "orders": "Orders",
+      "sold": "Sold",
+      "revenue": "Revenue",
+      "noData": "No analytics data yet"
+    },
+    "notFound": "Product not found.",
+    "loadError": "Failed to load product details.",
+    "updateError": "Failed to update product.",
+    "deleteError": "Failed to delete product.",
+    "statusUpdateError": "Failed to update order status."
+  },
+  "productLanding": {
+    "phoneNumber": "Phone Number",
+    "phonePlaceholder": "e.g., 8 777 123 4567",
+    "quantity": "Quantity",
+    "placeOrder": "Place Order",
+    "orderSuccess": "Order Placed!",
+    "orderSuccessMessage": "Thank you! Your order has been received and will be processed soon.",
+    "orderError": "Failed to place order.",
+    "validationError": "Please fill in the fields correctly.",
+    "missingCode": "Affiliate link code is missing.",
+    "loadError": "Failed to load product data.",
+    "notFound": "Product not found."
+  },
+  "authCallback": {
+    "processing": "Processing login...",
+    "error": "Login error: {message}",
+    "unknownError": "Unknown error"
+  }
+}
