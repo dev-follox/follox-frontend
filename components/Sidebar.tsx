@@ -4,7 +4,12 @@ import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
 import Button from './Button';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 	const { isLoggedIn, user, logout } = useAuth();
 	const { t, language, setLanguage } = useTranslation();
 	const location = useLocation();
@@ -12,6 +17,12 @@ const Sidebar: React.FC = () => {
 
 	const toggleLanguage = () => {
 		setLanguage(language === 'ru' ? 'en' : 'ru');
+	};
+
+	const handleLinkClick = () => {
+		if (onClose) {
+			onClose();
+		}
 	};
 
 	if (!isLoggedIn || (user?.role !== 'COMPANY' && user?.role !== 'BLOGGER')) {
@@ -26,7 +37,14 @@ const Sidebar: React.FC = () => {
 	const isBlogger = user?.role === 'BLOGGER';
 
 	return (
-    <div className="fixed left-0 top-0 h-full w-64 bg-white border-r border-[rgba(228,228,231,1)] flex flex-col z-50">
+    <>
+      {/* Mobile overlay - only show on mobile when menu is open */}
+      <div
+        className={`sidebar-overlay ${isOpen ? 'sidebar-overlay--visible' : ''}`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <div className={`sidebar ${isOpen ? 'sidebar--open' : 'sidebar--closed'}`}>
 			{/* Follox Logo/Name */}
 			<div className="p-6 border-b border-gray-200">
 				<Link
@@ -51,6 +69,7 @@ const Sidebar: React.FC = () => {
 					<div className="px-4 mb-4">
 						<Link
 							to="/dashboard"
+							onClick={handleLinkClick}
 							className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
 								location.pathname === '/dashboard'
 									? 'bg-primary text-primary-text'
@@ -72,6 +91,7 @@ const Sidebar: React.FC = () => {
 							{/* Answers Tab - Nested */}
 							<Link
 								to="/gtm/qa"
+								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
 									isActive('/gtm/qa') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
 								}`}
@@ -85,6 +105,7 @@ const Sidebar: React.FC = () => {
 							{/* Strategy Generation Tab - Nested */}
 							<Link
 								to="/gtm/strategy"
+								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
 									isActive('/gtm/strategy')
 										? 'bg-primary text-primary-text'
@@ -109,6 +130,7 @@ const Sidebar: React.FC = () => {
 						{/* Products Tab - Nested */}
 						<Link
 							to={isCompany ? '/company/dashboard' : '/blogger/products'}
+							onClick={handleLinkClick}
 							className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
 								(isCompany && (isActive('/company/dashboard') || isActive('/company/products'))) ||
 								(isBlogger && isActive('/blogger/products'))
@@ -133,6 +155,7 @@ const Sidebar: React.FC = () => {
 						{isCompany && (
 							<Link
 								to="/company/bloggers"
+								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
 									isActive('/company/bloggers')
 										? 'bg-primary text-primary-text'
@@ -182,6 +205,7 @@ const Sidebar: React.FC = () => {
 				</Button>
 			</div>
 		</div>
+    </>
 	);
 };
 

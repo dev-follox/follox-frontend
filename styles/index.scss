@@ -10,6 +10,7 @@
 @import './components/_button.scss';
 @import './components/_card.scss';
 @import './components/_header.scss';
+@import './components/_sidebar.scss';
 @import './components/_language-switcher.scss';
 @import './components/_toast.scss';
 
@@ -19,6 +20,7 @@
 
 // Import layout styles
 @import './layouts/_public-layout.scss';
+@import './layouts/_main-layout.scss';
 
 // Import page styles
 @import './pages/_auth-landing.scss';
