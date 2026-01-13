@@ -59,7 +59,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const authUser: AuthUser = { role: 'COMPANY', company: company || null };
       setUser(authUser);
       localStorage.setItem('auth_user', JSON.stringify(authUser));
-      navigate('/shop/dashboard', { replace: true });
+      
+      // Check which module was selected before auth
+      const selectedModule = localStorage.getItem('selectedModule');
+      if (selectedModule === 'gtmStrategy') {
+        navigate('/dashboard', { replace: true });
+      } else {
+        navigate('/company/dashboard', { replace: true });
+      }
       return;
     }
 
@@ -75,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithGoogle = useCallback(async (googleResponse: GoogleOAuthResponse) => {
     console.log('loginWithGoogle called with:', {
       role: googleResponse.role,
-      shop_id: googleResponse.shop_id,
+      shop_id: googleResponse.company_id,
       blogger_id: googleResponse.blogger_id,
       email: googleResponse.email,
     });
@@ -96,7 +103,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(authUser);
           localStorage.setItem('auth_user', JSON.stringify(authUser));
           console.log('Company login successful, navigating to dashboard');
-          navigate('/shop/dashboard', { replace: true });
+          
+          // Check which module was selected before auth
+          const selectedModule = localStorage.getItem('selectedModule');
+          if (selectedModule === 'gtmStrategy') {
+            navigate('/dashboard', { replace: true });
+          } else {
+            navigate('/company/dashboard', { replace: true });
+          }
           return;
         } catch (err: any) {
           console.error('Failed to fetch company data:', err);
@@ -127,7 +141,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUser(authUser);
             localStorage.setItem('auth_user', JSON.stringify(authUser));
             console.log('Company login successful (using minimal company data), navigating to dashboard');
-            navigate('/shop/dashboard', { replace: true });
+            
+            // Check which module was selected before auth
+            const selectedModule = localStorage.getItem('selectedModule');
+            if (selectedModule === 'gtmStrategy') {
+              navigate('/dashboard', { replace: true });
+            } else {
+              navigate('/company/dashboard', { replace: true });
+            }
             return;
           }
           
@@ -140,7 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     // Handle COMPANY role
-    if (googleResponse.role === 'COMPANY') {
+    if (googleResponse.role as UserRole === 'COMPANY') {
       if (googleResponse.company_id != null) {
         try {
           console.log('Fetching company data for company_id:', googleResponse.company_id);

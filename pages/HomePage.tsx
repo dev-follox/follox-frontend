@@ -28,7 +28,10 @@ const HomePage: React.FC = () => {
               </p>
             </div>
             <div className="mt-auto pt-4">
-              <Link to="/login">
+              <Link 
+                to="/login"
+                onClick={() => localStorage.setItem('selectedModule', 'affiliateSales')}
+              >
                 <Button className="w-full">{t('home.goToModule')}</Button>
               </Link>
             </div>
@@ -42,7 +45,10 @@ const HomePage: React.FC = () => {
               </p>
             </div>
             <div className="mt-auto pt-4">
-              <Link to="/login">
+              <Link 
+                to="/login"
+                onClick={() => localStorage.setItem('selectedModule', 'gtmStrategy')}
+              >
                 <Button className="w-full">{t('home.goToModule')}</Button>
               </Link>
             </div>

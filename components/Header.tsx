@@ -51,57 +51,11 @@ const Header: React.FC = () => {
 			<header className="bg-white shadow-md">
 				<nav className="container mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
 					<div className="flex items-center space-x-4">
-						<Link 
-							to={
-								isLoggedIn 
-									? (user?.role === 'COMPANY' 
-										? '/shop/dashboard' 
-										: '/blogger/products')
-									: '/'
-							} 
-							className="text-2xl font-bold text-gray-800"
-						>
-							Follox
-						</Link>
 						{isLoggedIn && user?.role === 'COMPANY' && user.company && (
 							<span className="text-gray-600 hidden sm:block">{t('common.welcome')}, {user.company.company_name}</span>
 						)}
 					</div>
 					<div className="flex items-center space-x-4">
-						{isLoggedIn && user?.role === 'COMPANY' && user.company && (
-							<>
-								<div className="flex items-center space-x-4">
-									<Link 
-										to="/shop/dashboard" 
-										className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-											location.pathname.startsWith('/shop') 
-												? 'bg-primary text-white' 
-												: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-										}`}
-									>
-										{t('header.affiliateSales')}
-									</Link>
-									<Link 
-										to="/gtm/qa" 
-										className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-											location.pathname.startsWith('/gtm') 
-												? 'bg-primary text-white' 
-												: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-										}`}
-									>
-										{t('header.gtmStrategy')}
-									</Link>
-									<Link to="/shop/bloggers" className="text-gray-600 hover:text-gray-900">
-										{t('header.bloggers')}
-									</Link>
-									<Button onClick={handleOpenLinkTelegramDialog}>{t('header.linkTelegram')}</Button>
-									<LanguageSwitcher />
-									<Button onClick={logout} variant="secondary">
-										{t('common.logout')}
-									</Button>
-								</div>
-							</>
-						)}
 						{isLoggedIn && user?.role === 'BLOGGER' && (
 							<>
 								<LanguageSwitcher />

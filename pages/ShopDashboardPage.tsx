@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
 import { Product } from '../types';
@@ -10,11 +10,24 @@ import Button from '../components/Button';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ProductForm from '../components/ProductForm';
 
+type TabType = 'products' | 'bloggers';
+
 const ShopDashboardPage: React.FC = () => {
 	const { user } = useAuth();
 	const { t } = useTranslation();
 	const company = user?.company;
 	const navigate = useNavigate();
+	const [activeTab, setActiveTab] = useState<TabType>('products');
+	const location = useLocation();
+
+	// Sync activeTab with current route
+	useEffect(() => {
+		if (location.pathname === '/company/bloggers') {
+			setActiveTab('bloggers');
+		} else if (location.pathname.startsWith('/company/dashboard') || location.pathname.startsWith('/company/products')) {
+			setActiveTab('products');
+		}
+	}, [location.pathname]);
 	const [products, setProducts] = useState<Product[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -171,16 +184,45 @@ const ShopDashboardPage: React.FC = () => {
 		if (target.closest('.dropdown-container')) {
 			return;
 		}
-		navigate(`/shop/products/${productId}`);
+		navigate(`/company/products/${productId}`);
 	};
 
 	return (
 		<>
 			<div className="h-full w-full p-4 md:p-8 space-y-8">
-				<div className="flex justify-between items-center">
-					<h1 className="text-xl font-bold text-gray-900">{t('dashboard.yourProducts')}</h1>
-					<Button onClick={() => setIsDialogOpen(true)}>{t('dashboard.addProduct')}</Button>
+				{/* Tabs */}
+				<div className="border-b border-gray-200">
+					<nav className="-mb-px flex space-x-8">
+						<button
+							onClick={() => setActiveTab('products')}
+							className={`${
+								activeTab === 'products'
+									? 'border-primary text-primary'
+									: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+							} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+						>
+							{t('sidebar.products')}
+						</button>
+						<button
+							onClick={() => navigate('/company/bloggers')}
+							className={`${
+								activeTab === 'bloggers'
+									? 'border-primary text-primary'
+									: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+							} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
+						>
+							{t('sidebar.bloggers')}
+						</button>
+					</nav>
 				</div>
+
+				{/* Tab Content */}
+				{activeTab === 'products' && (
+					<>
+						<div className="flex justify-between items-center">
+							<h1 className="text-xl font-bold text-gray-900">{t('dashboard.yourProducts')}</h1>
+							<Button onClick={() => setIsDialogOpen(true)}>{t('dashboard.addProduct')}</Button>
+						</div>
 
 				<ConfirmDialog
 					isOpen={isDeleteDialogOpen}
@@ -271,10 +313,10 @@ const ShopDashboardPage: React.FC = () => {
 										<h2 className="text-lg font-semibold text-gray-800 mb-2">{product.name}</h2>
 										<p className="text-gray-600 text-sm flex-grow overflow-hidden">
 											<span className="line-clamp-3">
-												{product.description || 'Нет описания'}
+												{product.description || t('dashboard.noDescription')}
 											</span>
 										</p>
-										<p className="mt-4 text-2xl font-bold text-primary flex-shrink-0">
+										<p className="mt-4 text-2xl font-bold text-primary-text flex-shrink-0">
 											₸{product.price.toFixed(2)}
 										</p>
 									</div>
@@ -283,6 +325,9 @@ const ShopDashboardPage: React.FC = () => {
 						))}
 					</div>
 				)}
+					</>
+				)}
+
 			</div>
 			<ProductForm
 				isOpen={isDialogOpen}

@@ -48,7 +48,12 @@ const AuthPage: React.FC = () => {
   
   if (isLoggedIn) {
     if (user?.role === 'COMPANY') {
-      navigate('/shop/dashboard', { replace: true });
+      const selectedModule = localStorage.getItem('selectedModule');
+      if (selectedModule === 'gtmStrategy') {
+        navigate('/dashboard', { replace: true });
+      } else {
+        navigate('/company/dashboard', { replace: true });
+      }
     } else if (user?.role === 'BLOGGER') {
       navigate('/blogger/products', { replace: true });
     }

@@ -77,6 +77,7 @@
     "yourProducts": "Your Products",
     "addProduct": "Add Product",
     "noProducts": "You haven't added any products yet.",
+    "noDescription": "No description",
     "productName": "Product Name",
     "price": "Price",
     "image": "Image",
@@ -302,5 +303,43 @@
     "processing": "Processing login...",
     "error": "Login error: {message}",
     "unknownError": "Unknown error"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "affiliateSales": "Affiliate Sales Module",
+    "products": "Products",
+    "bloggers": "Bloggers",
+    "gtmStrategy": "GTM Strategy Generation Module",
+    "answers": "Answers",
+    "strategyGeneration": "GTM Strategy Generation",
+    "switchLanguage": "Switch Language"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "step": "Step",
+    "steps": {
+      "answerQuestions": {
+        "title": "Answer the questions",
+        "description": "Fill out the questionnaire about your product, market, and business",
+        "goTo": "Go to Questions & Answers",
+        "product": "Product",
+        "market": "Market",
+        "customer": "Customer",
+        "problem": "Problem",
+        "solution": "Solution",
+        "distribution": "Distribution",
+        "pricing": "Pricing",
+        "traction": "Traction",
+        "constraints": "Constraints"
+      },
+      "generateStrategy": {
+        "title": "Generate GTM Strategy",
+        "description": "Generate go-to-market strategies, validations, and forecasts",
+        "goTo": "Go to GTM Strategy Generation",
+        "strategy": "GTM Strategy",
+        "validation": "Validation",
+        "forecast": "Forecast"
+      }
+    }
   }
 }

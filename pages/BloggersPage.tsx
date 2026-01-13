@@ -95,7 +95,7 @@ const BloggersPage: React.FC = () => {
   }
 
   return (
-    <div className="h-full w-full p-4 md:p-8 space-y-8">
+    <div className="h-full w-full space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-bold text-gray-900">{t('bloggers.title')}</h1>
         <div className="flex gap-2">

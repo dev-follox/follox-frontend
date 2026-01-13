@@ -77,6 +77,7 @@
     "yourProducts": "Ваши товары",
     "addProduct": "Добавить товар",
     "noProducts": "Вы еще не добавили ни одного товара.",
+    "noDescription": "Нет описания",
     "productName": "Название товара",
     "price": "Цена",
     "image": "Изображение",
@@ -302,5 +303,43 @@
     "processing": "Обработка входа...",
     "error": "Ошибка входа: {message}",
     "unknownError": "Неизвестная ошибка"
+  },
+  "sidebar": {
+    "dashboard": "Панель управления",
+    "affiliateSales": "Модуль партнёрских продаж",
+    "products": "Товары",
+    "bloggers": "Блогеры",
+    "gtmStrategy": "Модуль генерации GTM стратегии",
+    "answers": "Ответы",
+    "strategyGeneration": "Генерация GTM стратегии",
+    "switchLanguage": "Переключить язык"
+  },
+  "dashboard": {
+    "title": "Панель управления",
+    "step": "Шаг",
+    "steps": {
+      "answerQuestions": {
+        "title": "Ответить на вопросы",
+        "description": "Заполните анкету о вашем продукте, рынке и бизнесе",
+        "goTo": "Перейти к вопросам и ответам",
+        "product": "Продукт",
+        "market": "Рынок",
+        "customer": "Клиент",
+        "problem": "Проблема",
+        "solution": "Решение",
+        "distribution": "Распределение",
+        "pricing": "Ценообразование",
+        "traction": "Тяга",
+        "constraints": "Ограничения"
+      },
+      "generateStrategy": {
+        "title": "Сгенерировать GTM стратегию",
+        "description": "Генерируйте стратегии выхода на рынок, валидации и прогнозы",
+        "goTo": "Перейти к генерации GTM стратегии",
+        "strategy": "GTM Стратегия",
+        "validation": "Валидация",
+        "forecast": "Прогноз"
+      }
+    }
   }
 }
