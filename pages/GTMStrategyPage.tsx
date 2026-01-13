@@ -243,41 +243,45 @@ const GTMStrategyPage: React.FC = () => {
 
   return (
     <div className="gtm-strategy-page">
-      <div className="gtm-strategy-header">
-        <h1 className="gtm-strategy-header__title">{t('gtmStrategy.title')}</h1>
-        <Button onClick={() => navigate('/gtm/qa')} variant="secondary">
-          {t('gtmStrategy.editAnswers')}
-        </Button>
-      </div>
-
-      {error && (
-        <div className="qa-alert qa-alert--error">
-          {error}
+      <div className="gtm-strategy-page__header">
+        <div className="gtm-strategy-header">
+          <h1 className="gtm-strategy-header__title">{t('gtmStrategy.title')}</h1>
+          <Button onClick={() => navigate('/gtm/qa')} variant="secondary">
+            {t('gtmStrategy.editAnswers')}
+          </Button>
         </div>
-      )}
 
-      {/* Tabs */}
-      <div className="gtm-strategy-tabs">
-        <nav className="gtm-strategy-tabs__nav">
-          {(['strategy', 'validation', 'forecast'] as TabType[]).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`gtm-strategy-tabs__tab ${
-                activeTab === tab ? 'gtm-strategy-tabs__tab--active' : ''
-              }`}
-            >
-              {tab === 'strategy' && t('gtmStrategy.tabs.strategy')}
-              {tab === 'validation' && t('gtmStrategy.tabs.validation')}
-              {tab === 'forecast' && t('gtmStrategy.tabs.forecast')}
-            </button>
-          ))}
-        </nav>
+        {error && (
+          <div className="qa-alert qa-alert--error">
+            {error}
+          </div>
+        )}
+
+        {/* Tabs */}
+        <div className="gtm-strategy-tabs">
+          <nav className="gtm-strategy-tabs__nav">
+            {(['strategy', 'validation', 'forecast'] as TabType[]).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`gtm-strategy-tabs__tab ${
+                  activeTab === tab ? 'gtm-strategy-tabs__tab--active' : ''
+                }`}
+              >
+                {tab === 'strategy' && t('gtmStrategy.tabs.strategy')}
+                {tab === 'validation' && t('gtmStrategy.tabs.validation')}
+                {tab === 'forecast' && t('gtmStrategy.tabs.forecast')}
+              </button>
+            ))}
+          </nav>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="gtm-strategy-content">
-        {renderContent()}
+      <div className="gtm-strategy-page__content">
+        <div className="gtm-strategy-content">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );

@@ -2,13 +2,24 @@
 .gtm-strategy-page {
   height: 100%;
   width: 100%;
-  padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  overflow: hidden;
   
-  @media (min-width: 768px) {
+  &__header {
+    flex-shrink: 0;
     padding: var(--spacing-md);
+    background: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-md);
+    min-height: 0;
   }
 }
 

@@ -92,6 +92,7 @@
   "qa": {
     "title": "Questions & Answers",
     "goToStrategy": "Go to Strategy Generation",
+    "generateStrategy": "Generate GTM Strategy",
     "editAnswers": "Edit Answers",
     "saveAnswers": "Save Answers",
     "answersSaved": "Answers saved successfully!",

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import Button from '../components/Button';
@@ -13,10 +14,10 @@ const CompanyQAPage: React.FC = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [answers, setAnswers] = useState<CompanyAnswers['answers']>({
     product: {},
     market: {},
@@ -77,12 +78,18 @@ const CompanyQAPage: React.FC = () => {
 
     setSaving(true);
     setError(null);
-    setSuccess(false);
 
     try {
       await api.updateCompanyAnswers(user.company.id, { answers });
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      showToast({
+        message: t('qa.answersSaved'),
+        type: 'success',
+        action: {
+          label: t('qa.generateStrategy'),
+          onClick: () => navigate('/gtm/strategy'),
+        },
+        duration: 8000,
+      });
     } catch (err: any) {
       setError(t('qa.saveError'));
       console.error('Failed to save answers:', err);
@@ -109,26 +116,23 @@ const CompanyQAPage: React.FC = () => {
 
   return (
     <div className="qa-page">
-      <div className="qa-header">
-        <h1 className="qa-header__title">{t('qa.title')}</h1>
-        <Button onClick={() => navigate('/gtm/strategy')} variant="secondary">
-          {t('qa.goToStrategy')}
-        </Button>
+      <div className="qa-page__header">
+        <div className="qa-header">
+          <h1 className="qa-header__title">{t('qa.title')}</h1>
+          <Button onClick={() => navigate('/gtm/strategy')} variant="secondary">
+            {t('qa.goToStrategy')}
+          </Button>
+        </div>
+
+        {error && (
+          <div className="qa-alert qa-alert--error">
+            {error}
+          </div>
+        )}
       </div>
 
-      {error && (
-        <div className="qa-alert qa-alert--error">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="qa-alert qa-alert--success">
-          {t('qa.answersSaved')}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="qa-sections">
+      <div className="qa-page__content">
+        <form id="qa-form" onSubmit={handleSubmit} className="qa-sections">
         {/* Product Section */}
         <Card className="qa-section">
           <h2 className="qa-section__title">{t('qa.sections.product.title')}</h2>
@@ -357,12 +361,16 @@ const CompanyQAPage: React.FC = () => {
           </div>
         </Card>
 
+        </form>
+      </div>
+
+      <div className="qa-page__footer">
         <div className="flex flex--end flex--gap-md">
-          <Button type="submit" isLoading={saving}>
+          <Button type="submit" form="qa-form" isLoading={saving}>
             {t('qa.saveAnswers')}
           </Button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };
