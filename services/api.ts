@@ -317,8 +317,10 @@ const api = {
   },
 
   // GTM Strategy endpoints
-  generateGTMStrategy: async (companyId: number): Promise<GTMStrategy> => {
-    const response = await axiosInstance.post(`/companies/${companyId}/gtm-strategy/generate`);
+  generateGTMStrategy: async (companyId: number, language: string = 'ru'): Promise<GTMStrategy> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/gtm-strategy/generate`, {
+      language,
+    });
     return response.data;
   },
 
@@ -328,8 +330,10 @@ const api = {
   },
 
   // Validation endpoints
-  generateValidation: async (companyId: number): Promise<Validation> => {
-    const response = await axiosInstance.post(`/companies/${companyId}/validation/generate`);
+  generateValidation: async (companyId: number, language: string = 'ru'): Promise<Validation> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/validation/generate`, {
+      language,
+    });
     return response.data;
   },
 
@@ -339,8 +343,10 @@ const api = {
   },
 
   // Forecast endpoints
-  generateForecast: async (companyId: number): Promise<Forecast> => {
-    const response = await axiosInstance.post(`/companies/${companyId}/forecast/generate`);
+  generateForecast: async (companyId: number, language: string = 'ru'): Promise<Forecast> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/forecast/generate`, {
+      language,
+    });
     return response.data;
   },
 

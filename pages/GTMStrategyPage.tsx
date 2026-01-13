@@ -12,7 +12,7 @@ type TabType = 'strategy' | 'validation' | 'forecast';
 
 const GTMStrategyPage: React.FC = () => {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('strategy');
   const [loading, setLoading] = useState(false);
@@ -62,13 +62,13 @@ const GTMStrategyPage: React.FC = () => {
 
     try {
       if (type === 'strategy') {
-        const newStrategy = await api.generateGTMStrategy(user.company.id);
+        const newStrategy = await api.generateGTMStrategy(user.company.id, language);
         setStrategyHistory(prev => [newStrategy, ...prev]);
       } else if (type === 'validation') {
-        const newValidation = await api.generateValidation(user.company.id);
+        const newValidation = await api.generateValidation(user.company.id, language);
         setValidationHistory(prev => [newValidation, ...prev]);
       } else if (type === 'forecast') {
-        const newForecast = await api.generateForecast(user.company.id);
+        const newForecast = await api.generateForecast(user.company.id, language);
         setForecastHistory(prev => [newForecast, ...prev]);
       }
     } catch (err: any) {
@@ -89,7 +89,7 @@ const GTMStrategyPage: React.FC = () => {
   };
 
   const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleString(t.language, {
+    return new Date(dateString).toLocaleString(language, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
