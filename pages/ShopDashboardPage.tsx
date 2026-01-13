@@ -248,7 +248,7 @@ const ShopDashboardPage: React.FC = () => {
 											</svg>
 										</button>
 										{openDropdownId === product.id && (
-											<div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 border border-gray-200">
+											<div className="absolute right-0 mt-2 w-48 bg-white rounded-md z-20 border border-[rgba(228,228,231,1)]">
 												<div className="py-1">
 													<button
 														onClick={e => {

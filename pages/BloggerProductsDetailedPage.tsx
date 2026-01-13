@@ -46,7 +46,7 @@ const BloggerProductsDetailedPage: React.FC = () => {
           {items.map((p) => (
             <Card 
               key={p.id} 
-              className="h-120 flex flex-col cursor-pointer hover:shadow-xl transition-shadow duration-300"
+              className="h-120 flex flex-col cursor-pointer border border-[rgba(228,228,231,1)] transition-transform duration-300 hover:-translate-y-0.5"
               onClick={() => navigate(`/blogger/products/${p.id}`)}
             >
               {p.image_url && (

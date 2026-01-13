@@ -66,7 +66,7 @@ const BloggerProductDetailsPage: React.FC = () => {
 						<img
 							src={api.getImageUrl(product.image_url)}
 							alt={product.name}
-							className="w-full h-auto rounded-lg shadow-lg"
+							className="w-full h-auto rounded-lg border border-[rgba(228,228,231,1)]"
 						/>
 					</div>
 				)}

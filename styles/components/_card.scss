@@ -2,9 +2,9 @@
 // Add any card-specific styles that extend Tailwind here
 
 .card-hover-effect {
-  transition: box-shadow 0.3s ease;
+  transition: transform 0.3s ease;
   
   &:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
   }
 }

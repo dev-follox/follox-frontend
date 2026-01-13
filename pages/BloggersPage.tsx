@@ -223,7 +223,7 @@ const BloggersPage: React.FC = () => {
                     </svg>
                   </button>
                   {copied && (
-                    <div className="absolute -top-9 right-0 bg-gray-900 text-white text-xs px-2 py-1 rounded shadow">
+                    <div className="absolute -top-9 right-0 bg-gray-900 text-white text-xs px-2 py-1 rounded border border-[rgba(228,228,231,1)]">
                       {t('bloggers.linkCopied')}
                     </div>
                   )}

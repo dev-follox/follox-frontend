@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
 	const isBlogger = user?.role === 'BLOGGER';
 
 	return (
-		<div className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg flex flex-col z-50">
+    <div className="fixed left-0 top-0 h-full w-64 bg-white border-r border-[rgba(228,228,231,1)] flex flex-col z-50">
 			{/* Follox Logo/Name */}
 			<div className="p-6 border-b border-gray-200">
 				<Link

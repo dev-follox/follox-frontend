@@ -15,7 +15,7 @@ const Toggle: React.FC<ToggleProps> = ({ options, selected, onChange }) => {
     <div className="relative flex bg-gray-200 rounded-full p-1">
       {/* Sliding background indicator */}
       <div
-        className="absolute top-1 bottom-1 rounded-full bg-danger shadow-sm transition-all duration-300 ease-in-out"
+        className="absolute top-1 bottom-1 rounded-full bg-danger transition-all duration-300 ease-in-out"
         style={{
           left: `${percentage}%`,
           width: `${width}%`,
