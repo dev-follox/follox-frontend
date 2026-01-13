@@ -22,6 +22,8 @@ import HomePage from './pages/HomePage';
 import CompanyQAPage from './pages/CompanyQAPage';
 import GTMStrategyPage from './pages/GTMStrategyPage';
 import DashboardPage from './pages/DashboardPage';
+import AdminCompaniesPage from './pages/AdminCompaniesPage';
+import AdminCompanyDetailsPage from './pages/AdminCompanyDetailsPage';
 import { useTranslation } from './hooks/useTranslation';
 
 const ProtectedRoute: React.FC = () => {
@@ -68,6 +70,10 @@ const AppContent: React.FC = () => {
             {/* Blogger routes */}
             <Route path="/blogger/products" element={<BloggerProductsDetailedPage />} />
             <Route path="/blogger/products/:productId" element={<BloggerProductDetailsPage />} />
+            
+            {/* Admin routes */}
+            <Route path="/admin/companies" element={<AdminCompaniesPage />} />
+            <Route path="/admin/companies/:companyId" element={<AdminCompanyDetailsPage />} />
           </Route>
         </Route>
 

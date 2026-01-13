@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 		}
 	};
 
-	if (!isLoggedIn || (user?.role !== 'COMPANY' && user?.role !== 'BLOGGER')) {
+	if (!isLoggedIn || (user?.role !== 'COMPANY' && user?.role !== 'BLOGGER' && user?.role !== 'ADMIN')) {
 		return null;
 	}
 
@@ -35,6 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 
 	const isCompany = user?.role === 'COMPANY';
 	const isBlogger = user?.role === 'BLOGGER';
+	const isAdmin = user?.role === 'ADMIN';
 
 	return (
     <>
@@ -48,7 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 			{/* Follox Logo/Name */}
 			<div className="p-6 border-b border-gray-200">
 				<Link
-					to={isCompany ? '/dashboard' : '/blogger/products'}
+					to={isAdmin ? '/admin/companies' : isCompany ? '/dashboard' : '/blogger/products'}
 					className="text-2xl font-bold text-gray-800 hover:text-primary"
 				>
 					Follox
@@ -64,6 +65,31 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 
 			{/* Navigation */}
 			<div className="flex-1 overflow-y-auto py-4">
+				{/* Admin Module - Only for ADMIN */}
+				{isAdmin && (
+					<div className="px-4 mb-4">
+						<div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">
+							{t('sidebar.admin')}
+						</div>
+						<div className="space-y-0.5 ml-2 border-l-2 border-gray-200 pl-2">
+							<Link
+								to="/admin/companies"
+								onClick={handleLinkClick}
+								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
+									isActive('/admin/companies')
+										? 'bg-primary text-primary-text'
+										: 'text-gray-700 hover:bg-gray-100'
+								}`}
+							>
+								<span className={`mr-2 ${isActive('/admin/companies') ? 'text-primary-text' : 'text-gray-400'}`}>
+									└
+								</span>
+								<span>{t('sidebar.companies')}</span>
+							</Link>
+						</div>
+					</div>
+				)}
+
 				{/* Dashboard - Only for COMPANY */}
 				{isCompany && (
 					<div className="px-4 mb-4">
@@ -122,7 +148,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 				)}
 
 				{/* Affiliate Sales Module */}
-				<div className="px-4 mb-4">
+				{(isCompany || isBlogger) && <div className="px-4 mb-4">
 					<div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">
 						{t('sidebar.affiliateSales')}
 					</div>
@@ -171,7 +197,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 							</Link>
 						)}
 					</div>
-				</div>
+				</div>}
 			</div>
 
 			{/* Bottom Section */}

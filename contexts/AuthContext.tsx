@@ -77,6 +77,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       navigate('/blogger/products', { replace: true });
       return;
     }
+
+    if (token.role === 'ADMIN') {
+      const authUser: AuthUser = { role: 'ADMIN' };
+      setUser(authUser);
+      localStorage.setItem('auth_user', JSON.stringify(authUser));
+      navigate('/admin/companies', { replace: true });
+      return;
+    }
   }, [navigate]);
 
   const loginWithGoogle = useCallback(async (googleResponse: GoogleOAuthResponse) => {
@@ -215,6 +223,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('auth_user', JSON.stringify(authUser));
       console.log('Blogger login successful, navigating to products');
       navigate('/blogger/products', { replace: true });
+      return;
+    }
+
+    // Handle ADMIN role
+    if (googleResponse.role === 'ADMIN') {
+      const authUser: AuthUser = { role: 'ADMIN' };
+      setUser(authUser);
+      localStorage.setItem('auth_user', JSON.stringify(authUser));
+      console.log('Admin login successful, navigating to companies');
+      navigate('/admin/companies', { replace: true });
       return;
     }
 

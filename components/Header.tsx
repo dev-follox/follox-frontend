@@ -11,12 +11,13 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMenuOpen }) => {
   const { user } = useAuth();
   const isCompany = user?.role === 'COMPANY';
   const isBlogger = user?.role === 'BLOGGER';
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <header className="mobile-header">
       <div className="mobile-header__content">
         <Link
-          to={isCompany ? '/dashboard' : '/blogger/products'}
+          to={isAdmin ? '/admin/companies' : isCompany ? '/dashboard' : '/blogger/products'}
           className="mobile-header__logo"
         >
           Follox

@@ -354,6 +354,39 @@ const api = {
     const response = await axiosInstance.get(`/companies/${companyId}/forecast/history`);
     return response.data;
   },
+
+  // Admin endpoints
+  getAllCompanies: async (skip = 0, limit = 100): Promise<Company[]> => {
+    const response = await axiosInstance.get('/admin/companies', {
+      params: { skip, limit },
+    });
+    return response.data;
+  },
+
+  getCompanyById: async (companyId: number): Promise<Company> => {
+    const response = await axiosInstance.get(`/admin/companies/${companyId}`);
+    return response.data;
+  },
+
+  getCompanyAnswers: async (companyId: number): Promise<CompanyAnswers> => {
+    const response = await axiosInstance.get(`/admin/companies/${companyId}/answers`);
+    return response.data;
+  },
+
+  getCompanyGTMStrategies: async (companyId: number): Promise<GTMStrategy[]> => {
+    const response = await axiosInstance.get(`/admin/companies/${companyId}/gtm-strategies`);
+    return response.data;
+  },
+
+  getCompanyValidations: async (companyId: number): Promise<Validation[]> => {
+    const response = await axiosInstance.get(`/admin/companies/${companyId}/validations`);
+    return response.data;
+  },
+
+  getCompanyForecasts: async (companyId: number): Promise<Forecast[]> => {
+    const response = await axiosInstance.get(`/admin/companies/${companyId}/forecasts`);
+    return response.data;
+  },
 };
 
 export default api;

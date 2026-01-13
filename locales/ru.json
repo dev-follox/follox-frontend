@@ -313,6 +313,8 @@
     "gtmStrategy": "Модуль генерации GTM стратегии",
     "answers": "Ответы",
     "strategyGeneration": "Генерация GTM стратегии",
+    "admin": "Админ модуль",
+    "companies": "Компании",
     "switchLanguage": "Переключить язык"
   },
   "dashboard": {
@@ -341,6 +343,47 @@
         "validation": "Валидация",
         "forecast": "Прогноз"
       }
+    }
+  },
+  "admin": {
+    "title": "Панель администратора",
+    "companies": {
+      "title": "Компании",
+      "table": {
+        "companyName": "Название компании",
+        "email": "Email",
+        "fullName": "Полное имя",
+        "created": "Создано",
+        "actions": "Действия",
+        "view": "Просмотр"
+      },
+      "noCompanies": "Компании не найдены.",
+      "loadError": "Не удалось загрузить компании."
+    },
+    "companyDetails": {
+      "title": "Детали компании",
+      "back": "← Назад",
+      "tabs": {
+        "answers": "Ответы компании",
+        "generations": "GTM генерации"
+      },
+      "answers": {
+        "title": "Ответы компании",
+        "createdAt": "Создано",
+        "updatedAt": "Обновлено",
+        "noAnswers": "Ответы для этой компании не найдены."
+      },
+      "generations": {
+        "title": "GTM генерации",
+        "strategy": "GTM стратегия",
+        "validation": "Валидация",
+        "forecast": "Прогноз",
+        "createdAt": "Создано",
+        "noStrategy": "GTM стратегии не найдены.",
+        "noValidation": "Валидации не найдены.",
+        "noForecast": "Прогнозы не найдены."
+      },
+      "loadError": "Не удалось загрузить данные компании."
     }
   }
 }

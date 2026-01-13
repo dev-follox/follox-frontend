@@ -135,7 +135,7 @@ export interface Forecast {
   created_at: string;
 }
 
-export type UserRole = 'COMPANY' | 'BLOGGER';
+export type UserRole = 'COMPANY' | 'BLOGGER' | 'ADMIN';
 
 // Product types
 export interface Product {

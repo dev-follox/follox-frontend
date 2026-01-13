@@ -313,6 +313,8 @@
     "gtmStrategy": "GTM Strategy Generation Module",
     "answers": "Answers",
     "strategyGeneration": "GTM Strategy Generation",
+    "admin": "Admin Module",
+    "companies": "Companies",
     "switchLanguage": "Switch Language"
   },
   "dashboard": {
@@ -341,6 +343,47 @@
         "validation": "Validation",
         "forecast": "Forecast"
       }
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "companies": {
+      "title": "Companies",
+      "table": {
+        "companyName": "Company Name",
+        "email": "Email",
+        "fullName": "Full Name",
+        "created": "Created",
+        "actions": "Actions",
+        "view": "View"
+      },
+      "noCompanies": "No companies found.",
+      "loadError": "Failed to load companies."
+    },
+    "companyDetails": {
+      "title": "Company Details",
+      "back": "← Back",
+      "tabs": {
+        "answers": "Company Answers",
+        "generations": "GTM Generations"
+      },
+      "answers": {
+        "title": "Company Answers",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At",
+        "noAnswers": "No answers found for this company."
+      },
+      "generations": {
+        "title": "GTM Generations",
+        "strategy": "GTM Strategy",
+        "validation": "Validation",
+        "forecast": "Forecast",
+        "createdAt": "Created At",
+        "noStrategy": "No GTM strategies found.",
+        "noValidation": "No validations found.",
+        "noForecast": "No forecasts found."
+      },
+      "loadError": "Failed to load company data."
     }
   }
 }
