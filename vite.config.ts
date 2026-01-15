@@ -4,13 +4,14 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
+    console.log('env', env);
     return {
       server: {
         port: 4000,
         host: '0.0.0.0',
         proxy: {
           '/v1': {
-            target: env.VITE_API_URL || 'https://api.follox.co',
+            target: env.VITE_API_URL || 'https://follox-backend-test.onrender.com',
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/v1/, ''),
             secure: false,
