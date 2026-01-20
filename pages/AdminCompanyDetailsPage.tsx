@@ -3,27 +3,21 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
-import { Company, CompanyAnswers, GTMStrategy, Validation, Forecast } from '../types';
+import { Company, CompanyAnswers } from '../types';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import Spinner from '../components/Spinner';
-
-type TabType = 'answers' | 'generations';
 
 const AdminCompanyDetailsPage: React.FC = () => {
   const { companyId } = useParams<{ companyId: string }>();
   const { t, language } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>('answers');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   const [company, setCompany] = useState<Company | null>(null);
   const [answers, setAnswers] = useState<CompanyAnswers | null>(null);
-  const [strategies, setStrategies] = useState<GTMStrategy[]>([]);
-  const [validations, setValidations] = useState<Validation[]>([]);
-  const [forecasts, setForecasts] = useState<Forecast[]>([]);
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') {
@@ -33,7 +27,7 @@ const AdminCompanyDetailsPage: React.FC = () => {
     if (companyId) {
       loadData();
     }
-  }, [user, companyId, navigate, activeTab]);
+  }, [user, companyId, navigate]);
 
   const loadData = async () => {
     if (!companyId) return;
@@ -45,25 +39,13 @@ const AdminCompanyDetailsPage: React.FC = () => {
       const companyData = await api.getCompanyById(Number(companyId));
       setCompany(companyData);
       
-      if (activeTab === 'answers') {
-        try {
-          const answersData = await api.getCompanyAnswersAdmin(Number(companyId));
-          setAnswers(answersData);
-        } catch (err: any) {
-          // Answers might not exist, that's okay
-          if (err?.response?.status !== 404) {
-            console.error('Failed to load answers:', err);
-          }
+      try {
+        const answersData = await api.getCompanyAnswersAdmin(Number(companyId));
+        setAnswers(answersData);
+      } catch (err: any) {
+        if (err?.response?.status !== 404) {
+          console.error('Failed to load answers:', err);
         }
-      } else if (activeTab === 'generations') {
-        const [strategiesData, validationsData, forecastsData] = await Promise.all([
-          api.getCompanyGTMStrategiesAdmin(Number(companyId)),
-          api.getCompanyValidationsAdmin(Number(companyId)),
-          api.getCompanyForecastsAdmin(Number(companyId)),
-        ]);
-        setStrategies(strategiesData);
-        setValidations(validationsData);
-        setForecasts(forecastsData);
       }
     } catch (err: any) {
       setError(t('admin.companyDetails.loadError'));
@@ -123,29 +105,8 @@ const AdminCompanyDetailsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="admin-company-details-tabs">
-        <button
-          onClick={() => setActiveTab('answers')}
-          className={`admin-company-details-tab ${
-            activeTab === 'answers' ? 'admin-company-details-tab--active' : ''
-          }`}
-        >
-          {t('admin.companyDetails.tabs.answers')}
-        </button>
-        <button
-          onClick={() => setActiveTab('generations')}
-          className={`admin-company-details-tab ${
-            activeTab === 'generations' ? 'admin-company-details-tab--active' : ''
-          }`}
-        >
-          {t('admin.companyDetails.tabs.generations')}
-        </button>
-      </div>
-
       {/* Content */}
-      {activeTab === 'answers' ? (
-        <div className="qa-page">
+      <div className="qa-page">
           <div className="qa-page__header">
             {answers && (
               <div className="mb-4">
@@ -401,95 +362,6 @@ const AdminCompanyDetailsPage: React.FC = () => {
               )}
           </div>
         </div>
-      ) : (
-        <div className="admin-company-details-content">
-          <div className="space-y-6">
-            {/* GTM Strategies */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4">{t('admin.companyDetails.generations.strategy')}</h2>
-              {strategies.length === 0 ? (
-                <Card className="p-8 text-center text-gray-500">
-                  <p>{t('admin.companyDetails.generations.noStrategy')}</p>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {strategies.map((strategy) => (
-                    <Card key={strategy.id} className="p-6">
-                      <div className="mb-4">
-                        <p className="text-sm text-gray-500">
-                          <strong>{t('admin.companyDetails.generations.createdAt')}:</strong>{' '}
-                          {formatDate(strategy.created_at)}
-                        </p>
-                      </div>
-                      <div className="prose max-w-none">
-                        <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded">
-                          {strategy.content}
-                        </pre>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Validations */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4">{t('admin.companyDetails.generations.validation')}</h2>
-              {validations.length === 0 ? (
-                <Card className="p-8 text-center text-gray-500">
-                  <p>{t('admin.companyDetails.generations.noValidation')}</p>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {validations.map((validation) => (
-                    <Card key={validation.id} className="p-6">
-                      <div className="mb-4">
-                        <p className="text-sm text-gray-500">
-                          <strong>{t('admin.companyDetails.generations.createdAt')}:</strong>{' '}
-                          {formatDate(validation.created_at)}
-                        </p>
-                      </div>
-                      <div className="prose max-w-none">
-                        <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded">
-                          {validation.content}
-                        </pre>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Forecasts */}
-            <div>
-              <h2 className="text-xl font-semibold mb-4">{t('admin.companyDetails.generations.forecast')}</h2>
-              {forecasts.length === 0 ? (
-                <Card className="p-8 text-center text-gray-500">
-                  <p>{t('admin.companyDetails.generations.noForecast')}</p>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {forecasts.map((forecast) => (
-                    <Card key={forecast.id} className="p-6">
-                      <div className="mb-4">
-                        <p className="text-sm text-gray-500">
-                          <strong>{t('admin.companyDetails.generations.createdAt')}:</strong>{' '}
-                          {formatDate(forecast.created_at)}
-                        </p>
-                      </div>
-                      <div className="prose max-w-none">
-                        <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded">
-                          {forecast.content}
-                        </pre>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

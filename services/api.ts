@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed, Company, CompanyCreate, CompanyUpdate, CompanyAnswers, CompanyAnswersUpdate, GTMStrategy, Validation, Forecast } from '../types';
+import { Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed, Company, CompanyCreate, CompanyUpdate, CompanyAnswers, CompanyAnswersUpdate, ICPDiagnostician, Positioning, ChannelRisk, Experiment, DecisionReview } from '../types';
 
 // In development, use the proxy URL, in production use the actual URL
 const BASE_URL = '/v1';
@@ -323,42 +323,54 @@ const api = {
     return response.data;
   },
 
-  // GTM Strategy endpoints
-  generateGTMStrategy: async (companyId: number, language: string = 'ru'): Promise<GTMStrategy> => {
-    const response = await axiosInstance.post(`/companies/${companyId}/gtm-strategy/generate`, {
-      language,
-    });
+  // Decision endpoints (icp_diagnostician, positioning, channel_risk, experiment, decision_review)
+  generateIcpDiagnostician: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ICPDiagnostician> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/icp-diagnostician/generate`, body ?? {});
     return response.data;
   },
 
-  getGTMStrategyHistory: async (companyId: number): Promise<GTMStrategy[]> => {
-    const response = await axiosInstance.get(`/companies/${companyId}/gtm-strategy/history`);
+  getIcpDiagnosticianHistory: async (companyId: number): Promise<ICPDiagnostician[]> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/icp-diagnostician/history`);
     return response.data;
   },
 
-  // Validation endpoints
-  generateValidation: async (companyId: number, language: string = 'ru'): Promise<Validation> => {
-    const response = await axiosInstance.post(`/companies/${companyId}/validation/generate`, {
-      language,
-    });
+  generatePositioning: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<Positioning> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/positioning/generate`, body ?? {});
     return response.data;
   },
 
-  getValidationHistory: async (companyId: number): Promise<Validation[]> => {
-    const response = await axiosInstance.get(`/companies/${companyId}/validation/history`);
+  getPositioningHistory: async (companyId: number): Promise<Positioning[]> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/positioning/history`);
     return response.data;
   },
 
-  // Forecast endpoints
-  generateForecast: async (companyId: number, language: string = 'ru'): Promise<Forecast> => {
-    const response = await axiosInstance.post(`/companies/${companyId}/forecast/generate`, {
-      language,
-    });
+  generateChannelRisk: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ChannelRisk> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/channel-risk/generate`, body ?? {});
     return response.data;
   },
 
-  getForecastHistory: async (companyId: number): Promise<Forecast[]> => {
-    const response = await axiosInstance.get(`/companies/${companyId}/forecast/history`);
+  getChannelRiskHistory: async (companyId: number): Promise<ChannelRisk[]> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/channel-risk/history`);
+    return response.data;
+  },
+
+  generateExperiment: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<Experiment> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/experiment/generate`, body ?? {});
+    return response.data;
+  },
+
+  getExperimentHistory: async (companyId: number): Promise<Experiment[]> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/experiment/history`);
+    return response.data;
+  },
+
+  generateDecisionReview: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<DecisionReview> => {
+    const response = await axiosInstance.post(`/companies/${companyId}/decision-review/generate`, body ?? {});
+    return response.data;
+  },
+
+  getDecisionReviewHistory: async (companyId: number): Promise<DecisionReview[]> => {
+    const response = await axiosInstance.get(`/companies/${companyId}/decision-review/history`);
     return response.data;
   },
 
@@ -381,20 +393,6 @@ const api = {
     return response.data;
   },
 
-  getCompanyGTMStrategiesAdmin: async (companyId: number): Promise<GTMStrategy[]> => {
-    const response = await axiosInstance.get(`/admin/companies/${companyId}/gtm-strategies`);
-    return response.data;
-  },
-
-  getCompanyValidationsAdmin: async (companyId: number): Promise<Validation[]> => {
-    const response = await axiosInstance.get(`/admin/companies/${companyId}/validations`);
-    return response.data;
-  },
-
-  getCompanyForecastsAdmin: async (companyId: number): Promise<Forecast[]> => {
-    const response = await axiosInstance.get(`/admin/companies/${companyId}/forecasts`);
-    return response.data;
-  },
 };
 
 export default api;

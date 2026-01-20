@@ -107,41 +107,62 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 					</div>
 				)}
 
-				{/* GTM Strategy Generation Module - Only for COMPANY */}
+				{/* Decisions Module - Only for COMPANY */}
 				{isCompany && (
 					<div className="px-4 mb-4">
 						<div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">
-							{t('sidebar.gtmStrategy')}
+							{t('sidebar.decisions')}
 						</div>
 						<div className="space-y-0.5 ml-2 border-l-2 border-gray-200 pl-2">
-							{/* Answers Tab - Nested */}
 							<Link
-								to="/gtm/qa"
+								to="/decisions/icp-diagnostician"
 								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/gtm/qa') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
+									isActive('/decisions/icp-diagnostician') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
 								}`}
 							>
-								<span className={`mr-2 ${isActive('/gtm/qa') ? 'text-primary-text' : 'text-gray-400'}`}>
-									└
-								</span>
-								<span>{t('sidebar.answers')}</span>
+								<span className={`mr-2 ${isActive('/decisions/icp-diagnostician') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
+								<span>{t('sidebar.icpDiagnostician')}</span>
 							</Link>
-
-							{/* Strategy Generation Tab - Nested */}
 							<Link
-								to="/gtm/strategy"
+								to="/decisions/positioning"
 								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/gtm/strategy')
-										? 'bg-primary text-primary-text'
-										: 'text-gray-700 hover:bg-gray-100'
+									isActive('/decisions/positioning') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
 								}`}
 							>
-								<span className={`mr-2 ${isActive('/gtm/strategy') ? 'text-primary-text' : 'text-gray-400'}`}>
-									└
-								</span>
-								<span>{t('sidebar.strategyGeneration')}</span>
+								<span className={`mr-2 ${isActive('/decisions/positioning') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
+								<span>{t('sidebar.positioning')}</span>
+							</Link>
+							<Link
+								to="/decisions/channel-risk"
+								onClick={handleLinkClick}
+								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
+									isActive('/decisions/channel-risk') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
+								}`}
+							>
+								<span className={`mr-2 ${isActive('/decisions/channel-risk') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
+								<span>{t('sidebar.channelRisk')}</span>
+							</Link>
+							<Link
+								to="/decisions/experiment"
+								onClick={handleLinkClick}
+								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
+									isActive('/decisions/experiment') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
+								}`}
+							>
+								<span className={`mr-2 ${isActive('/decisions/experiment') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
+								<span>{t('sidebar.experiment')}</span>
+							</Link>
+							<Link
+								to="/decisions/decision-review"
+								onClick={handleLinkClick}
+								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
+									isActive('/decisions/decision-review') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
+								}`}
+							>
+								<span className={`mr-2 ${isActive('/decisions/decision-review') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
+								<span>{t('sidebar.decisionReview')}</span>
 							</Link>
 						</div>
 					</div>

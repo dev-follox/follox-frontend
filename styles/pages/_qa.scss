@@ -35,11 +35,85 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+
   &__title {
     font-size: 1.25rem;
     font-weight: 700;
     color: #111827;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  &__link {
+    flex-shrink: 0;
+  }
+}
+
+.qa-step-indicator {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.qa-progress {
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.qa-progress__bar {
+  height: 100%;
+  background: var(--color-primary, #4f46e5);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+.qa-steps-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  width: 100%;
+
+  &__left {
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+
+  &__right {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+}
+
+.qa-page--steps .qa-page__content {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.qa-section--step {
+  animation: qa-step-in 0.2s ease;
+}
+
+@keyframes qa-step-in {
+  from {
+    opacity: 0.6;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

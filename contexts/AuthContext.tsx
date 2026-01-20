@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Check which module was selected before auth
       const selectedModule = localStorage.getItem('selectedModule');
-      if (selectedModule === 'gtmStrategy') {
+      if (selectedModule === 'decisions') {
         navigate('/dashboard', { replace: true });
       } else {
         navigate('/company/dashboard', { replace: true });
@@ -118,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           // Check which module was selected before auth
           const selectedModule = localStorage.getItem('selectedModule');
-          if (selectedModule === 'gtmStrategy') {
+          if (selectedModule === 'decisions') {
             navigate('/dashboard', { replace: true });
           } else {
             navigate('/company/dashboard', { replace: true });
@@ -156,7 +156,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             // Check which module was selected before auth
             const selectedModule = localStorage.getItem('selectedModule');
-            if (selectedModule === 'gtmStrategy') {
+            if (selectedModule === 'decisions') {
               navigate('/dashboard', { replace: true });
             } else {
               navigate('/company/dashboard', { replace: true });
@@ -182,7 +182,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(authUser);
           localStorage.setItem('auth_user', JSON.stringify(authUser));
           console.log('Company login successful, navigating to GTM Q&A');
-          navigate('/gtm/qa', { replace: true });
+          navigate('/dashboard', { replace: true });
           return;
         } catch (err: any) {
           console.error('Failed to fetch company data:', err);
@@ -203,8 +203,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const authUser: AuthUser = { role: 'COMPANY', company: minimalCompany };
           setUser(authUser);
           localStorage.setItem('auth_user', JSON.stringify(authUser));
-          console.log('Company login successful (using minimal data), navigating to GTM Q&A');
-          navigate('/gtm/qa', { replace: true });
+          console.log('Company login successful (using minimal data), navigating to dashboard');
+          navigate('/dashboard', { replace: true });
           return;
         }
       } else {

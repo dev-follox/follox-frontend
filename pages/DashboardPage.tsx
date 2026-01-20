@@ -13,9 +13,11 @@ const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<CompanyAnswers['answers'] | null>(null);
-  const [hasStrategy, setHasStrategy] = useState(false);
-  const [hasValidation, setHasValidation] = useState(false);
-  const [hasForecast, setHasForecast] = useState(false);
+  const [hasIcp, setHasIcp] = useState(false);
+  const [hasPositioning, setHasPositioning] = useState(false);
+  const [hasChannelRisk, setHasChannelRisk] = useState(false);
+  const [hasExperiment, setHasExperiment] = useState(false);
+  const [hasDecisionReview, setHasDecisionReview] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,42 +27,37 @@ const DashboardPage: React.FC = () => {
       }
 
       try {
-        // Fetch answers
         try {
           const companyAnswers = await api.getCompanyAnswers(user.company.id);
           if (companyAnswers.answers) {
             setAnswers(companyAnswers.answers);
           }
         } catch (err: any) {
-          // 404 is fine, means no answers yet
           if (err.response?.status !== 404) {
             console.error('Failed to fetch answers:', err);
           }
         }
 
-        // Fetch strategy history
         try {
-          const strategyHistory = await api.getGTMStrategyHistory(user.company.id);
-          setHasStrategy(strategyHistory.length > 0);
-        } catch (err) {
-          console.error('Failed to fetch strategy history:', err);
-        }
-
-        // Fetch validation history
+          const h = await api.getIcpDiagnosticianHistory(user.company.id);
+          setHasIcp(h.length > 0);
+        } catch (err) { console.error('Failed to fetch ICP history:', err); }
         try {
-          const validationHistory = await api.getValidationHistory(user.company.id);
-          setHasValidation(validationHistory.length > 0);
-        } catch (err) {
-          console.error('Failed to fetch validation history:', err);
-        }
-
-        // Fetch forecast history
+          const h = await api.getPositioningHistory(user.company.id);
+          setHasPositioning(h.length > 0);
+        } catch (err) { console.error('Failed to fetch positioning history:', err); }
         try {
-          const forecastHistory = await api.getForecastHistory(user.company.id);
-          setHasForecast(forecastHistory.length > 0);
-        } catch (err) {
-          console.error('Failed to fetch forecast history:', err);
-        }
+          const h = await api.getChannelRiskHistory(user.company.id);
+          setHasChannelRisk(h.length > 0);
+        } catch (err) { console.error('Failed to fetch channel risk history:', err); }
+        try {
+          const h = await api.getExperimentHistory(user.company.id);
+          setHasExperiment(h.length > 0);
+        } catch (err) { console.error('Failed to fetch experiment history:', err); }
+        try {
+          const h = await api.getDecisionReviewHistory(user.company.id);
+          setHasDecisionReview(h.length > 0);
+        } catch (err) { console.error('Failed to fetch decision review history:', err); }
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
       } finally {
@@ -130,7 +127,7 @@ const DashboardPage: React.FC = () => {
               </h2>
             </div>
             <button
-              onClick={() => navigate('/gtm/qa')}
+              onClick={() => navigate('/decisions/qa')}
               className="dashboard-step__arrow"
               title={t('dashboard.steps.answerQuestions.goTo')}
             >
@@ -181,7 +178,7 @@ const DashboardPage: React.FC = () => {
           </div>
         </Card>
 
-        {/* Step 2: Generate GTM Strategy */}
+        {/* Step 2: Generate decisions */}
         <Card className="dashboard-step">
           <div className="dashboard-step__header">
             <div className="flex flex--align-center flex--gap-sm">
@@ -189,13 +186,13 @@ const DashboardPage: React.FC = () => {
                 {t('dashboard.step')} 2
               </span>
               <h2 className="dashboard-step__title">
-                {t('dashboard.steps.generateStrategy.title')}
+                {t('dashboard.steps.generateDecisions.title')}
               </h2>
             </div>
             <button
-              onClick={() => navigate('/gtm/strategy')}
+              onClick={() => navigate('/decisions/icp-diagnostician')}
               className="dashboard-step__arrow"
-              title={t('dashboard.steps.generateStrategy.goTo')}
+              title={t('dashboard.steps.generateDecisions.goTo')}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -213,12 +210,14 @@ const DashboardPage: React.FC = () => {
               </svg>
             </button>
           </div>
-          <p className="dashboard-step__description">{t('dashboard.steps.generateStrategy.description')}</p>
+          <p className="dashboard-step__description">{t('dashboard.steps.generateDecisions.description')}</p>
           <div className="dashboard-step__items">
             {[
-              { key: 'strategy', label: t('dashboard.steps.generateStrategy.strategy'), checked: hasStrategy },
-              { key: 'validation', label: t('dashboard.steps.generateStrategy.validation'), checked: hasValidation },
-              { key: 'forecast', label: t('dashboard.steps.generateStrategy.forecast'), checked: hasForecast },
+              { key: 'icp', label: t('dashboard.steps.generateDecisions.icpDiagnostician'), checked: hasIcp },
+              { key: 'positioning', label: t('dashboard.steps.generateDecisions.positioning'), checked: hasPositioning },
+              { key: 'channelRisk', label: t('dashboard.steps.generateDecisions.channelRisk'), checked: hasChannelRisk },
+              { key: 'experiment', label: t('dashboard.steps.generateDecisions.experiment'), checked: hasExperiment },
+              { key: 'decisionReview', label: t('dashboard.steps.generateDecisions.decisionReview'), checked: hasDecisionReview },
             ].map(({ key, label, checked }) => (
               <div
                 key={key}

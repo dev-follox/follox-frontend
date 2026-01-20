@@ -110,28 +110,49 @@ export interface CompanyAnswersUpdate {
   answers: CompanyAnswers['answers'];
 }
 
-// GTM Strategy types
-export interface GTMStrategy {
+// Decision types (icp_diagnostician, positioning, channel_risk, experiment, decision_review)
+export interface ICPDiagnostician {
   id: number;
   company_id: number;
-  content: string;
-  output_data?: Record<string, any> | null;
+  content?: string | null;
+  output_data?: Record<string, unknown> | null;
+  language?: string | null;
   created_at: string;
 }
 
-export interface Validation {
+export interface Positioning {
   id: number;
   company_id: number;
-  content: string;
-  output_data?: Record<string, any> | null;
+  content?: string | null;
+  output_data?: Record<string, unknown> | null;
+  language?: string | null;
   created_at: string;
 }
 
-export interface Forecast {
+export interface ChannelRisk {
   id: number;
   company_id: number;
-  content: string;
-  output_data?: Record<string, any> | null;
+  content?: string | null;
+  output_data?: Record<string, unknown> | null;
+  language?: string | null;
+  created_at: string;
+}
+
+export interface Experiment {
+  id: number;
+  company_id: number;
+  content?: string | null;
+  output_data?: Record<string, unknown> | null;
+  language?: string | null;
+  created_at: string;
+}
+
+export interface DecisionReview {
+  id: number;
+  company_id: number;
+  content?: string | null;
+  output_data?: Record<string, unknown> | null;
+  language?: string | null;
   created_at: string;
 }
 

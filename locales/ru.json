@@ -33,9 +33,9 @@
       "title": "Affiliate Sales & Analytics",
       "description": "Управляйте продажами через партнёрскую программу. Добавляйте товары, отслеживайте аналитику, управляйте заказами, работайте с блогерами и создавайте партнёрские ссылки."
     },
-    "gtmStrategy": {
-      "title": "GTM Strategy Generator",
-      "description": "Генерируйте стратегии выхода на рынок, валидируйте гипотезы и создавайте прогнозы. Ответьте на вопросы о вашем продукте и получите персонализированные рекомендации."
+    "decisions": {
+      "title": "Решения",
+      "description": "Ответьте на вопросы о продукте, затем генерируйте ICP Diagnostician, Positioning, Channel Risk, Experiment и Decision Review. История хранится по компании."
     },
     "goToModule": "Перейти к модулю"
   },
@@ -91,8 +91,13 @@
   },
   "qa": {
     "title": "Вопросы и ответы",
-    "goToStrategy": "Перейти к генерации стратегии",
-    "generateStrategy": "Сгенерировать GTM стратегию",
+    "goToDecisions": "Перейти к решениям",
+    "viewIcpDiagnostician": "Перейти к ICP Diagnostician",
+    "stepOf": "Шаг {current} из {total}",
+    "back": "Назад",
+    "skip": "Пропустить",
+    "next": "Далее",
+    "done": "Готово",
     "editAnswers": "Редактировать ответы",
     "saveAnswers": "Сохранить ответы",
     "answersSaved": "Ответы успешно сохранены!",
@@ -153,31 +158,54 @@
       }
     }
   },
-  "gtmStrategy": {
-    "title": "GTM Strategy Generator",
+  "decisions": {
     "editAnswers": "Редактировать ответы",
-    "tabs": {
-      "strategy": "GTM Стратегия",
-      "validation": "Валидация",
-      "forecast": "Прогноз"
-    },
     "generate": "Сгенерировать",
     "regenerate": "Регенерировать",
-    "noHistory": {
-      "strategy": "История GTM стратегий пуста. Нажмите \"Сгенерировать\" для создания первой стратегии.",
-      "validation": "История валидаций пуста. Нажмите \"Сгенерировать\" для создания первой валидации.",
-      "forecast": "История прогнозов пуста. Нажмите \"Сгенерировать\" для создания первого прогноза."
+    "history": "История",
+    "loadHistoryError": "Не удалось загрузить историю. Попробуйте снова.",
+    "noOutput": "Нет структурированных данных.",
+    "step": "Шаг",
+    "extra": "Дополнительные данные",
+    "answerFirst": "Сначала ответьте на вопросы, чтобы сгенерировать.",
+    "goToQuestions": "Перейти к вопросам и ответам",
+    "noDataYet": "Данные ещё не сгенерированы. Нажмите «Сгенерировать», чтобы создать.",
+    "pleaseAnswerFirst": "Сначала ответьте на вопросы.",
+    "icp": {
+      "recommendations": "Рекомендации",
+      "confidence": "Уверенность",
+      "idealCustomerProfile": "Профиль идеального клиента",
+      "companySize": "Размер компании",
+      "industry": "Индустрия",
+      "role": "Роль",
+      "painPoints": "Боли",
+      "nextSteps": "Следующие шаги"
     },
-    "generatedAt": "Стратегия от",
-    "validationAt": "Валидация от",
-    "forecastAt": "Прогноз от",
-    "showStructuredData": "Показать структурированные данные",
-    "generateError": {
-      "strategy": "Не удалось сгенерировать GTM стратегию. Попробуйте снова.",
-      "validation": "Не удалось сгенерировать валидацию. Попробуйте снова.",
-      "forecast": "Не удалось сгенерировать прогноз. Попробуйте снова."
+    "icpDiagnostician": {
+      "title": "ICP Diagnostician",
+      "noHistory": "История ICP Diagnostician пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать ICP Diagnostician. Попробуйте снова."
     },
-    "loadHistoryError": "Не удалось загрузить историю. Попробуйте снова."
+    "positioning": {
+      "title": "Positioning",
+      "noHistory": "История Positioning пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать Positioning. Попробуйте снова."
+    },
+    "channelRisk": {
+      "title": "Channel Risk",
+      "noHistory": "История Channel Risk пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать Channel Risk. Попробуйте снова."
+    },
+    "experiment": {
+      "title": "Experiment",
+      "noHistory": "История Experiment пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать Experiment. Попробуйте снова."
+    },
+    "decisionReview": {
+      "title": "Decision Review",
+      "noHistory": "История Decision Review пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать Decision Review. Попробуйте снова."
+    }
   },
   "telegram": {
     "linkTitle": "Привязать Telegram",
@@ -310,9 +338,13 @@
     "affiliateSales": "Модуль партнёрских продаж",
     "products": "Товары",
     "bloggers": "Блогеры",
-    "gtmStrategy": "Модуль генерации GTM стратегии",
+    "decisions": "Решения",
     "answers": "Ответы",
-    "strategyGeneration": "Генерация GTM стратегии",
+    "icpDiagnostician": "ICP Diagnostician",
+    "positioning": "Positioning",
+    "channelRisk": "Channel Risk",
+    "experiment": "Experiment",
+    "decisionReview": "Decision Review",
     "admin": "Админ модуль",
     "companies": "Компании",
     "switchLanguage": "Переключить язык"
@@ -335,13 +367,15 @@
         "traction": "Traction",
         "constraints": "Ограничения"
       },
-      "generateStrategy": {
-        "title": "Сгенерировать GTM стратегию",
-        "description": "Генерируйте стратегии выхода на рынок, валидации и прогнозы",
-        "goTo": "Перейти к генерации GTM стратегии",
-        "strategy": "GTM Стратегия",
-        "validation": "Валидация",
-        "forecast": "Прогноз"
+      "generateDecisions": {
+        "title": "Сгенерировать решения",
+        "description": "Генерируйте ICP Diagnostician, Positioning, Channel Risk, Experiment и Decision Review",
+        "goTo": "Перейти к ICP Diagnostician",
+        "icpDiagnostician": "ICP Diagnostician",
+        "positioning": "Positioning",
+        "channelRisk": "Channel Risk",
+        "experiment": "Experiment",
+        "decisionReview": "Decision Review"
       }
     }
   },
@@ -363,25 +397,11 @@
     "companyDetails": {
       "title": "Детали компании",
       "back": "← Назад",
-      "tabs": {
-        "answers": "Ответы компании",
-        "generations": "GTM генерации"
-      },
       "answers": {
         "title": "Ответы компании",
         "createdAt": "Создано",
         "updatedAt": "Обновлено",
         "noAnswers": "Ответы для этой компании не найдены."
-      },
-      "generations": {
-        "title": "GTM генерации",
-        "strategy": "GTM стратегия",
-        "validation": "Валидация",
-        "forecast": "Прогноз",
-        "createdAt": "Создано",
-        "noStrategy": "GTM стратегии не найдены.",
-        "noValidation": "Валидации не найдены.",
-        "noForecast": "Прогнозы не найдены."
       },
       "loadError": "Не удалось загрузить данные компании."
     }

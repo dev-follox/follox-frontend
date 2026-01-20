@@ -20,7 +20,7 @@ import AuthPage from './pages/AuthPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import HomePage from './pages/HomePage';
 import CompanyQAPage from './pages/CompanyQAPage';
-import GTMStrategyPage from './pages/GTMStrategyPage';
+import DecisionPage from './pages/DecisionPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminCompaniesPage from './pages/AdminCompaniesPage';
 import AdminCompanyDetailsPage from './pages/AdminCompanyDetailsPage';
@@ -63,9 +63,13 @@ const AppContent: React.FC = () => {
             <Route path="/company/products/:productId" element={<ShopProductDetailsPage />} />
             <Route path="/company/bloggers" element={<BloggersPage />} />
             
-            {/* GTM Strategy Module - Company only */}
-            <Route path="/gtm/qa" element={<CompanyQAPage />} />
-            <Route path="/gtm/strategy" element={<GTMStrategyPage />} />
+            {/* Decisions Module - Company only */}
+            <Route path="/decisions/qa" element={<CompanyQAPage />} />
+            <Route path="/decisions/icp-diagnostician" element={<DecisionPage variant="icp_diagnostician" />} />
+            <Route path="/decisions/positioning" element={<DecisionPage variant="positioning" />} />
+            <Route path="/decisions/channel-risk" element={<DecisionPage variant="channel_risk" />} />
+            <Route path="/decisions/experiment" element={<DecisionPage variant="experiment" />} />
+            <Route path="/decisions/decision-review" element={<DecisionPage variant="decision_review" />} />
             
             {/* Blogger routes */}
             <Route path="/blogger/products" element={<BloggerProductsDetailedPage />} />

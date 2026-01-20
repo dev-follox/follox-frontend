@@ -33,9 +33,9 @@
       "title": "Affiliate Sales & Analytics",
       "description": "Manage sales through affiliate program. Add products, track analytics, manage orders, work with bloggers and create affiliate links."
     },
-    "gtmStrategy": {
-      "title": "GTM Strategy Generator",
-      "description": "Generate go-to-market strategies, validate hypotheses and create forecasts. Answer questions about your product and get personalized recommendations."
+    "decisions": {
+      "title": "Decisions",
+      "description": "Answer questions about your product, then generate ICP Diagnostician, Positioning, Channel Risk, Experiment, and Decision Review. View history per company."
     },
     "goToModule": "Go to Module"
   },
@@ -91,13 +91,18 @@
   },
   "qa": {
     "title": "Questions & Answers",
-    "goToStrategy": "Go to Strategy Generation",
-    "generateStrategy": "Generate GTM Strategy",
+    "goToDecisions": "Go to Decisions",
+    "viewIcpDiagnostician": "View ICP Diagnostician",
     "editAnswers": "Edit Answers",
     "saveAnswers": "Save Answers",
     "answersSaved": "Answers saved successfully!",
     "saveError": "Failed to save answers. Try again.",
     "companyNotFound": "Company not found. Please log in.",
+    "stepOf": "Step {current} of {total}",
+    "back": "Back",
+    "skip": "Skip",
+    "next": "Next",
+    "done": "Done",
     "sections": {
       "product": {
         "title": "Product",
@@ -153,31 +158,54 @@
       }
     }
   },
-  "gtmStrategy": {
-    "title": "GTM Strategy Generator",
+  "decisions": {
     "editAnswers": "Edit Answers",
-    "tabs": {
-      "strategy": "GTM Strategy",
-      "validation": "Validation",
-      "forecast": "Forecast"
-    },
     "generate": "Generate",
     "regenerate": "Regenerate",
-    "noHistory": {
-      "strategy": "GTM strategy history is empty. Click \"Generate\" to create the first strategy.",
-      "validation": "Validation history is empty. Click \"Generate\" to create the first validation.",
-      "forecast": "Forecast history is empty. Click \"Generate\" to create the first forecast."
+    "history": "History",
+    "loadHistoryError": "Failed to load history. Try again.",
+    "noOutput": "No structured output available.",
+    "step": "Step",
+    "extra": "Additional data",
+    "answerFirst": "Answer the questions first to generate.",
+    "goToQuestions": "Go to Questions & Answers",
+    "noDataYet": "No data generated yet. Click Generate to create one.",
+    "pleaseAnswerFirst": "Please answer the questions first.",
+    "icp": {
+      "recommendations": "Recommendations",
+      "confidence": "Confidence",
+      "idealCustomerProfile": "Ideal Customer Profile",
+      "companySize": "Company size",
+      "industry": "Industry",
+      "role": "Role",
+      "painPoints": "Pain points",
+      "nextSteps": "Next steps"
     },
-    "generatedAt": "Strategy from",
-    "validationAt": "Validation from",
-    "forecastAt": "Forecast from",
-    "showStructuredData": "Show Structured Data",
-    "generateError": {
-      "strategy": "Failed to generate GTM strategy. Try again.",
-      "validation": "Failed to generate validation. Try again.",
-      "forecast": "Failed to generate forecast. Try again."
+    "icpDiagnostician": {
+      "title": "ICP Diagnostician",
+      "noHistory": "No ICP Diagnostician history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate ICP Diagnostician. Try again."
     },
-    "loadHistoryError": "Failed to load history. Try again."
+    "positioning": {
+      "title": "Positioning",
+      "noHistory": "No Positioning history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate Positioning. Try again."
+    },
+    "channelRisk": {
+      "title": "Channel Risk",
+      "noHistory": "No Channel Risk history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate Channel Risk. Try again."
+    },
+    "experiment": {
+      "title": "Experiment",
+      "noHistory": "No Experiment history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate Experiment. Try again."
+    },
+    "decisionReview": {
+      "title": "Decision Review",
+      "noHistory": "No Decision Review history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate Decision Review. Try again."
+    }
   },
   "telegram": {
     "linkTitle": "Link Telegram",
@@ -243,7 +271,7 @@
     "loadError": "Failed to load products."
   },
   "bloggerProductDetails": {
-    "backToList": "← Back to List",
+    "backToList": "? Back to List",
     "description": "Description",
     "taskFromShop": "Task from Shop",
     "affiliateLink": "Affiliate Link",
@@ -254,8 +282,8 @@
   },
   "productDetails": {
     "edit": "Edit",
-    "expand": "Expand ↓",
-    "collapse": "Collapse ↑",
+    "expand": "Expand ?",
+    "collapse": "Collapse ?",
     "deleteTitle": "Delete Product",
     "deleteMessage": "Are you sure you want to delete this product? This action cannot be undone.",
     "tabs": {
@@ -310,9 +338,13 @@
     "affiliateSales": "Affiliate Sales Module",
     "products": "Products",
     "bloggers": "Bloggers",
-    "gtmStrategy": "GTM Strategy Generation Module",
+    "decisions": "Decisions",
     "answers": "Answers",
-    "strategyGeneration": "GTM Strategy Generation",
+    "icpDiagnostician": "ICP Diagnostician",
+    "positioning": "Positioning",
+    "channelRisk": "Channel Risk",
+    "experiment": "Experiment",
+    "decisionReview": "Decision Review",
     "admin": "Admin Module",
     "companies": "Companies",
     "switchLanguage": "Switch Language"
@@ -335,13 +367,15 @@
         "traction": "Traction",
         "constraints": "Constraints"
       },
-      "generateStrategy": {
-        "title": "Generate GTM Strategy",
-        "description": "Generate go-to-market strategies, validations, and forecasts",
-        "goTo": "Go to GTM Strategy Generation",
-        "strategy": "GTM Strategy",
-        "validation": "Validation",
-        "forecast": "Forecast"
+      "generateDecisions": {
+        "title": "Generate decisions",
+        "description": "Generate ICP Diagnostician, Positioning, Channel Risk, Experiment, and Decision Review",
+        "goTo": "Go to ICP Diagnostician",
+        "icpDiagnostician": "ICP Diagnostician",
+        "positioning": "Positioning",
+        "channelRisk": "Channel Risk",
+        "experiment": "Experiment",
+        "decisionReview": "Decision Review"
       }
     }
   },
@@ -363,25 +397,11 @@
     "companyDetails": {
       "title": "Company Details",
       "back": "← Back",
-      "tabs": {
-        "answers": "Company Answers",
-        "generations": "GTM Generations"
-      },
       "answers": {
         "title": "Company Answers",
         "createdAt": "Created At",
         "updatedAt": "Updated At",
         "noAnswers": "No answers found for this company."
-      },
-      "generations": {
-        "title": "GTM Generations",
-        "strategy": "GTM Strategy",
-        "validation": "Validation",
-        "forecast": "Forecast",
-        "createdAt": "Created At",
-        "noStrategy": "No GTM strategies found.",
-        "noValidation": "No validations found.",
-        "noForecast": "No forecasts found."
       },
       "loadError": "Failed to load company data."
     }
