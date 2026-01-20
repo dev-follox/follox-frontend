@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 			<div className="p-6 border-b border-gray-200">
 				<Link
 					to={isAdmin ? '/admin/companies' : isCompany ? '/dashboard' : '/blogger/products'}
-					className="text-2xl font-bold text-gray-800 hover:text-primary"
+					className="text-2xl font-bold text-gray-800 hover:text-primary-text"
 				>
 					Follox
 				</Link>

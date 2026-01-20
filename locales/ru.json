@@ -181,6 +181,48 @@
       "painPoints": "Боли",
       "nextSteps": "Следующие шаги"
     },
+    "positioningView": {
+      "decisionType": "Тип решения",
+      "positioningStatement": "Позиционирование",
+      "valuePropositions": "Ценностные предложения",
+      "messagingFramework": "Маркетинговый фреймворк",
+      "nextSteps": "Следующие шаги"
+    },
+    "channelRiskView": {
+      "decisionType": "Тип решения",
+      "channelAssessments": "Оценка каналов",
+      "riskLevel": "Уровень риска",
+      "opportunityScore": "Оценка возможностей",
+      "priority": "Приоритет",
+      "estimatedCac": "Оценочный CAC",
+      "riskFactors": "Факторы риска",
+      "mitigation": "Митигация",
+      "recommendedChannels": "Рекомендованные каналы",
+      "nextSteps": "Следующие шаги"
+    },
+    "experimentView": {
+      "decisionType": "Тип решения",
+      "experiments": "Эксперименты",
+      "duration": "Длительность",
+      "budget": "Бюджет",
+      "riskLevel": "Уровень риска",
+      "successMetrics": "Метрики успеха",
+      "prioritization": "Приоритизация",
+      "nextSteps": "Следующие шаги"
+    },
+    "decisionReviewView": {
+      "decisionType": "Тип решения",
+      "qualityScore": "Оценка качества решения",
+      "strengths": "Сильные стороны",
+      "weaknesses": "Слабые стороны",
+      "risks": "Риски",
+      "severity": "Серьёзность",
+      "mitigation": "Митигация",
+      "recommendations": "Рекомендации",
+      "priority": "Приоритет",
+      "impact": "Влияние",
+      "nextSteps": "Следующие шаги"
+    },
     "icpDiagnostician": {
       "title": "ICP Diagnostician",
       "noHistory": "История ICP Diagnostician пуста. Нажмите \"Сгенерировать\" для создания первой.",

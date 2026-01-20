@@ -181,6 +181,48 @@
       "painPoints": "Pain points",
       "nextSteps": "Next steps"
     },
+    "positioningView": {
+      "decisionType": "Decision type",
+      "positioningStatement": "Positioning statement",
+      "valuePropositions": "Value propositions",
+      "messagingFramework": "Messaging framework",
+      "nextSteps": "Next steps"
+    },
+    "channelRiskView": {
+      "decisionType": "Decision type",
+      "channelAssessments": "Channel assessments",
+      "riskLevel": "Risk level",
+      "opportunityScore": "Opportunity score",
+      "priority": "Priority",
+      "estimatedCac": "Estimated CAC",
+      "riskFactors": "Risk factors",
+      "mitigation": "Mitigation",
+      "recommendedChannels": "Recommended channels",
+      "nextSteps": "Next steps"
+    },
+    "experimentView": {
+      "decisionType": "Decision type",
+      "experiments": "Experiments",
+      "duration": "Duration",
+      "budget": "Budget",
+      "riskLevel": "Risk level",
+      "successMetrics": "Success metrics",
+      "prioritization": "Prioritization",
+      "nextSteps": "Next steps"
+    },
+    "decisionReviewView": {
+      "decisionType": "Decision type",
+      "qualityScore": "Decision quality score",
+      "strengths": "Strengths",
+      "weaknesses": "Weaknesses",
+      "risks": "Risks",
+      "severity": "Severity",
+      "mitigation": "Mitigation",
+      "recommendations": "Recommendations",
+      "priority": "Priority",
+      "impact": "Impact",
+      "nextSteps": "Next steps"
+    },
     "icpDiagnostician": {
       "title": "ICP Diagnostician",
       "noHistory": "No ICP Diagnostician history. Click \"Generate\" to create the first one.",

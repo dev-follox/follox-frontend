@@ -110,7 +110,7 @@ const ProductLandingPage: React.FC = () => {
         <div className="p-8 flex flex-col justify-center">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h1>
           <p className="text-gray-600 mb-4">{product.description}</p>
-          <p className="text-4xl font-extrabold text-primary mb-6">₸{product.price.toFixed(2)}</p>
+          <p className="text-4xl font-extrabold text-primary-text mb-6">₸{product.price.toFixed(2)}</p>
           
           {orderSuccess ? (
             <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md" role="alert">

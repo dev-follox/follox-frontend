@@ -69,7 +69,7 @@
 
     &--active {
       background: rgba(var(--color-primary-rgb, 79, 70, 229), 0.1);
-      color: var(--color-primary);
+      color: var(--color-primary-text);
       font-weight: 500;
     }
   }
