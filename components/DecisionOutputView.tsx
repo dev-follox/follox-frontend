@@ -359,8 +359,7 @@ const ExperimentOutput: React.FC<{ data: Record<string, unknown>; t: (k: string)
             {prioritization.map((p, i) => (
               <div key={i} className="flex gap-2 items-baseline">
                 {p.experiment_id != null && <span className="font-medium text-primary-text w-12">{p.experiment_id}</span>}
-                {p.priority != null && <span className="text-gray-500">#{p.priority}</span>}
-                {p.rationale && <span className="text-gray-700">{p.rationale}</span>}
+                {p.rationale && <span className="text-gray-700 ml-3">{p.rationale}</span>}
               </div>
             ))}
           </div>
