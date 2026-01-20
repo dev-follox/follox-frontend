@@ -117,7 +117,9 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
     setGenerating(true);
     setError(null);
     try {
-      const item = await cfg.generate(user.company.id, { language });
+      // Send language by locale: en → English, ru → Russian
+      const requestLanguage = language === 'en' ? 'en' : 'ru';
+      const item = await cfg.generate(user.company.id, { language: requestLanguage });
       setHistory((prev) => [item, ...prev]);
       setSelectedId(item.id);
     } catch (e) {
