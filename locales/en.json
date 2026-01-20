@@ -35,7 +35,7 @@
     },
     "tools": {
       "title": "Tools",
-      "description": "Answer questions about your product, then generate ICP Diagnostician, Positioning, Channel Risk, Experiment, and Decision Review. View history per company."
+      "description": "Answer questions about your product, then generate Ideal Customer Profile, Positioning, Channel Risk, Experiment, and Decision Review. View history per company."
     },
     "goToModule": "Go to Module"
   },
@@ -92,7 +92,7 @@
   "qa": {
     "title": "Questions & Answers",
     "goToTools": "Go to Tools",
-    "viewIcpDiagnostician": "View ICP Diagnostician",
+    "viewIcpDiagnostician": "View Ideal Customer Profile",
     "editAnswers": "Edit Answers",
     "saveAnswers": "Save Answers",
     "answersSaved": "Answers saved successfully!",
@@ -224,9 +224,9 @@
       "nextSteps": "Next steps"
     },
     "icpDiagnostician": {
-      "title": "ICP Diagnostician",
-      "noHistory": "No ICP Diagnostician history. Click \"Generate\" to create the first one.",
-      "generateError": "Failed to generate ICP Diagnostician. Try again."
+      "title": "Ideal Customer Profile",
+      "noHistory": "No Ideal Customer Profile history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate Ideal Customer Profile. Try again."
     },
     "positioning": {
       "title": "Positioning",
@@ -382,7 +382,7 @@
     "bloggers": "Bloggers",
     "tools": "Tools",
     "answers": "Answers",
-    "icpDiagnostician": "ICP Diagnostician",
+    "icpDiagnostician": "Ideal Customer Profile",
     "positioning": "Positioning",
     "channelRisk": "Channel Risk",
     "experiment": "Experiment",
@@ -411,9 +411,9 @@
       },
       "generateTools": {
         "title": "Tools",
-        "description": "Generate ICP Diagnostician, Positioning, Channel Risk, Experiment, and Decision Review",
-        "goTo": "Go to ICP Diagnostician",
-        "icpDiagnostician": "ICP Diagnostician",
+        "description": "Generate Ideal Customer Profile, Positioning, Channel Risk, Experiment, and Decision Review",
+        "goTo": "Go to Ideal Customer Profile",
+        "icpDiagnostician": "Ideal Customer Profile",
         "positioning": "Positioning",
         "channelRisk": "Channel Risk",
         "experiment": "Experiment",

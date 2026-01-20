@@ -35,7 +35,7 @@
     },
     "tools": {
       "title": "Инструменты",
-      "description": "Ответьте на вопросы о продукте, затем генерируйте ICP Diagnostician, Positioning, Channel Risk, Experiment и Decision Review. История хранится по компании."
+      "description": "Ответьте на вопросы о продукте, затем генерируйте Ideal Customer Profile, Positioning, Channel Risk, Experiment и Decision Review. История хранится по компании."
     },
     "goToModule": "Перейти к модулю"
   },
@@ -92,7 +92,7 @@
   "qa": {
     "title": "Вопросы и ответы",
     "goToTools": "Перейти к инструментам",
-    "viewIcpDiagnostician": "Перейти к ICP Diagnostician",
+    "viewIcpDiagnostician": "Перейти к Ideal Customer Profile",
     "stepOf": "Шаг {current} из {total}",
     "back": "Назад",
     "skip": "Пропустить",
@@ -224,9 +224,9 @@
       "nextSteps": "Следующие шаги"
     },
     "icpDiagnostician": {
-      "title": "ICP Diagnostician",
-      "noHistory": "История ICP Diagnostician пуста. Нажмите \"Сгенерировать\" для создания первой.",
-      "generateError": "Не удалось сгенерировать ICP Diagnostician. Попробуйте снова."
+      "title": "Ideal Customer Profile",
+      "noHistory": "История Ideal Customer Profile пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать Ideal Customer Profile. Попробуйте снова."
     },
     "positioning": {
       "title": "Positioning",
@@ -382,7 +382,7 @@
     "bloggers": "Блогеры",
     "tools": "Инструменты",
     "answers": "Ответы",
-    "icpDiagnostician": "ICP Diagnostician",
+    "icpDiagnostician": "Ideal Customer Profile",
     "positioning": "Positioning",
     "channelRisk": "Channel Risk",
     "experiment": "Experiment",
@@ -411,9 +411,9 @@
       },
       "generateTools": {
         "title": "Инструменты",
-        "description": "Генерируйте ICP Diagnostician, Positioning, Channel Risk, Experiment и Decision Review",
-        "goTo": "Перейти к ICP Diagnostician",
-        "icpDiagnostician": "ICP Diagnostician",
+        "description": "Генерируйте Ideal Customer Profile, Positioning, Channel Risk, Experiment и Decision Review",
+        "goTo": "Перейти к Ideal Customer Profile",
+        "icpDiagnostician": "Ideal Customer Profile",
         "positioning": "Positioning",
         "channelRisk": "Channel Risk",
         "experiment": "Experiment",
