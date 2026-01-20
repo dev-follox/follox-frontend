@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Check which module was selected before auth
       const selectedModule = localStorage.getItem('selectedModule');
-      if (selectedModule === 'decisions') {
+      if (selectedModule === 'tools') {
         navigate('/dashboard', { replace: true });
       } else {
         navigate('/company/dashboard', { replace: true });
@@ -118,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           
           // Check which module was selected before auth
           const selectedModule = localStorage.getItem('selectedModule');
-          if (selectedModule === 'decisions') {
+          if (selectedModule === 'tools') {
             navigate('/dashboard', { replace: true });
           } else {
             navigate('/company/dashboard', { replace: true });
@@ -156,7 +156,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             // Check which module was selected before auth
             const selectedModule = localStorage.getItem('selectedModule');
-            if (selectedModule === 'decisions') {
+            if (selectedModule === 'tools') {
               navigate('/dashboard', { replace: true });
             } else {
               navigate('/company/dashboard', { replace: true });

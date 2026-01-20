@@ -97,7 +97,7 @@ const CompanyQAPage: React.FC = () => {
     if (currentStep < SECTION_ORDER.length - 1) {
       setCurrentStep((s) => s + 1);
     } else {
-      navigate('/decisions/icp-diagnostician');
+      navigate('/tools/icp-diagnostician');
     }
   };
 
@@ -382,8 +382,8 @@ const CompanyQAPage: React.FC = () => {
             <span className="qa-step-indicator">
               {t('qa.stepOf').replace('{current}', String(currentStep + 1)).replace('{total}', String(SECTION_ORDER.length))}
             </span>
-            <Button onClick={() => navigate('/decisions/icp-diagnostician')} variant="secondary" className="qa-header__link">
-              {t('qa.goToDecisions')}
+            <Button onClick={() => navigate('/tools/icp-diagnostician')} variant="secondary" className="qa-header__link">
+              {t('qa.goToTools')}
             </Button>
           </div>
         </div>

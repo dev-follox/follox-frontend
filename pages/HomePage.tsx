@@ -39,15 +39,15 @@ const HomePage: React.FC = () => {
 
           <Card className="home-module-card">
             <div className="home-module-card__content">
-              <h2 className="home-module-card__title">{t('home.decisions.title')}</h2>
+              <h2 className="home-module-card__title">{t('home.tools.title')}</h2>
               <p className="home-module-card__description">
-                {t('home.decisions.description')}
+                {t('home.tools.description')}
               </p>
             </div>
             <div className="home-module-card__action">
               <Link 
                 to="/login"
-                onClick={() => localStorage.setItem('selectedModule', 'decisions')}
+                onClick={() => localStorage.setItem('selectedModule', 'tools')}
               >
                 <Button className="w-full">{t('home.goToModule')}</Button>
               </Link>

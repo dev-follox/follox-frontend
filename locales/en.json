@@ -33,8 +33,8 @@
       "title": "Affiliate Sales & Analytics",
       "description": "Manage sales through affiliate program. Add products, track analytics, manage orders, work with bloggers and create affiliate links."
     },
-    "decisions": {
-      "title": "Decisions",
+    "tools": {
+      "title": "Tools",
       "description": "Answer questions about your product, then generate ICP Diagnostician, Positioning, Channel Risk, Experiment, and Decision Review. View history per company."
     },
     "goToModule": "Go to Module"
@@ -91,7 +91,7 @@
   },
   "qa": {
     "title": "Questions & Answers",
-    "goToDecisions": "Go to Decisions",
+    "goToTools": "Go to Tools",
     "viewIcpDiagnostician": "View ICP Diagnostician",
     "editAnswers": "Edit Answers",
     "saveAnswers": "Save Answers",
@@ -338,7 +338,7 @@
     "affiliateSales": "Affiliate Sales Module",
     "products": "Products",
     "bloggers": "Bloggers",
-    "decisions": "Decisions",
+    "tools": "Tools",
     "answers": "Answers",
     "icpDiagnostician": "ICP Diagnostician",
     "positioning": "Positioning",
@@ -367,8 +367,8 @@
         "traction": "Traction",
         "constraints": "Constraints"
       },
-      "generateDecisions": {
-        "title": "Generate decisions",
+      "generateTools": {
+        "title": "Tools",
         "description": "Generate ICP Diagnostician, Positioning, Channel Risk, Experiment, and Decision Review",
         "goTo": "Go to ICP Diagnostician",
         "icpDiagnostician": "ICP Diagnostician",

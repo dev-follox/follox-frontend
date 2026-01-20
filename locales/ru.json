@@ -33,8 +33,8 @@
       "title": "Affiliate Sales & Analytics",
       "description": "Управляйте продажами через партнёрскую программу. Добавляйте товары, отслеживайте аналитику, управляйте заказами, работайте с блогерами и создавайте партнёрские ссылки."
     },
-    "decisions": {
-      "title": "Решения",
+    "tools": {
+      "title": "Инструменты",
       "description": "Ответьте на вопросы о продукте, затем генерируйте ICP Diagnostician, Positioning, Channel Risk, Experiment и Decision Review. История хранится по компании."
     },
     "goToModule": "Перейти к модулю"
@@ -91,7 +91,7 @@
   },
   "qa": {
     "title": "Вопросы и ответы",
-    "goToDecisions": "Перейти к решениям",
+    "goToTools": "Перейти к инструментам",
     "viewIcpDiagnostician": "Перейти к ICP Diagnostician",
     "stepOf": "Шаг {current} из {total}",
     "back": "Назад",
@@ -338,7 +338,7 @@
     "affiliateSales": "Модуль партнёрских продаж",
     "products": "Товары",
     "bloggers": "Блогеры",
-    "decisions": "Решения",
+    "tools": "Инструменты",
     "answers": "Ответы",
     "icpDiagnostician": "ICP Diagnostician",
     "positioning": "Positioning",
@@ -367,8 +367,8 @@
         "traction": "Traction",
         "constraints": "Ограничения"
       },
-      "generateDecisions": {
-        "title": "Сгенерировать решения",
+      "generateTools": {
+        "title": "Инструменты",
         "description": "Генерируйте ICP Diagnostician, Positioning, Channel Risk, Experiment и Decision Review",
         "goTo": "Перейти к ICP Diagnostician",
         "icpDiagnostician": "ICP Diagnostician",

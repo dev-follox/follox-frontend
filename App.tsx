@@ -63,13 +63,13 @@ const AppContent: React.FC = () => {
             <Route path="/company/products/:productId" element={<ShopProductDetailsPage />} />
             <Route path="/company/bloggers" element={<BloggersPage />} />
             
-            {/* Decisions Module - Company only */}
-            <Route path="/decisions/qa" element={<CompanyQAPage />} />
-            <Route path="/decisions/icp-diagnostician" element={<DecisionPage variant="icp_diagnostician" />} />
-            <Route path="/decisions/positioning" element={<DecisionPage variant="positioning" />} />
-            <Route path="/decisions/channel-risk" element={<DecisionPage variant="channel_risk" />} />
-            <Route path="/decisions/experiment" element={<DecisionPage variant="experiment" />} />
-            <Route path="/decisions/decision-review" element={<DecisionPage variant="decision_review" />} />
+            {/* Tools Module - Company only */}
+            <Route path="/tools/qa" element={<CompanyQAPage />} />
+            <Route path="/tools/icp-diagnostician" element={<DecisionPage variant="icp_diagnostician" />} />
+            <Route path="/tools/positioning" element={<DecisionPage variant="positioning" />} />
+            <Route path="/tools/channel-risk" element={<DecisionPage variant="channel_risk" />} />
+            <Route path="/tools/experiment" element={<DecisionPage variant="experiment" />} />
+            <Route path="/tools/decision-review" element={<DecisionPage variant="decision_review" />} />
             
             {/* Blogger routes */}
             <Route path="/blogger/products" element={<BloggerProductsDetailedPage />} />

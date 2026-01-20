@@ -127,7 +127,7 @@ const DashboardPage: React.FC = () => {
               </h2>
             </div>
             <button
-              onClick={() => navigate('/decisions/qa')}
+              onClick={() => navigate('/tools/qa')}
               className="dashboard-step__arrow"
               title={t('dashboard.steps.answerQuestions.goTo')}
             >
@@ -178,7 +178,7 @@ const DashboardPage: React.FC = () => {
           </div>
         </Card>
 
-        {/* Step 2: Generate decisions */}
+        {/* Step 2: Tools */}
         <Card className="dashboard-step">
           <div className="dashboard-step__header">
             <div className="flex flex--align-center flex--gap-sm">
@@ -186,13 +186,13 @@ const DashboardPage: React.FC = () => {
                 {t('dashboard.step')} 2
               </span>
               <h2 className="dashboard-step__title">
-                {t('dashboard.steps.generateDecisions.title')}
+                {t('dashboard.steps.generateTools.title')}
               </h2>
             </div>
             <button
-              onClick={() => navigate('/decisions/icp-diagnostician')}
+              onClick={() => navigate('/tools/icp-diagnostician')}
               className="dashboard-step__arrow"
-              title={t('dashboard.steps.generateDecisions.goTo')}
+              title={t('dashboard.steps.generateTools.goTo')}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -210,14 +210,14 @@ const DashboardPage: React.FC = () => {
               </svg>
             </button>
           </div>
-          <p className="dashboard-step__description">{t('dashboard.steps.generateDecisions.description')}</p>
+          <p className="dashboard-step__description">{t('dashboard.steps.generateTools.description')}</p>
           <div className="dashboard-step__items">
             {[
-              { key: 'icp', label: t('dashboard.steps.generateDecisions.icpDiagnostician'), checked: hasIcp },
-              { key: 'positioning', label: t('dashboard.steps.generateDecisions.positioning'), checked: hasPositioning },
-              { key: 'channelRisk', label: t('dashboard.steps.generateDecisions.channelRisk'), checked: hasChannelRisk },
-              { key: 'experiment', label: t('dashboard.steps.generateDecisions.experiment'), checked: hasExperiment },
-              { key: 'decisionReview', label: t('dashboard.steps.generateDecisions.decisionReview'), checked: hasDecisionReview },
+              { key: 'icp', label: t('dashboard.steps.generateTools.icpDiagnostician'), checked: hasIcp },
+              { key: 'positioning', label: t('dashboard.steps.generateTools.positioning'), checked: hasPositioning },
+              { key: 'channelRisk', label: t('dashboard.steps.generateTools.channelRisk'), checked: hasChannelRisk },
+              { key: 'experiment', label: t('dashboard.steps.generateTools.experiment'), checked: hasExperiment },
+              { key: 'decisionReview', label: t('dashboard.steps.generateTools.decisionReview'), checked: hasDecisionReview },
             ].map(({ key, label, checked }) => (
               <div
                 key={key}

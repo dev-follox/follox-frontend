@@ -109,7 +109,7 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
       showToast({
         message: t('decisions.pleaseAnswerFirst'),
         type: 'info',
-        action: { label: t('decisions.goToQuestions'), onClick: () => navigate('/decisions/qa') },
+        action: { label: t('decisions.goToQuestions'), onClick: () => navigate('/tools/qa') },
         duration: 6000,
       });
       return;
@@ -147,7 +147,7 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
         <div className="decision-page-header">
           <h1 className="decision-page-header__title">{t(cfg.titleKey)}</h1>
           <div className="decision-page-header__actions flex flex--gap-sm">
-            <Button onClick={() => navigate('/decisions/qa')} variant="secondary">
+            <Button onClick={() => navigate('/tools/qa')} variant="secondary">
               {t('decisions.editAnswers')}
             </Button>
             <Button onClick={handleGenerate} isLoading={generating}>
@@ -206,7 +206,7 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
               {hasAnswers === false ? (
                 <>
                   <p className="decision-page__empty-text">{t('decisions.answerFirst')}</p>
-                  <Button onClick={() => navigate('/decisions/qa')}>
+                  <Button onClick={() => navigate('/tools/qa')}>
                     {t('decisions.goToQuestions')}
                   </Button>
                 </>
