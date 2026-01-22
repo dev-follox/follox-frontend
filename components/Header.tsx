@@ -20,6 +20,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMenuOpen }) => {
           to={isAdmin ? '/admin/companies' : isCompany ? '/dashboard' : '/blogger/products'}
           className="mobile-header__logo"
         >
+          <img src="/assets/logo.png" alt="Follox" className="mobile-header__logo-img" />
           Follox
         </Link>
         <button

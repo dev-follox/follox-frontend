@@ -26,6 +26,81 @@
     "company": "Company",
     "blogger": "Blogger"
   },
+  "landing": {
+    "header": {
+      "home": "Home",
+      "freeTools": "Free tools",
+      "logIn": "Log in",
+      "tryForFree": "Try for free"
+    },
+    "hero": {
+      "title1": "Grow Your Startup With a Personal ",
+      "titleHighlight": "AI Marketing Assistant",
+      "title2": "",
+      "subtitle": "A decision-driven GTM system that helps founders validate ICP, positioning, and channels through phase-based experiments - before scaling execution.",
+      "cta": "Get a free marketing strategy"
+    },
+    "block2": {
+      "title": "Built for the moments founders usually face alone.",
+      "text": "When channels don't scale and positioning feels fuzzy, we help you turn uncertainty into clear GTM hypotheses you can generate and test in seconds - so you know what to test next, what to ignore, and when to move on."
+    },
+    "tools": {
+      "icp": {
+        "name": "ICP Audience Research",
+        "heading": "Understand your ideal customer",
+        "para1": "Generate detailed ideal customer descriptions to skip hours of tedious interviews.",
+        "para2": "Go beyond with actionable customer journey maps to make your marketing funnel more effective."
+      },
+      "positioning": {
+        "name": "Positioning",
+        "heading": "Nail your value proposition",
+        "para1": "Understand how to sell the positive transformation from using your product. Grab the attention of your audience instantly.",
+        "para2": "Audit your offer to get customers effortlessly."
+      },
+      "channelRisk": {
+        "name": "Channel Risk Assessor",
+        "heading": "Maximize your reach by choosing the right platforms",
+        "para1": "Audit your marketing and distribution channels, evaluating market maturity and CAC. Get a structured risk-opportunity analysis to ensure your product fits the channel perfectly and scales safely.",
+        "para2": ""
+      },
+      "experiment": {
+        "name": "Experiment Designer",
+        "heading": "Stop guessing and start testing",
+        "para1": "Design lean, data-driven experiments to validate your GTM strategy. From defining hypotheses to setting success metrics, get a structured roadmap for rapid testing and safe scaling based on real data.",
+        "para2": ""
+      },
+      "decisionReview": {
+        "name": "Strategic Decision Reviewer",
+        "heading": "Ensure your strategy is bulletproof",
+        "para1": "Get a high-level consultant, which is auditing your GTM decisions for risks and hidden constraints. Avoid costly mistakes and ensure alignment with market context.",
+        "para2": ""
+      }
+    },
+    "toolsCta": "Get a free marketing strategy",
+    "team": {
+      "title": "Hi, this is our team.",
+      "member1": {
+        "name": "Iskander Temirlan",
+        "detail": "33, EPAM",
+        "quote": "\"customers don't buy when they understand, they buy when they feel understood\""
+      },
+      "member2": {
+        "name": "Batizhamal Rauiya",
+        "detail": "22, KazDream",
+        "quote": "\"Less talk. More implementation.\""
+      }
+    },
+    "footer": {
+      "brand": "Follox",
+      "tagline": "AI marketing tools to grow your business. Made for Founders.",
+      "rights": "All rights reserved.",
+      "support": "Support",
+      "privacyPolicy": "Privacy policy",
+      "termsOfService": "Terms of service",
+      "email": "mail@follox.co",
+      "tools": "Tools"
+    }
+  },
   "home": {
     "title": "Welcome to Follox",
     "subtitle": "Choose a module to work with",

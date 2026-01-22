@@ -7,6 +7,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import Toggle from '../components/Toggle';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import LandingHeader from '../components/LandingHeader';
 import api from '../services/api';
 
 type AuthMode = 'signup' | 'login';
@@ -168,15 +169,19 @@ const AuthPage: React.FC = () => {
     }));
   };
 
+  const openAuthModal = () => {
+    // This is a placeholder since we're already on the auth page
+    // Could navigate to home and open modal there if needed
+  };
+
   return (
+    <div className="auth-landing">
+      <LandingHeader onTryForFree={openAuthModal} transparent={true} />
     <div className={mode === 'signup' ? "auth-landing-container auth-landing-container--start" : "auth-landing-container"}>
       <div className="max-w-2xl w-full">
         
         <Card className="p-8 w-full">
             <div className="mb-8 text-left">
-              <div className="flex justify-end mb-4">
-                <LanguageSwitcher />
-              </div>
               <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">{t('auth.welcome')}</h1>
               <p className="text-center text-gray-600">{t('auth.chooseHowToContinue')}</p>
             </div>
@@ -428,6 +433,7 @@ const AuthPage: React.FC = () => {
           )}
         </Card>
       </div>
+    </div>
     </div>
   );
 };

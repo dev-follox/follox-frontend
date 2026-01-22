@@ -1,5 +1,11 @@
 // Sidebar Component Styles
 .sidebar {
+  &__logo-img {
+    height: 32px;
+    width: auto;
+    display: block;
+  }
+  
   position: fixed;
   left: 0;
   top: 0;
