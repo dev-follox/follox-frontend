@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import LandingHeader from '../components/LandingHeader';
 import AuthModal from '../components/AuthModal';
 import ToolsOverviewBlock from '../components/ToolsOverviewBlock';
@@ -9,11 +9,16 @@ import { useTranslation } from '../hooks/useTranslation';
 const HomePage: React.FC = () => {
   const { t } = useTranslation();
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const openAuthModal = () => {
     localStorage.setItem('selectedModule', 'tools');
     setAuthModalOpen(true);
   };
+
+  const goToAuth = () => {
+    navigate('/login');
+  }
 
   return (
     <div className="landing-page">
@@ -31,7 +36,7 @@ const HomePage: React.FC = () => {
             </h1>
             <p className="landing-hero__subtitle">{t('landing.hero.subtitle')}</p>
             <div className="landing-hero__cta">
-              <Button onClick={openAuthModal} className="landing-hero__btn">
+              <Button onClick={goToAuth} className="landing-hero__btn">
                 {t('landing.hero.cta')}
               </Button>
               </div>
@@ -66,7 +71,7 @@ const HomePage: React.FC = () => {
               <ToolsOverviewBlock />
             </div>
             <div className="landing-tools-cta">
-              <Button onClick={openAuthModal} variant="primary" className="landing-hero__btn">
+              <Button onClick={goToAuth} variant="primary" className="landing-hero__btn">
                 {t('landing.toolsCta')}
               </Button>
             </div>
