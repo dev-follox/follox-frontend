@@ -172,10 +172,9 @@
 }
 
 .landing-screencast__placeholder {
-  width: 100%;
-  aspect-ratio: 16 / 9;
+  width: auto;
   max-height: 480px;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 0.5rem;
   display: block;
 }
