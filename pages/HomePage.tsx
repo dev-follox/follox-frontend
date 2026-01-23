@@ -42,7 +42,11 @@ const HomePage: React.FC = () => {
         {/* Space for screencast */}
         <section className="landing-screencast">
           <div className="container container--lg">
-            <div className="landing-screencast__placeholder" />
+            <img 
+              src="/assets/screencast.gif" 
+              alt="Follox platform demonstration"
+              className="landing-screencast__placeholder"
+            />
           </div>
         </section>
         {/* </div> */}

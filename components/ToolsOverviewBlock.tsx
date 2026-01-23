@@ -3,6 +3,14 @@ import { useTranslation } from '../hooks/useTranslation';
 
 const TOOL_IDS = ['icp', 'positioning', 'channelRisk', 'experiment', 'decisionReview'] as const;
 
+const TOOL_SCREENSHOTS: Record<(typeof TOOL_IDS)[number], string> = {
+  icp: '/assets/icp.png',
+  positioning: '/assets/positioning.png',
+  channelRisk: '/assets/channel_risk.png',
+  experiment: '/assets/experiment.png',
+  decisionReview: '/assets/decision_review.png',
+};
+
 const ToolsOverviewBlock: React.FC = () => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<(typeof TOOL_IDS)[number]>('icp');
@@ -29,9 +37,11 @@ const ToolsOverviewBlock: React.FC = () => {
             <p className="landing-tools__para">{t(`landing.tools.${selected}.para2`)}</p>
           )}
         </div>
-        <div className="landing-tools__screenshot">
-          {/* Space for screenshot per tool */}
-        </div>
+          <img 
+            src={TOOL_SCREENSHOTS[selected]} 
+            alt={t(`landing.tools.${selected}.name`)}
+            className="landing-tools__screenshot"
+          />
       </div>
     </div>
   );

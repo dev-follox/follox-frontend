@@ -175,9 +175,9 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   max-height: 480px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 2px dashed rgba(107, 114, 128, 0.4);
+  object-fit: contain;
   border-radius: 0.5rem;
+  display: block;
 }
 
 // -----------------------------------------------------------------------------
@@ -296,14 +296,16 @@
 }
 
 .landing-tools__screenshot {
-  min-height: 280px;
-  background: #f3f4f6;
-  border: 2px dashed #d1d5db;
+  min-width: 452px;
+  height: auto;
   border-radius: 0.5rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  object-fit: cover;
+  box-shadow: 4px 4px 12px 4px rgba(26, 26, 26, 0.1);
 
-  @media (min-width: 768px) {
-    min-height: 320px;
-  }
 }
 
 // -----------------------------------------------------------------------------
