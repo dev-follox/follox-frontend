@@ -34,15 +34,15 @@
       "tryForFree": "Try for free"
     },
     "hero": {
-      "title1": "Grow Your Startup With a Personal ",
-      "titleHighlight": "AI Marketing Assistant",
+      "title1": "Test your startup idea  ",
+      "titleHighlight": "from day one",
       "title2": "",
-      "subtitle": "A decision-driven GTM system that helps founders validate ICP, positioning, and channels through phase-based experiments - before scaling execution.",
-      "cta": "Get a free marketing strategy"
+      "subtitle": "Make clear decisions about what to build, who it’s for, and whether it’s worth continuing - using a structured system instead of guesswork",
+      "cta": "Start testing YOUR IDEA"
     },
     "block2": {
-      "title": "Built for the moments founders usually face alone.",
-      "text": "When channels don't scale and positioning feels fuzzy, we help you turn uncertainty into clear GTM hypotheses you can generate and test in seconds - so you know what to test next, what to ignore, and when to move on."
+      "title": "Turn ideas into clear next steps - one test at a time",
+      "text": "Follox helps you generate hypotheses, so you can take action through real customer conversations, collect feedback, and Follox turn it into clear insights - so you know what to test next, what to ignore, and when it’s time to move forward"
     },
     "tools": {
       "icp": {
@@ -64,9 +64,9 @@
         "para2": ""
       },
       "experiment": {
-        "name": "Experiment Designer",
+        "name": "Hypotheses Designer",
         "heading": "Stop guessing and start testing",
-        "para1": "Design lean, data-driven experiments to validate your GTM strategy. From defining hypotheses to setting success metrics, get a structured roadmap for rapid testing and safe scaling based on real data.",
+        "para1": "Design lean, data-driven experiments to validate your sales strategy. From defining hypotheses to setting success metrics, get a structured roadmap for rapid testing and safe scaling based on real data.",
         "para2": ""
       },
       "decisionReview": {
@@ -76,7 +76,7 @@
         "para2": ""
       }
     },
-    "toolsCta": "Get a free marketing strategy",
+    "toolsCta": "Start testing YOUR IDEA",
     "team": {
       "title": "Hi, this is our team.",
       "member1": {
@@ -92,7 +92,7 @@
     },
     "footer": {
       "brand": "Follox",
-      "tagline": "AI marketing tools to grow your business. Made for Founders.",
+      "tagline": "Follox - clarity for first-time founders.",
       "rights": "All rights reserved.",
       "support": "Support",
       "privacyPolicy": "Privacy policy",
