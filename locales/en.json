@@ -235,6 +235,8 @@
     }
   },
   "decisions": {
+    "autoRegenerated": "Automatically regenerated based on your updated answers.",
+    "inProgress": "In progress",
     "editAnswers": "Edit Answers",
     "generate": "Generate",
     "regenerate": "Regenerate",

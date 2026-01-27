@@ -84,6 +84,9 @@ const CompanyQAPage: React.FC = () => {
     setError(null);
     try {
       await api.updateCompanyAnswers(user.company.id, { answers });
+      // Mark answers as updated - this will trigger tool regeneration
+      const updateTimestamp = new Date().toISOString();
+      localStorage.setItem(`answers_last_updated_${user.company.id}`, updateTimestamp);
       showToast({ message: t('qa.answersSaved'), type: 'success', duration: 4000 });
     } catch (err: any) {
       setError(t('qa.saveError'));

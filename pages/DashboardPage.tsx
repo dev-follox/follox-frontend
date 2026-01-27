@@ -289,6 +289,9 @@ const DashboardPage: React.FC = () => {
     setSaving(true);
     try {
       await api.updateCompanyAnswers(user.company.id, { answers: updatedAnswers });
+      // Mark answers as updated - this will trigger tool regeneration
+      const updateTimestamp = new Date().toISOString();
+      localStorage.setItem(`answers_last_updated_${user.company.id}`, updateTimestamp);
     } catch (err) {
       console.error('Failed to save answer:', err);
       showToast({ message: t('qa.saveError'), type: 'error', duration: 3000 });

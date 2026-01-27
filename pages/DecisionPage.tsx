@@ -82,26 +82,95 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    cfg.getHistory(user.company.id)
-      .then((list) => {
+    
+    const checkAndRegenerate = async () => {
+      try {
+        // Load history first
+        const list = await cfg.getHistory(user.company.id);
         if (cancelled) return;
+        
         setHistory(list);
         if (list.length > 0) setSelectedId(list[0].id);
-      })
-      .catch((e) => {
+        
+        // Check if we have answers
+        let hasAnswers = false;
+        try {
+          await api.getCompanyAnswers(user.company.id);
+          hasAnswers = true;
+        } catch (e: any) {
+          if (e?.response?.status === 404) {
+            hasAnswers = false;
+          } else {
+            throw e;
+          }
+        }
+        
+        if (cancelled) return;
+        setHasAnswers(hasAnswers);
+        
+        // Only auto-regenerate if:
+        // 1. We have answers
+        // 2. Tool was previously generated (has history)
+        // 3. Answers were updated after last generation
+        if (hasAnswers && list.length > 0) {
+          // Get answer update timestamp
+          const answersUpdated = localStorage.getItem(`answers_last_updated_${user.company.id}`);
+          // Get tool generation timestamp (use latest history item if not in localStorage)
+          let toolGenerated = localStorage.getItem(`tool_last_generated_${user.company.id}_${variant}`);
+          
+          // If no timestamp in localStorage, use the latest history item's created_at
+          if (!toolGenerated && list.length > 0) {
+            toolGenerated = list[0].created_at;
+            // Store it for future reference
+            localStorage.setItem(`tool_last_generated_${user.company.id}_${variant}`, toolGenerated);
+          }
+          
+          // Check if answers were updated after last generation
+          const needsRegeneration = answersUpdated && toolGenerated && 
+            new Date(answersUpdated) > new Date(toolGenerated);
+          
+          if (needsRegeneration) {
+            setGenerating(true);
+            try {
+              const requestLanguage = language === 'en' ? 'en' : 'ru';
+              const item = await cfg.generate(user.company.id, { language: requestLanguage });
+              if (cancelled) return;
+              
+              // Update generation timestamp
+              localStorage.setItem(`tool_last_generated_${user.company.id}_${variant}`, new Date().toISOString());
+              
+              setHistory((prev) => [item, ...prev]);
+              setSelectedId(item.id);
+              showToast({
+                message: t('decisions.autoRegenerated'),
+                type: 'success',
+                duration: 4000,
+              });
+            } catch (e) {
+              if (!cancelled) {
+                console.error('Auto-regeneration failed:', e);
+                // Don't show error toast for auto-regeneration, just log it
+              }
+            } finally {
+              if (!cancelled) {
+                setGenerating(false);
+              }
+            }
+          }
+        }
+      } catch (e) {
         if (!cancelled) {
           setError(t('decisions.loadHistoryError'));
           console.error(e);
         }
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
-    api.getCompanyAnswers(user.company.id)
-      .then(() => { if (!cancelled) setHasAnswers(true); })
-      .catch((e: any) => { if (!cancelled && e?.response?.status === 404) setHasAnswers(false); });
+      }
+    };
+    
+    checkAndRegenerate();
     return () => { cancelled = true; };
-  }, [user?.company?.id, variant, t]);
+  }, [user?.company?.id, variant, t, language, cfg]);
 
   const handleGenerate = async () => {
     if (!user?.company?.id) return;
@@ -120,6 +189,10 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
       // Send language by locale: en → English, ru → Russian
       const requestLanguage = language === 'en' ? 'en' : 'ru';
       const item = await cfg.generate(user.company.id, { language: requestLanguage });
+      
+      // Update generation timestamp
+      localStorage.setItem(`tool_last_generated_${user.company.id}_${variant}`, new Date().toISOString());
+      
       setHistory((prev) => [item, ...prev]);
       setSelectedId(item.id);
     } catch (e) {
@@ -152,7 +225,7 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
             <Button onClick={() => navigate('/tools/qa')} variant="secondary">
               {t('decisions.editAnswers')}
             </Button>
-            <Button onClick={handleGenerate} isLoading={generating}>
+            <Button onClick={handleGenerate} disabled={generating}>
               {history.length > 0 ? t('decisions.regenerate') : t('decisions.generate')}
             </Button>
           </div>
@@ -163,31 +236,46 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
       <div className="decision-page__body">
         <aside className="decision-page__sidebar">
           <h2 className="decision-page__sidebar-title">{t('decisions.history')}</h2>
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <Spinner size="small" />
-            </div>
-          ) : history.length === 0 ? (
+          {history.length === 0 ? (
             <p className="decision-page__empty text-gray-500 text-sm">{t(cfg.emptyKey)}</p>
           ) : (
             <ul className="decision-page__list">
-              {history.map((item) => (
-                <li key={item.id}>
+              {generating && (
+                <li>
                   <button
                     type="button"
-                    onClick={() => setSelectedId(item.id)}
-                    className={`decision-page__list-item ${selectedId === item.id ? 'decision-page__list-item--active' : ''}`}
+                    disabled
+                    className="decision-page__list-item decision-page__list-item--generating"
                   >
-                    <span className="decision-page__list-date">{formatDate(item.created_at)}</span>
+                    <span className="decision-page__list-date">{t('decisions.inProgress')}</span>
                   </button>
                 </li>
-              ))}
+              )}
+              {history.map((item) => {
+                const isInactive = generating;
+                return (
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      onClick={() => !generating && setSelectedId(item.id)}
+                      disabled={generating}
+                      className={`decision-page__list-item ${selectedId === item.id && !generating ? 'decision-page__list-item--active' : ''} ${isInactive ? 'decision-page__list-item--inactive' : ''}`}
+                    >
+                      <span className="decision-page__list-date">{formatDate(item.created_at)}</span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </aside>
 
         <main className="decision-page__main">
-          {loading && history.length === 0 ? (
+          {generating ? (
+            <div className="decision-page__main-loader">
+              <Spinner size="large" />
+            </div>
+          ) : loading && history.length === 0 ? (
             <div className="flex justify-center items-center h-64">
               <Spinner size="large" />
             </div>
