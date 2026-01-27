@@ -170,12 +170,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 				)}
 
 				{/* Affiliate Sales Module */}
-				{(isCompany || isBlogger) && <div className="px-4 mb-4">
+				{/* {(isCompany || isBlogger) && <div className="px-4 mb-4">
 					<div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">
 						{t('sidebar.affiliateSales')}
 					</div>
 					<div className="space-y-0.5 ml-2 border-l-2 border-gray-200 pl-2">
-						{/* Products Tab - Nested */}
 						<Link
 							to={isCompany ? '/company/dashboard' : '/blogger/products'}
 							onClick={handleLinkClick}
@@ -199,7 +198,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 							<span>{t('sidebar.products')}</span>
 						</Link>
 
-						{/* Bloggers Tab - Only for COMPANY, Nested */}
 						{isCompany && (
 							<Link
 								to="/company/bloggers"
@@ -219,7 +217,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 							</Link>
 						)}
 					</div>
-				</div>}
+				</div>} */}
 			</div>
 
 			{/* Bottom Section */}

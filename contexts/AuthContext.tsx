@@ -249,6 +249,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     localStorage.removeItem('auth_user');
     localStorage.removeItem('access_token');
+    
+    // Clear all chat history from session storage
+    try {
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && key.startsWith('dashboard_chat_')) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => sessionStorage.removeItem(key));
+    } catch (error) {
+      console.error('Failed to clear chat history from session storage:', error);
+    }
+    
     navigate('/login', { replace: true });
   }, [navigate]);
 

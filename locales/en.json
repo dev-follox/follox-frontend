@@ -4,6 +4,7 @@
     "welcomeTo": "Welcome to Follox",
     "loading": "Loading...",
     "save": "Save",
+    "saving": "Saving",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
@@ -469,6 +470,73 @@
   "dashboard": {
     "title": "Dashboard",
     "step": "Step",
+    "chatbot": {
+      "welcome": "Welcome! I'm here to help you set up your business profile. I'll ask you a series of questions about your product, market, customers, and business model. Your answers will help us generate personalized insights and recommendations. Let's get started!",
+      "completion": "Great! I've collected all your answers. You can now use the tools in the sidebar to generate insights based on your responses. Feel free to come back and update your answers anytime.",
+      "progress": "Question {current} of {total}",
+      "placeholder": "Type your answer...",
+      "placeholderWithSkip": "Type your answer or \"Skip\" to continue...",
+      "multilinePlaceholder": "Type your answer... (Press Enter to send, Shift+Enter for new line)",
+      "completePlaceholder": "All questions completed!",
+      "typeStartPlaceholder": "Type \"Start\" to begin chatting.",
+      "typeStartHint": "Please type \"Start\" to begin the questionnaire.",
+      "skipHint": "Type \"Skip\" to go to the next question.",
+      "finishHint": "Type \"Finish\" to finish the questionnaire.",
+      "required": "This field is required. Please provide an answer.",
+      "tools": {
+        "title": "Available Tools",
+        "openTool": "Open tool"
+      },
+      "callout": {
+        "title": "Get Started",
+        "text": "Type \"Start\" in the input below to begin answering questions about your business. I'll guide you through a series of questions to help us understand your product, market, and business model."
+      },
+      "questions": {
+        "product": {
+          "name": "What is the name of your product?",
+          "description": "Can you describe your product in detail?",
+          "category": "What category does your product belong to?",
+          "stage": "What stage is your product currently in? (e.g., MVP, Beta, Launched)"
+        },
+        "market": {
+          "targetMarket": "Who is your target market?",
+          "geography": "What geographic markets are you targeting?",
+          "alternatives": "What are the main alternatives or competitors to your product? (comma-separated)"
+        },
+        "customer": {
+          "role": "What is the role of your ideal customer? (e.g., CTO, Marketing Manager)",
+          "companyStage": "What stage are your target customer companies typically in?",
+          "teamSize": "What team size do your target customers typically have?"
+        },
+        "problem": {
+          "mainPain": "What is the main pain point your product solves?",
+          "frequency": "How often do customers experience this problem?",
+          "currentSolution": "What solutions are customers currently using to address this problem?"
+        },
+        "solution": {
+          "coreValue": "What is the core value proposition of your solution?",
+          "differentiator": "What makes your solution different from alternatives?"
+        },
+        "distribution": {
+          "knownChannels": "What distribution channels are you aware of or considering? (comma-separated)",
+          "preferredChannel": "What is your preferred distribution channel?"
+        },
+        "pricing": {
+          "model": "What pricing model are you using or planning to use?",
+          "expectedPrice": "What is your expected price point?"
+        },
+        "traction": {
+          "users": "How many users do you currently have?",
+          "revenue": "What is your current revenue?",
+          "signals": "What traction signals or metrics are you tracking?"
+        },
+        "constraints": {
+          "budget": "What are your budget constraints?",
+          "time": "What are your time constraints?",
+          "team": "What are your team constraints?"
+        }
+      }
+    },
     "steps": {
       "answerQuestions": {
         "title": "Answer the questions",

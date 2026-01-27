@@ -1,32 +1,133 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
+import { useToast } from '../contexts/ToastContext';
 import api from '../services/api';
-import Card from '../components/Card';
 import Spinner from '../components/Spinner';
 import { CompanyAnswers } from '../types';
+
+interface Message {
+  id: string;
+  type: 'bot' | 'user';
+  content: string;
+  timestamp: Date;
+}
+
+interface Question {
+  section: keyof CompanyAnswers['answers'];
+  field: string;
+  label: string;
+  isRequired?: boolean;
+  isMultiline?: boolean;
+}
+
+const SECTION_ORDER = [
+  'product',
+  'market',
+  'customer',
+  'problem',
+  'solution',
+  'distribution',
+  'pricing',
+  'traction',
+  'constraints',
+] as const;
+
+const QUESTIONS: Question[] = [
+  // Product section
+  { section: 'product', field: 'name', label: 'dashboard.chatbot.questions.product.name', isRequired: true },
+  { section: 'product', field: 'description', label: 'dashboard.chatbot.questions.product.description', isRequired: true, isMultiline: true },
+  { section: 'product', field: 'category', label: 'dashboard.chatbot.questions.product.category' },
+  { section: 'product', field: 'stage', label: 'dashboard.chatbot.questions.product.stage' },
+  // Market section
+  { section: 'market', field: 'target_market', label: 'dashboard.chatbot.questions.market.targetMarket', isRequired: true },
+  { section: 'market', field: 'geography', label: 'dashboard.chatbot.questions.market.geography' },
+  { section: 'market', field: 'alternatives', label: 'dashboard.chatbot.questions.market.alternatives' },
+  // Customer section
+  { section: 'customer', field: 'role', label: 'dashboard.chatbot.questions.customer.role', isRequired: true },
+  { section: 'customer', field: 'company_stage', label: 'dashboard.chatbot.questions.customer.companyStage' },
+  { section: 'customer', field: 'team_size', label: 'dashboard.chatbot.questions.customer.teamSize' },
+  // Problem section
+  { section: 'problem', field: 'main_pain', label: 'dashboard.chatbot.questions.problem.mainPain', isRequired: true, isMultiline: true },
+  { section: 'problem', field: 'frequency', label: 'dashboard.chatbot.questions.problem.frequency' },
+  { section: 'problem', field: 'current_solution', label: 'dashboard.chatbot.questions.problem.currentSolution', isMultiline: true },
+  // Solution section
+  { section: 'solution', field: 'core_value', label: 'dashboard.chatbot.questions.solution.coreValue', isMultiline: true },
+  { section: 'solution', field: 'differentiator', label: 'dashboard.chatbot.questions.solution.differentiator', isMultiline: true },
+  // Distribution section
+  { section: 'distribution', field: 'known_channels', label: 'dashboard.chatbot.questions.distribution.knownChannels' },
+  { section: 'distribution', field: 'preferred_channel', label: 'dashboard.chatbot.questions.distribution.preferredChannel' },
+  // Pricing section
+  { section: 'pricing', field: 'model', label: 'dashboard.chatbot.questions.pricing.model' },
+  { section: 'pricing', field: 'expected_price', label: 'dashboard.chatbot.questions.pricing.expectedPrice' },
+  // Traction section
+  { section: 'traction', field: 'users', label: 'dashboard.chatbot.questions.traction.users' },
+  { section: 'traction', field: 'revenue', label: 'dashboard.chatbot.questions.traction.revenue' },
+  { section: 'traction', field: 'signals', label: 'dashboard.chatbot.questions.traction.signals', isMultiline: true },
+  // Constraints section
+  { section: 'constraints', field: 'budget', label: 'dashboard.chatbot.questions.constraints.budget' },
+  { section: 'constraints', field: 'time', label: 'dashboard.chatbot.questions.constraints.time' },
+  { section: 'constraints', field: 'team', label: 'dashboard.chatbot.questions.constraints.team' },
+];
 
 const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [answers, setAnswers] = useState<CompanyAnswers['answers'] | null>(null);
-  const [hasIcp, setHasIcp] = useState(false);
-  const [hasPositioning, setHasPositioning] = useState(false);
-  const [hasChannelRisk, setHasChannelRisk] = useState(false);
-  const [hasExperiment, setHasExperiment] = useState(false);
-  const [hasDecisionReview, setHasDecisionReview] = useState(false);
+  const [chatStarted, setChatStarted] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [inputValue, setInputValue] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [answers, setAnswers] = useState<CompanyAnswers['answers']>({
+    product: {},
+    market: {},
+    customer: {},
+    problem: {},
+    solution: {},
+    distribution: {},
+    pricing: {},
+    traction: {},
+    constraints: {},
+  });
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  // Session storage key for chat history
+  const getSessionKey = () => `dashboard_chat_${user?.company?.id || 'default'}`;
+
+  // Save messages to session storage
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user?.company?.id) {
-        setLoading(false);
-        return;
-      }
-
+    if (messages.length > 0 && user?.company?.id) {
       try {
+        const sessionData = {
+          messages: messages.map(msg => ({
+            ...msg,
+            timestamp: msg.timestamp.toISOString(), // Convert Date to string for storage
+          })),
+          currentQuestionIndex,
+          chatStarted,
+        };
+        sessionStorage.setItem(getSessionKey(), JSON.stringify(sessionData));
+      } catch (err) {
+        console.error('Failed to save chat to session storage:', err);
+      }
+    }
+  }, [messages, currentQuestionIndex, chatStarted, user?.company?.id]);
+
+  // Load chat history from session storage
+  useEffect(() => {
+    if (!user?.company?.id) {
+      setLoading(false);
+      return;
+    }
+
+    const loadChatHistory = async () => {
+      try {
+        // Load answers from API
         try {
           const companyAnswers = await api.getCompanyAnswers(user.company.id);
           if (companyAnswers.answers) {
@@ -38,59 +139,293 @@ const DashboardPage: React.FC = () => {
           }
         }
 
-        try {
-          const h = await api.getIcpDiagnosticianHistory(user.company.id);
-          setHasIcp(h.length > 0);
-        } catch (err) { console.error('Failed to fetch ICP history:', err); }
-        try {
-          const h = await api.getPositioningHistory(user.company.id);
-          setHasPositioning(h.length > 0);
-        } catch (err) { console.error('Failed to fetch positioning history:', err); }
-        try {
-          const h = await api.getChannelRiskHistory(user.company.id);
-          setHasChannelRisk(h.length > 0);
-        } catch (err) { console.error('Failed to fetch channel risk history:', err); }
-        try {
-          const h = await api.getExperimentHistory(user.company.id);
-          setHasExperiment(h.length > 0);
-        } catch (err) { console.error('Failed to fetch experiment history:', err); }
-        try {
-          const h = await api.getDecisionReviewHistory(user.company.id);
-          setHasDecisionReview(h.length > 0);
-        } catch (err) { console.error('Failed to fetch decision review history:', err); }
+        // Load chat history from session storage
+        const savedData = sessionStorage.getItem(getSessionKey());
+        if (savedData) {
+          try {
+            const parsed = JSON.parse(savedData);
+            if (parsed.messages && Array.isArray(parsed.messages)) {
+              const restoredMessages: Message[] = parsed.messages.map((msg: any) => ({
+                ...msg,
+                timestamp: new Date(msg.timestamp), // Convert back to Date
+              }));
+              setMessages(restoredMessages);
+              setCurrentQuestionIndex(parsed.currentQuestionIndex || 0);
+              setChatStarted(parsed.chatStarted || false);
+            }
+          } catch (err) {
+            console.error('Failed to parse saved chat history:', err);
+          }
+        }
       } catch (err) {
-        console.error('Failed to fetch dashboard data:', err);
+        console.error('Failed to load chat history:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [user]);
+    loadChatHistory();
+  }, [user?.company?.id]);
 
-  const isSectionAnswered = (section: keyof typeof answers): boolean => {
-    if (!answers || !answers[section]) return false;
-    const sectionData = answers[section];
-    if (!sectionData || typeof sectionData !== 'object') return false;
-    return Object.keys(sectionData).length > 0 && Object.values(sectionData).some(v => {
-      if (Array.isArray(v)) return v.length > 0;
-      if (typeof v === 'string') return v.trim().length > 0;
-      if (typeof v === 'number') return v > 0;
-      return v !== null && v !== undefined;
-    });
+  // Clear session storage on logout (handled by AuthContext, but we can also clear on unmount if needed)
+
+  const startChat = (startInput: string) => {
+    // Only start if not already started or if starting fresh
+    if (!chatStarted) {
+      setChatStarted(true);
+      setCurrentQuestionIndex(0); // Always start from the beginning
+      const startMessage: Message = {
+        id: `start-${Date.now()}`,
+        type: 'user',
+        content: startInput,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, startMessage]);
+      // Add welcome message
+      const welcomeMessage: Message = {
+        id: 'welcome',
+        type: 'bot',
+        content: t('dashboard.chatbot.welcome'),
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, welcomeMessage]);
+      
+      // Start asking questions
+      setTimeout(() => {
+        askNextQuestion();
+      }, 500);
+    } else {
+      // If chat already started, just continue from where we left off
+      if (currentQuestionIndex < QUESTIONS.length) {
+        askNextQuestion();
+      }
+    }
   };
 
-  const answerSections = [
-    { key: 'product', label: t('dashboard.steps.answerQuestions.product') },
-    { key: 'market', label: t('dashboard.steps.answerQuestions.market') },
-    { key: 'customer', label: t('dashboard.steps.answerQuestions.customer') },
-    { key: 'problem', label: t('dashboard.steps.answerQuestions.problem') },
-    { key: 'solution', label: t('dashboard.steps.answerQuestions.solution') },
-    { key: 'distribution', label: t('dashboard.steps.answerQuestions.distribution') },
-    { key: 'pricing', label: t('dashboard.steps.answerQuestions.pricing') },
-    { key: 'traction', label: t('dashboard.steps.answerQuestions.traction') },
-    { key: 'constraints', label: t('dashboard.steps.answerQuestions.constraints') },
-  ] as const;
+  const handleInitialSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatStarted) {
+      const trimmedInput = inputValue.trim().toLowerCase();
+      
+      // Only start if user types "start"
+      if (trimmedInput === 'start') {
+        setInputValue('');
+        startChat(inputValue);
+      } else if (trimmedInput) {
+        // Show hint if they type something else
+        showToast({ 
+          message: t('dashboard.chatbot.typeStartHint'), 
+          type: 'info', 
+          duration: 3000 
+        });
+      }
+    }
+  };
+
+  const handleInitialKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleInitialSubmit(e);
+    }
+  };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const askNextQuestion = () => {
+    if (currentQuestionIndex >= QUESTIONS.length) {
+      // All questions answered - show completion and tools widget
+      const completionMessage: Message = {
+        id: `completion-${Date.now()}`,
+        type: 'bot',
+        content: t('dashboard.chatbot.completion'),
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, completionMessage]);
+      return;
+    }
+
+    const question = QUESTIONS[currentQuestionIndex];
+    const questionText = t(question.label);
+    const optionalText = question.isRequired ? '' : ` (${t('common.optional')})`;
+    
+    const questionMessage: Message = {
+      id: `question-${currentQuestionIndex}-${Date.now()}`,
+      type: 'bot',
+      content: `${questionText}${optionalText}`,
+      timestamp: new Date(),
+    };
+    
+    setMessages((prev) => [...prev, questionMessage]);
+    
+    inputRef.current?.focus();
+  };
+
+  const saveAnswer = async (question: Question, value: string) => {
+    if (!user?.company?.id) return;
+
+    const section = answers[question.section] || {};
+    let processedValue: any = value.trim();
+
+    // Handle array fields (alternatives, known_channels)
+    if (question.field === 'alternatives' || question.field === 'known_channels') {
+      processedValue = value.split(',').map((item) => item.trim()).filter(Boolean);
+    } else if (question.field === 'expected_price' || question.field === 'users' || question.field === 'revenue') {
+      processedValue = value ? Number(value) : undefined;
+    }
+
+    const updatedAnswers = {
+      ...answers,
+      [question.section]: {
+        ...section,
+        [question.field]: processedValue,
+      },
+    };
+
+    setAnswers(updatedAnswers);
+
+    // Auto-save to backend
+    setSaving(true);
+    try {
+      await api.updateCompanyAnswers(user.company.id, { answers: updatedAnswers });
+    } catch (err) {
+      console.error('Failed to save answer:', err);
+      showToast({ message: t('qa.saveError'), type: 'error', duration: 3000 });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const value = inputValue.trim().toLowerCase();
+
+    // Handle "Start" command - restart chat if completed
+    if (value === 'start' && isComplete) {
+      setInputValue('');
+      setCurrentQuestionIndex(0);
+      setChatStarted(true);
+      const startMessage: Message = {
+        id: `start-${Date.now()}`,
+        type: 'user',
+        content: 'Start',
+        timestamp: new Date(),
+      };
+      const welcomeMessage: Message = {
+        id: 'welcome',
+        type: 'bot',
+        content: t('dashboard.chatbot.welcome'),
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, startMessage, welcomeMessage]);
+      setTimeout(() => {
+        askNextQuestion();
+      }, 500);
+      return;
+    }
+    
+    if (currentQuestionIndex >= QUESTIONS.length) {
+      return;
+    }
+
+    const question = QUESTIONS[currentQuestionIndex];
+
+    // Handle "Skip" command
+    if (value === 'skip') {
+      const skipMessage: Message = {
+        id: `user-skip-${Date.now()}`,
+        type: 'user',
+        content: 'Skip',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, skipMessage]);
+      
+      // Move to next question without saving
+      setCurrentQuestionIndex((prev) => prev + 1);
+      setInputValue('');
+
+      // Ask next question after a short delay
+      setTimeout(() => {
+        askNextQuestion();
+      }, 300);
+      return;
+    }
+
+    if (value === 'finish') {
+      const finishMessage: Message = {
+        id: `user-finish-${Date.now()}`,
+        type: 'user',
+        content: 'Finish',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, finishMessage]);
+      
+      // Move to completion state - this will trigger isComplete to be true
+      setCurrentQuestionIndex(QUESTIONS.length);
+      setInputValue('');
+
+      // Add completion message and tools widget will appear automatically
+      setTimeout(() => {
+        const completionMessage: Message = {
+          id: `completion-${Date.now()}`,
+          type: 'bot',
+          content: t('dashboard.chatbot.completion'),
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, completionMessage]);
+        // Scroll to bottom to show tools widget
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }, 300);
+      
+      return;
+    }
+
+    // Skip if empty and not required
+    if (!inputValue.trim() && !question.isRequired) {
+      setCurrentQuestionIndex((prev) => prev + 1);
+      askNextQuestion();
+      setInputValue('');
+      return;
+    }
+
+    // Validate required fields
+    if (question.isRequired && !inputValue.trim()) {
+      showToast({ message: t('dashboard.chatbot.required'), type: 'error', duration: 3000 });
+      return;
+    }
+
+    // Add user message
+    const userMessage: Message = {
+      id: `user-${Date.now()}`,
+      type: 'user',
+      content: inputValue.trim(),
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMessage]);
+
+    // Save answer
+    saveAnswer(question, inputValue.trim());
+
+    // Move to next question
+    setCurrentQuestionIndex((prev) => prev + 1);
+    setInputValue('');
+
+    // Ask next question after a short delay
+    setTimeout(() => {
+      askNextQuestion();
+    }, 300);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
 
   if (loading) {
     return (
@@ -108,142 +443,259 @@ const DashboardPage: React.FC = () => {
     );
   }
 
+  const currentQuestion = currentQuestionIndex < QUESTIONS.length ? QUESTIONS[currentQuestionIndex] : null;
+  const isComplete = currentQuestionIndex >= QUESTIONS.length;
+  const hasHistory = messages.length > 0;
+
+  // Always show chat view if there's history, otherwise show initial centered state
+  const showInitialCentered = !chatStarted && !hasHistory;
+
   return (
-    <div className="dashboard-page">
-      <div className="dashboard-header">
-        <h1 className="dashboard-header__title">{t('dashboard.title')}</h1>
-      </div>
+    <div className={`dashboard-chatbot ${showInitialCentered ? 'dashboard-chatbot--initial' : ''}`}>
+      {!showInitialCentered && (
+        <div className="dashboard-chatbot__header">
+          <h1 className="dashboard-chatbot__title">{t('dashboard.title')}</h1>
+          {saving && (
+            <span className="dashboard-chatbot__saving">{t('common.saving')}...</span>
+          )}
+        </div>
+      )}
 
-      <div className="dashboard-steps">
-        {/* Step 1: Answer the questions */}
-        <Card className="dashboard-step">
-          <div className="dashboard-step__header">
-            <div className="flex flex--align-center flex--gap-sm">
-              <span className="dashboard-step__badge">
-                {t('dashboard.step')} 1
-              </span>
-              <h2 className="dashboard-step__title">
-                {t('dashboard.steps.answerQuestions.title')}
-              </h2>
-            </div>
-            <button
-              onClick={() => navigate('/tools/qa')}
-              className="dashboard-step__arrow"
-              title={t('dashboard.steps.answerQuestions.goTo')}
+      {showInitialCentered ? (
+        // Initial centered state
+        <div className="dashboard-chatbot__initial-container">
+          {/* Logo and name at the top */}
+          <div className="dashboard-chatbot__logo-section">
+            <img src="/assets/logo.png" alt="Follox" className="dashboard-chatbot__logo-img" />
+            <span className="dashboard-chatbot__logo-name">Follox</span>
+          </div>
+        </div>
+      ) : (
+        // Chat messages view
+        <div className="dashboard-chatbot__messages">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`dashboard-chatbot__message dashboard-chatbot__message--${message.type}`}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </div>
-          <p className="dashboard-step__description">{t('dashboard.steps.answerQuestions.description')}</p>
-          <div className="dashboard-step__items">
-            {answerSections.map(({ key, label }) => {
-              const isAnswered = isSectionAnswered(key as keyof typeof answers);
-              return (
-                <div
-                  key={key}
-                  className={`dashboard-step__item ${isAnswered ? 'dashboard-step__item--checked' : 'dashboard-step__item--unchecked'}`}
-                >
-                  {isAnswered ? (
-                    <svg
-                      className="dashboard-step__checkmark"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : (
-                    <div className="dashboard-step__checkbox" />
-                  )}
-                  <span>{label}</span>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-
-        {/* Step 2: Tools */}
-        <Card className="dashboard-step">
-          <div className="dashboard-step__header">
-            <div className="flex flex--align-center flex--gap-sm">
-              <span className="dashboard-step__badge">
-                {t('dashboard.step')} 2
-              </span>
-              <h2 className="dashboard-step__title">
-                {t('dashboard.steps.generateTools.title')}
-              </h2>
-            </div>
-            <button
-              onClick={() => navigate('/tools/icp-diagnostician')}
-              className="dashboard-step__arrow"
-              title={t('dashboard.steps.generateTools.goTo')}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </div>
-          <p className="dashboard-step__description">{t('dashboard.steps.generateTools.description')}</p>
-          <div className="dashboard-step__items">
-            {[
-              { key: 'icp', label: t('dashboard.steps.generateTools.icpDiagnostician'), checked: hasIcp },
-              { key: 'positioning', label: t('dashboard.steps.generateTools.positioning'), checked: hasPositioning },
-              { key: 'channelRisk', label: t('dashboard.steps.generateTools.channelRisk'), checked: hasChannelRisk },
-              { key: 'experiment', label: t('dashboard.steps.generateTools.experiment'), checked: hasExperiment },
-              { key: 'decisionReview', label: t('dashboard.steps.generateTools.decisionReview'), checked: hasDecisionReview },
-            ].map(({ key, label, checked }) => (
-              <div
-                key={key}
-                className={`dashboard-step__item ${checked ? 'dashboard-step__item--checked' : 'dashboard-step__item--unchecked'}`}
-              >
-                {checked ? (
-                  <svg
-                    className="dashboard-step__checkmark"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                ) : (
-                  <div className="dashboard-step__checkbox" />
-                )}
-                <span>{label}</span>
+              <div className="dashboard-chatbot__message-content">
+                {message.content}
               </div>
-            ))}
+              <div className="dashboard-chatbot__message-time">
+                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            </div>
+          ))}
+          
+          {/* Tools Widget - Show after completion */}
+          {isComplete && (
+            <div className="dashboard-chatbot__tools-widget">
+              <h3 className="dashboard-chatbot__tools-title">{t('dashboard.chatbot.tools.title')}</h3>
+              <div className="dashboard-chatbot__tools-grid">
+                {[
+                  { id: 'icp', path: '/tools/icp-diagnostician', nameKey: 'sidebar.icpDiagnostician', descKey: 'landing.tools.icp.para1' },
+                  { id: 'positioning', path: '/tools/positioning', nameKey: 'sidebar.positioning', descKey: 'landing.tools.positioning.para1' },
+                  { id: 'channelRisk', path: '/tools/channel-risk', nameKey: 'sidebar.channelRisk', descKey: 'landing.tools.channelRisk.para1' },
+                  { id: 'experiment', path: '/tools/experiment', nameKey: 'sidebar.experiment', descKey: 'landing.tools.experiment.para1' },
+                  { id: 'decisionReview', path: '/tools/decision-review', nameKey: 'sidebar.decisionReview', descKey: 'landing.tools.decisionReview.para1' },
+                ].map((tool) => (
+                  <a
+                    key={tool.id}
+                    href={tool.path}
+                    className="dashboard-chatbot__tool-card"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(tool.path);
+                    }}
+                  >
+                    <h4 className="dashboard-chatbot__tool-name">{t(tool.nameKey)}</h4>
+                    <p className="dashboard-chatbot__tool-desc">{t(tool.descKey)}</p>
+                    <span className="dashboard-chatbot__tool-link">
+                      {t('dashboard.chatbot.tools.openTool')} →
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+      )}
+
+      {/* Input form - always shown */}
+      <form 
+        className={`dashboard-chatbot__input-form ${showInitialCentered ? 'dashboard-chatbot__input-form--centered' : ''}`}
+        onSubmit={showInitialCentered ? handleInitialSubmit : handleSubmit}
+      >
+        <div className={`dashboard-chatbot__input-wrapper ${showInitialCentered ? 'dashboard-chatbot__input-wrapper--centered' : ''}`}>
+          <textarea
+            ref={inputRef}
+            className={`dashboard-chatbot__input ${showInitialCentered ? 'dashboard-chatbot__input--centered' : ''}`}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={showInitialCentered ? handleInitialKeyDown : handleKeyDown}
+            placeholder={
+              showInitialCentered
+                ? t('dashboard.chatbot.typeStartPlaceholder')
+                : isComplete
+                ? t('dashboard.chatbot.typeStartPlaceholder')
+                : currentQuestion?.isMultiline
+                ? t('dashboard.chatbot.multilinePlaceholder')
+                : currentQuestion?.isRequired
+                ? t('dashboard.chatbot.placeholder')
+                : t('dashboard.chatbot.placeholderWithSkip')
+            }
+            rows={showInitialCentered ? 4 : (currentQuestion?.isMultiline ? 3 : 1)}
+            disabled={!showInitialCentered && isComplete && !chatStarted}
+          />
+          {showInitialCentered && (
+            <div 
+              className="dashboard-chatbot__hint-inside"
+              onClick={() => {
+                const startInput = 'Start';
+                setInputValue('');
+                startChat(startInput);
+              }}
+            >
+              Start
+            </div>
+          )}
+          {!showInitialCentered && !isComplete && (
+            <div className="dashboard-chatbot__hints-inside">
+              <div 
+                className="dashboard-chatbot__hints-inside__hint"
+                onClick={() => {
+                  if (currentQuestion && !isComplete) {
+                    const skipValue = 'Skip';
+                    setInputValue('');
+                    
+                    // Add user message
+                    const skipMessage: Message = {
+                      id: `user-skip-${Date.now()}`,
+                      type: 'user',
+                      content: skipValue,
+                      timestamp: new Date(),
+                    };
+                    setMessages((prev) => [...prev, skipMessage]);
+                    
+                    // Move to next question without saving
+                    setCurrentQuestionIndex((prev) => prev + 1);
+
+                    // Ask next question after a short delay
+                    setTimeout(() => {
+                      askNextQuestion();
+                    }, 300);
+                  }
+                }}
+              >
+                Skip
+              </div>
+              <div 
+                className="dashboard-chatbot__hints-inside__hint"
+                onClick={() => {
+                  if (!isComplete) {
+                    const finishValue = 'Finish';
+                    setInputValue('');
+                    
+                    // Add user message
+                    const finishMessage: Message = {
+                      id: `user-finish-${Date.now()}`,
+                      type: 'user',
+                      content: finishValue,
+                      timestamp: new Date(),
+                    };
+                    setMessages((prev) => [...prev, finishMessage]);
+                    
+                    // Move to completion state
+                    setCurrentQuestionIndex(QUESTIONS.length);
+
+                    // Add completion message and tools widget will appear automatically
+                    setTimeout(() => {
+                      const completionMessage: Message = {
+                        id: `completion-${Date.now()}`,
+                        type: 'bot',
+                        content: t('dashboard.chatbot.completion'),
+                        timestamp: new Date(),
+                      };
+                      setMessages((prev) => [...prev, completionMessage]);
+                      // Scroll to bottom to show tools widget
+                      setTimeout(() => {
+                        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+                      }, 100);
+                    }, 300);
+                  }
+                }}
+              >
+                Finish
+              </div>
+            </div>
+          )}
+          <button
+            type="submit"
+            className="dashboard-chatbot__submit"
+            disabled={
+              showInitialCentered
+                ? (saving || inputValue.trim().toLowerCase() !== 'start')
+                : (isComplete && inputValue.trim().toLowerCase() !== 'start') || saving || (inputValue.trim() === '' && currentQuestion?.isRequired)
+            }
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              />
+            </svg>
+          </button>
+        </div>
+        {!showInitialCentered && !isComplete && currentQuestion && (
+          <div className="dashboard-chatbot__progress">
+            <span className="dashboard-chatbot__progress-text">
+              {t('dashboard.chatbot.progress').replace('{current}', String(currentQuestionIndex + 1)).replace('{total}', String(QUESTIONS.length))}
+            </span>
           </div>
-        </Card>
-      </div>
+        )}
+      </form>
+      
+      {/* Callout at the bottom when centered */}
+      {showInitialCentered && (
+        <div className="dashboard-chatbot__callout-bottom">
+          <div className="dashboard-chatbot__callout">
+            <div className="dashboard-chatbot__callout-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div className="dashboard-chatbot__callout-content">
+              <h3 className="dashboard-chatbot__callout-title">
+                {t('dashboard.chatbot.callout.title')}
+              </h3>
+              <p className="dashboard-chatbot__callout-text">
+                {t('dashboard.chatbot.callout.text')}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
