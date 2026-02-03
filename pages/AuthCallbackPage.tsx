@@ -65,7 +65,7 @@ const AuthCallbackPage: React.FC = () => {
         // Validate state
         const storedState = sessionStorage.getItem('oauth_state');
         const storedRedirectUri = sessionStorage.getItem('oauth_redirect_uri');
-        const storedUserType = sessionStorage.getItem('oauth_user_type') as 'shop' | 'blogger' | null;
+        const storedUserType = sessionStorage.getItem('oauth_user_type') as 'company' | 'blogger' | null;
         
         // Log state values for debugging
         console.log('State validation:', {
@@ -146,7 +146,7 @@ const AuthCallbackPage: React.FC = () => {
         const googleResponse = {
           access_token: tokenData.access_token,
           token_type: tokenData.token_type || 'bearer',
-          shop_id: tokenData.shop_id || null,
+          company_id: tokenData.company_id || null,
           blogger_id: tokenData.blogger_id || null,
           email: tokenData.email,
           name: tokenData.name,
@@ -156,7 +156,7 @@ const AuthCallbackPage: React.FC = () => {
 
         console.log('Calling loginWithGoogle with:', {
           role: googleResponse.role,
-          shop_id: googleResponse.shop_id,
+          company_id: googleResponse.company_id,
           blogger_id: googleResponse.blogger_id,
           email: googleResponse.email,
         });

@@ -491,7 +491,7 @@
       },
       "callout": {
         "title": "Get Started",
-        "text": "Type \"Start\" in the input below to begin answering questions about your business. I'll guide you through a series of questions to help us understand your product, market, and business model."
+        "text": "Type \"Start\" in the input above to begin answering questions about your business. I'll guide you through a series of questions to help us understand your product, market, and business model."
       },
       "questions": {
         "product": {

@@ -331,7 +331,7 @@ const AuthPage: React.FC = () => {
                 </Button>
               </form>
               
-              {/* <div className="mt-6">
+              <div className="mt-6">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-300"></div>
@@ -354,7 +354,7 @@ const AuthPage: React.FC = () => {
                   </svg>
                   {t('auth.loginWithGoogle')}
                 </button>
-              </div> */}
+              </div>
               
               <div className="text-center mt-6">
                 <button
@@ -395,7 +395,7 @@ const AuthPage: React.FC = () => {
                 </Button>
               </form>
               
-              {/* <div className="mt-6">
+              <div className="mt-6">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-300"></div>
@@ -418,7 +418,7 @@ const AuthPage: React.FC = () => {
                   </svg>
                   {t('auth.loginWithGoogle')}
                 </button>
-              </div> */}
+              </div>
               
               <div className="text-center mt-6">
                 <button

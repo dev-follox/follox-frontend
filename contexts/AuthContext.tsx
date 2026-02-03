@@ -94,7 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginWithGoogle = useCallback(async (googleResponse: GoogleOAuthResponse) => {
     console.log('loginWithGoogle called with:', {
       role: googleResponse.role,
-      shop_id: googleResponse.company_id,
+      company_id: googleResponse.company_id,
       blogger_id: googleResponse.blogger_id,
       email: googleResponse.email,
     });
