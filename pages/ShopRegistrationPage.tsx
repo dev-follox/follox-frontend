@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import api from '../services/api';
 import { useTranslation } from '../hooks/useTranslation';
 import Select from '../components/Select';
+import { validatePassword, getPasswordErrorFrom422 } from '../utils/passwordValidation';
 
 const ShopRegistrationPage: React.FC = () => {
   const { t } = useTranslation();
@@ -21,11 +22,17 @@ const ShopRegistrationPage: React.FC = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    const passwordValidation = validatePassword(formData.password, t);
+    if (!passwordValidation.valid) {
+      setError(passwordValidation.message ?? t('registration.signupError'));
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -41,8 +48,11 @@ const ShopRegistrationPage: React.FC = () => {
       });
       // Redirect to login page after successful registration
       navigate('/login');
-    } catch (err) {
-      setError(t('registration.signupError'));
+    } catch (err: any) {
+      const passwordMsg = err?.response?.status === 422 && err?.response?.data
+        ? getPasswordErrorFrom422(err.response.data)
+        : null;
+      setError(passwordMsg ?? t('registration.signupError'));
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +60,7 @@ const ShopRegistrationPage: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    if (name === 'password') setPasswordTouched(true);
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -159,6 +170,15 @@ const ShopRegistrationPage: React.FC = () => {
               required
               value={formData.password}
               onChange={handleChange}
+              onBlur={() => setPasswordTouched(true)}
+              error={
+                passwordTouched
+                  ? (() => {
+                      const v = validatePassword(formData.password, t);
+                      return v.valid ? undefined : v.message;
+                    })()
+                  : undefined
+              }
             />
 
             <div>

@@ -8,6 +8,7 @@ import Select from '../components/Select';
 import Spinner from '../components/Spinner';
 import Dialog from '../components/Dialog';
 import { useTranslation } from '../hooks/useTranslation';
+import { validatePassword, getPasswordErrorFrom422 } from '../utils/passwordValidation';
 
 const BloggersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -26,6 +27,7 @@ const BloggersPage: React.FC = () => {
     bio: '',
     password: '',
   });
+  const [passwordTouched, setPasswordTouched] = useState(false);
 
   // Affiliate link creation
   const [selectedBlogger, setSelectedBlogger] = useState<Blogger | null>(null);
@@ -56,14 +58,24 @@ const BloggersPage: React.FC = () => {
 
   const handleCreateBlogger = async (e: React.FormEvent) => {
     e.preventDefault();
+    const passwordValidation = validatePassword(newBlogger.password, t);
+    if (!passwordValidation.valid) {
+      setError(passwordValidation.message ?? t('bloggers.createError'));
+      return;
+    }
+    setError(null);
     setIsCreating(true);
     try {
       const blogger = await api.createBlogger(newBlogger);
       setBloggers(prev => [...prev, blogger]);
       setNewBlogger({ name: '', email: '', bio: '', password: '' });
+      setPasswordTouched(false);
       setIsDialogOpen(false);
-    } catch (err) {
-      setError(t('bloggers.createError'));
+    } catch (err: any) {
+      const passwordMsg = err?.response?.status === 422 && err?.response?.data
+        ? getPasswordErrorFrom422(err.response.data)
+        : null;
+      setError(passwordMsg ?? t('bloggers.createError'));
     } finally {
       setIsCreating(false);
     }
@@ -131,8 +143,20 @@ const BloggersPage: React.FC = () => {
           label={t('common.password')}
           type="password"
           value={newBlogger.password}
-          onChange={e => setNewBlogger(prev => ({ ...prev, password: e.target.value }))}
+          onChange={e => {
+            setPasswordTouched(true);
+            setNewBlogger(prev => ({ ...prev, password: e.target.value }));
+          }}
+          onBlur={() => setPasswordTouched(true)}
           required
+          error={
+            passwordTouched
+              ? (() => {
+                  const v = validatePassword(newBlogger.password, t);
+                  return v.valid ? undefined : v.message;
+                })()
+              : undefined
+          }
         />
         <Input
           id="bio"

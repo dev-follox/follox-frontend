@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'multiline'> {
@@ -6,9 +5,19 @@ interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, '
   id: string;
   multiline?: boolean;
   rows?: number;
+  error?: string;
 }
 
-const Input: React.FC<InputProps> = ({ label, id, multiline = false, rows = 3, ...props }) => {
+const inputBaseClasses =
+  'appearance-none block w-full px-3 py-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary sm:text-sm text-gray-900 ';
+const inputDefaultBorder = 'border border-gray-300 focus:border-primary';
+const inputErrorBorder = 'border-2 border-red-500 focus:border-red-500 focus:ring-red-500';
+
+const Input: React.FC<InputProps> = ({ label, id, multiline = false, rows = 3, error, className, ...props }) => {
+  const hasError = Boolean(error);
+  const borderClass = hasError ? inputErrorBorder : inputDefaultBorder;
+  const disabledClass = props.disabled ? 'bg-gray-50 cursor-not-allowed opacity-60' : '';
+
   return (
     <div>
       {label && (
@@ -20,20 +29,17 @@ const Input: React.FC<InputProps> = ({ label, id, multiline = false, rows = 3, .
         <textarea
           id={id}
           rows={rows}
-          className={`appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm text-gray-900 ${
-            props.disabled ? 'bg-gray-50 cursor-not-allowed opacity-60' : ''
-          }`}
+          className={`${inputBaseClasses} ${borderClass} ${disabledClass} ${className ?? ''}`}
           {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
         />
       ) : (
         <input
           id={id}
-          className={`appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm text-gray-900 ${
-            props.disabled ? 'bg-gray-50 cursor-not-allowed opacity-60' : ''
-          }`}
+          className={`${inputBaseClasses} ${borderClass} ${disabledClass} ${className ?? ''}`}
           {...props}
         />
       )}
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
     </div>
   );
 };

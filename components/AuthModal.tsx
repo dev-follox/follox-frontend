@@ -5,6 +5,7 @@ import Input from './Input';
 import Button from './Button';
 import Toggle from './Toggle';
 import api from '../services/api';
+import { validatePassword, getPasswordErrorFrom422 } from '../utils/passwordValidation';
 
 type AuthMode = 'signup' | 'login';
 type UserType = 'company' | 'blogger';
@@ -43,6 +44,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const [signupError, setSignupError] = useState('');
   const [isSignupLoading, setIsSignupLoading] = useState(false);
+  const [companyPasswordTouched, setCompanyPasswordTouched] = useState(false);
+  const [bloggerPasswordTouched, setBloggerPasswordTouched] = useState(false);
 
   const { login } = useAuth();
   const { t } = useTranslation();
@@ -66,6 +69,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
     setSignupError('');
+    const password = userType === 'company' ? companyFormData.password : bloggerFormData.password;
+    const passwordValidation = validatePassword(password, t);
+    if (!passwordValidation.valid) {
+      setSignupError(passwordValidation.message ?? t('auth.signupError'));
+      return;
+    }
     setIsSignupLoading(true);
     try {
       if (userType === 'company') {
@@ -84,8 +93,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       }
       setMode('login');
       setLoginEmail(userType === 'company' ? companyFormData.email : bloggerFormData.email);
-    } catch {
-      setSignupError(t('auth.signupError'));
+    } catch (err: any) {
+      const passwordMsg = err?.response?.status === 422 && err?.response?.data
+        ? getPasswordErrorFrom422(err.response.data)
+        : null;
+      setSignupError(passwordMsg ?? t('auth.signupError'));
     } finally {
       setIsSignupLoading(false);
     }
@@ -93,11 +105,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleCompanyFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    if (name === 'password') setCompanyPasswordTouched(true);
     setCompanyFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleBloggerFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    if (name === 'password') setBloggerPasswordTouched(true);
     setBloggerFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -149,13 +163,47 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     </select>
                   </div>
                   <Input id="m-description" name="description" label={`${t('common.description')} (${t('common.optional')})`} multiline rows={2} value={companyFormData.description} onChange={handleCompanyFormChange} />
-                  <Input id="m-password" name="password" label={t('common.password')} type="password" required value={companyFormData.password} onChange={handleCompanyFormChange} />
+                  <Input
+                    id="m-password"
+                    name="password"
+                    label={t('common.password')}
+                    type="password"
+                    required
+                    value={companyFormData.password}
+                    onChange={handleCompanyFormChange}
+                    onBlur={() => setCompanyPasswordTouched(true)}
+                    error={
+                      companyPasswordTouched
+                        ? (() => {
+                            const v = validatePassword(companyFormData.password, t);
+                            return v.valid ? undefined : v.message;
+                          })()
+                        : undefined
+                    }
+                  />
                 </>
               ) : (
                 <>
                   <Input id="m-name" name="name" label={t('common.name')} type="text" required value={bloggerFormData.name} onChange={handleBloggerFormChange} />
                   <Input id="m-b-email" name="email" label={t('auth.email')} type="email" required value={bloggerFormData.email} onChange={handleBloggerFormChange} />
-                  <Input id="m-b-password" name="password" label={t('common.password')} type="password" required value={bloggerFormData.password} onChange={handleBloggerFormChange} />
+                  <Input
+                    id="m-b-password"
+                    name="password"
+                    label={t('common.password')}
+                    type="password"
+                    required
+                    value={bloggerFormData.password}
+                    onChange={handleBloggerFormChange}
+                    onBlur={() => setBloggerPasswordTouched(true)}
+                    error={
+                      bloggerPasswordTouched
+                        ? (() => {
+                            const v = validatePassword(bloggerFormData.password, t);
+                            return v.valid ? undefined : v.message;
+                          })()
+                        : undefined
+                    }
+                  />
                   <Input id="m-bio" name="bio" label={`${t('auth.bio')} (${t('common.optional')})`} multiline rows={2} value={bloggerFormData.bio} onChange={handleBloggerFormChange} />
                 </>
               )}

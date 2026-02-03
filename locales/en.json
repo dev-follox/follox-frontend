@@ -140,6 +140,13 @@
     "bio": "About",
     "loginError": "Failed to login. Check your email and password.",
     "signupError": "Failed to register. Check your data and try again.",
+    "passwordRequirements": "At least 8 characters, one uppercase, one lowercase, one number, and one special character.",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "passwordMustHavePrefix": "Password must have: ",
+    "passwordReqUppercase": "at least one uppercase letter",
+    "passwordReqLowercase": "at least one lowercase letter",
+    "passwordReqNumber": "at least one number",
+    "passwordReqSpecial": "at least one special character",
     "googleAuthError": "Failed to initiate Google login. Try again."
   },
   "header": {

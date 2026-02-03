@@ -9,6 +9,7 @@ import Toggle from '../components/Toggle';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import LandingHeader from '../components/LandingHeader';
 import api from '../services/api';
+import { validatePassword, getPasswordErrorFrom422 } from '../utils/passwordValidation';
 
 type AuthMode = 'signup' | 'login';
 type UserType = 'company' | 'blogger';
@@ -42,7 +43,9 @@ const AuthPage: React.FC = () => {
   
   const [signupError, setSignupError] = useState('');
   const [isSignupLoading, setIsSignupLoading] = useState(false);
-  
+  const [companyPasswordTouched, setCompanyPasswordTouched] = useState(false);
+  const [bloggerPasswordTouched, setBloggerPasswordTouched] = useState(false);
+
   const { login, isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -127,6 +130,12 @@ const AuthPage: React.FC = () => {
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
     setSignupError('');
+    const password = userType === 'company' ? companyFormData.password : bloggerFormData.password;
+    const passwordValidation = validatePassword(password, t);
+    if (!passwordValidation.valid) {
+      setSignupError(passwordValidation.message ?? t('auth.signupError'));
+      return;
+    }
     setIsSignupLoading(true);
 
     try {
@@ -146,8 +155,11 @@ const AuthPage: React.FC = () => {
       }
       setMode('login');
       setLoginEmail(userType === 'company' ? companyFormData.email : bloggerFormData.email);
-    } catch (err) {
-      setSignupError(t('auth.signupError'));
+    } catch (err: any) {
+      const passwordMsg = err?.response?.status === 422 && err?.response?.data
+        ? getPasswordErrorFrom422(err.response.data)
+        : null;
+      setSignupError(passwordMsg ?? t('auth.signupError'));
     } finally {
       setIsSignupLoading(false);
     }
@@ -155,6 +167,7 @@ const AuthPage: React.FC = () => {
 
   const handleCompanyFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    if (name === 'password') setCompanyPasswordTouched(true);
     setCompanyFormData(prev => ({
       ...prev,
       [name]: value
@@ -163,6 +176,7 @@ const AuthPage: React.FC = () => {
 
   const handleBloggerFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    if (name === 'password') setBloggerPasswordTouched(true);
     setBloggerFormData(prev => ({
       ...prev,
       [name]: value
@@ -281,6 +295,15 @@ const AuthPage: React.FC = () => {
                       required
                       value={companyFormData.password}
                       onChange={handleCompanyFormChange}
+                      onBlur={() => setCompanyPasswordTouched(true)}
+                      error={
+                        companyPasswordTouched
+                          ? (() => {
+                              const v = validatePassword(companyFormData.password, t);
+                              return v.valid ? undefined : v.message;
+                            })()
+                          : undefined
+                      }
                     />
                   </>
                 ) : (
@@ -313,6 +336,15 @@ const AuthPage: React.FC = () => {
                       required
                       value={bloggerFormData.password}
                       onChange={handleBloggerFormChange}
+                      onBlur={() => setBloggerPasswordTouched(true)}
+                      error={
+                        bloggerPasswordTouched
+                          ? (() => {
+                              const v = validatePassword(bloggerFormData.password, t);
+                              return v.valid ? undefined : v.message;
+                            })()
+                          : undefined
+                      }
                     />
                     <Input
                       id="blogger-bio"

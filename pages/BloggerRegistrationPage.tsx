@@ -5,6 +5,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import api from '../services/api';
 import { useTranslation } from '../hooks/useTranslation';
+import { validatePassword, getPasswordErrorFrom422 } from '../utils/passwordValidation';
 
 const BloggerRegistrationPage: React.FC = () => {
   const { t } = useTranslation();
@@ -16,18 +17,27 @@ const BloggerRegistrationPage: React.FC = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    const passwordValidation = validatePassword(formData.password, t);
+    if (!passwordValidation.valid) {
+      setError(passwordValidation.message ?? t('registration.signupError'));
+      return;
+    }
     setIsLoading(true);
 
     try {
       await api.createBlogger(formData);
       navigate('/login');
-    } catch (err) {
-      setError(t('registration.signupError'));
+    } catch (err: any) {
+      const passwordMsg = err?.response?.status === 422 && err?.response?.data
+        ? getPasswordErrorFrom422(err.response.data)
+        : null;
+      setError(passwordMsg ?? t('registration.signupError'));
     } finally {
       setIsLoading(false);
     }
@@ -35,6 +45,7 @@ const BloggerRegistrationPage: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target as HTMLInputElement;
+    if (name === 'password') setPasswordTouched(true);
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -91,6 +102,15 @@ const BloggerRegistrationPage: React.FC = () => {
               required
               value={formData.password}
               onChange={handleChange}
+              onBlur={() => setPasswordTouched(true)}
+              error={
+                passwordTouched
+                  ? (() => {
+                      const v = validatePassword(formData.password, t);
+                      return v.valid ? undefined : v.message;
+                    })()
+                  : undefined
+              }
             />
 
             <Input
