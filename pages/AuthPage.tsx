@@ -201,14 +201,14 @@ const AuthPage: React.FC = () => {
             </div>
           {mode === 'signup' ? (
             <>
-              <Toggle
+              {/* <Toggle
                 options={[
                   { value: 'company', label: t('common.company') },
                   { value: 'blogger', label: t('common.blogger') }
                 ]}
                 selected={userType}
                 onChange={(value) => setUserType(value as UserType)}
-              />
+              /> */}
               
               <form className="mt-6 space-y-6" onSubmit={handleSignup}>
                 {signupError && <p className="text-center text-sm text-red-600">{signupError}</p>}
