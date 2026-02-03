@@ -467,6 +467,7 @@
     "bloggers": "Bloggers",
     "tools": "Tools",
     "answers": "Answers",
+    "qnaProgress": "Q&A filled",
     "icpDiagnostician": "Ideal Customer Profile",
     "positioning": "Positioning",
     "channelRisk": "Channel Risk",
@@ -474,7 +475,8 @@
     "decisionReview": "Decision Review",
     "admin": "Admin Module",
     "companies": "Companies",
-    "switchLanguage": "Switch Language"
+    "switchLanguage": "Switch Language",
+    "userProfile": "User profile"
   },
   "dashboard": {
     "title": "Dashboard",

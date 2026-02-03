@@ -467,6 +467,7 @@
     "bloggers": "Блогеры",
     "tools": "Инструменты",
     "answers": "Ответы",
+    "qnaProgress": "Заполнено Q&A",
     "icpDiagnostician": "Ideal Customer Profile",
     "positioning": "Positioning",
     "channelRisk": "Channel Risk",
@@ -474,7 +475,8 @@
     "decisionReview": "Decision Review",
     "admin": "Админ модуль",
     "companies": "Компании",
-    "switchLanguage": "Переключить язык"
+    "switchLanguage": "Переключить язык",
+    "userProfile": "Профиль пользователя"
   },
   "dashboard": {
     "title": "Панель управления",

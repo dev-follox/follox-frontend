@@ -320,6 +320,9 @@ const api = {
 
   updateCompanyAnswers: async (companyId: number, answers: CompanyAnswersUpdate): Promise<CompanyAnswers> => {
     const response = await axiosInstance.put(`/companies/${companyId}/answers`, answers);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('company-answers-updated'));
+    }
     return response.data;
   },
 

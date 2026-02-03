@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
-import Button from './Button';
+import api from '../services/api';
+import type { CompanyAnswers } from '../types';
+
+// QnA fields used for progress (must match dashboard/company QA)
+const QNA_FIELDS: { section: keyof CompanyAnswers['answers']; field: string }[] = [
+  { section: 'product', field: 'name' }, { section: 'product', field: 'description' }, { section: 'product', field: 'category' }, { section: 'product', field: 'stage' },
+  { section: 'market', field: 'target_market' }, { section: 'market', field: 'geography' }, { section: 'market', field: 'alternatives' },
+  { section: 'customer', field: 'role' }, { section: 'customer', field: 'company_stage' }, { section: 'customer', field: 'team_size' },
+  { section: 'problem', field: 'main_pain' }, { section: 'problem', field: 'frequency' }, { section: 'problem', field: 'current_solution' },
+  { section: 'solution', field: 'core_value' }, { section: 'solution', field: 'differentiator' },
+  { section: 'distribution', field: 'known_channels' }, { section: 'distribution', field: 'preferred_channel' },
+  { section: 'pricing', field: 'model' }, { section: 'pricing', field: 'expected_price' },
+  { section: 'traction', field: 'users' }, { section: 'traction', field: 'revenue' }, { section: 'traction', field: 'signals' },
+  { section: 'constraints', field: 'budget' }, { section: 'constraints', field: 'time' }, { section: 'constraints', field: 'team' },
+];
+
+function getQnaFilledPercent(answers: CompanyAnswers['answers']): number {
+  let filled = 0;
+  for (const { section, field } of QNA_FIELDS) {
+    const sectionData = answers[section];
+    if (!sectionData) continue;
+    const value = (sectionData as Record<string, unknown>)[field];
+    if (value === undefined || value === null) continue;
+    if (typeof value === 'string' && value.trim().length > 0) filled++;
+    else if (Array.isArray(value) && value.length > 0) filled++;
+    else if (typeof value === 'number' && !Number.isNaN(value)) filled++;
+  }
+  return QNA_FIELDS.length === 0 ? 0 : Math.round((filled / QNA_FIELDS.length) * 100);
+}
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -14,6 +42,46 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 	const { t, language, setLanguage } = useTranslation();
 	const location = useLocation();
 	const navigate = useNavigate();
+	const [userMenuOpen, setUserMenuOpen] = useState(false);
+	const userMenuRef = useRef<HTMLDivElement>(null);
+	const [qnaPercent, setQnaPercent] = useState<number | null>(null);
+
+	const fetchQnaPercent = React.useCallback(() => {
+		if (user?.role !== 'COMPANY' || !user?.company?.id) return;
+		api.getCompanyAnswers(user.company.id).then((data) => {
+			if (data?.answers) setQnaPercent(getQnaFilledPercent(data.answers));
+		}).catch(() => setQnaPercent(null));
+	}, [user?.role, user?.company?.id]);
+
+	useEffect(() => {
+		if (user?.role !== 'COMPANY' || !user?.company?.id) {
+			setQnaPercent(null);
+			return;
+		}
+		let cancelled = false;
+		api.getCompanyAnswers(user.company.id).then((data) => {
+			if (!cancelled && data?.answers) setQnaPercent(getQnaFilledPercent(data.answers));
+		}).catch(() => {
+			if (!cancelled) setQnaPercent(null);
+		});
+		return () => { cancelled = true; };
+	}, [user?.role, user?.company?.id]);
+
+	useEffect(() => {
+		const onAnswersUpdated = () => fetchQnaPercent();
+		window.addEventListener('company-answers-updated', onAnswersUpdated);
+		return () => window.removeEventListener('company-answers-updated', onAnswersUpdated);
+	}, [fetchQnaPercent]);
+
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+				setUserMenuOpen(false);
+			}
+		};
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
 
 	const toggleLanguage = () => {
 		setLanguage(language === 'ru' ? 'en' : 'ru');
@@ -37,6 +105,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 	const isBlogger = user?.role === 'BLOGGER';
 	const isAdmin = user?.role === 'ADMIN';
 
+	const displayName =
+		user?.company?.full_name ||
+		user?.company?.company_name ||
+		user?.blogger?.name ||
+		(isAdmin ? t('sidebar.admin') : null) ||
+		'User';
+
+	const profilePath = '/profile';
+
 	return (
     <>
       {/* Mobile overlay - only show on mobile when menu is open */}
@@ -55,13 +132,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 					<img src="/assets/logo.png" alt="Follox" className="sidebar__logo-img" />
 					Follox
 				</Link>
-			</div>
-			<div className="px-6 pt-4 flex items-center space-x-4">
-				{isLoggedIn && user?.role === 'COMPANY' && user.company && (
-					<span className="text-primary-text hidden sm:block">
-						{t('common.welcome')}, {user.company.company_name}
-					</span>
-				)}
 			</div>
 
 			{/* Navigation */}
@@ -220,35 +290,138 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 				</div>} */}
 			</div>
 
-			{/* Bottom Section */}
-			<div className="border-t border-gray-200 p-4 space-y-2">
-				{/* Language Switcher */}
-				<button
-					onClick={toggleLanguage}
-					className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-					title={t('sidebar.switchLanguage')}
-				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						className="h-5 w-5"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
-					<span>{language.toUpperCase()}</span>
-				</button>
+			{/* QnA progress widget - only for company */}
+			{isCompany && qnaPercent !== null && (
+				<div className="px-4 py-3">
+					<div className="rounded-lg bg-gray-50 p-3">
+						<div className="flex items-center justify-between gap-2 mb-1.5">
+							<span className="text-xs font-medium text-gray-600">{t('sidebar.qnaProgress')}</span>
+							<span className="text-xs font-semibold text-gray-800 tabular-nums">{qnaPercent}%</span>
+						</div>
+						<div className="h-2 w-full rounded-full bg-gray-200 overflow-hidden">
+							<div
+								className="h-full rounded-full bg-primary transition-all duration-300"
+								style={{ width: `${qnaPercent}%` }}
+								role="progressbar"
+								aria-valuenow={qnaPercent}
+								aria-valuemin={0}
+								aria-valuemax={100}
+								aria-label={t('sidebar.qnaProgress')}
+							/>
+						</div>
+					</div>
+				</div>
+			)}
 
-				{/* Logout */}
-				<Button onClick={logout} variant="secondary" className="w-full">
-					{t('common.logout')}
-				</Button>
+			{/* Bottom Section */}
+			<div className="border-t border-gray-200 p-4">
+				{/* User menu dropdown */}
+				<div className="relative w-full" ref={userMenuRef}>
+					<button
+						type="button"
+						onClick={() => setUserMenuOpen((o) => !o)}
+						className="w-full flex items-center justify-between gap-2 px-4 py-2 rounded-md text-sm font-medium text-primary-text hover:bg-gray-100 transition-colors text-left"
+						aria-expanded={userMenuOpen}
+						aria-haspopup="true"
+					>
+						<span className="truncate">{displayName}</span>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							className="h-4 w-4 flex-shrink-0 text-primary-text"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							aria-hidden
+						>
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+						</svg>
+					</button>
+					{userMenuOpen && (
+						<div
+							className="absolute bottom-full left-0 right-0 mb-1 py-1 bg-white border border-gray-200 rounded-md shadow-lg z-10"
+							role="menu"
+						>
+							{profilePath && (
+								<Link
+									to={profilePath}
+									onClick={() => {
+										setUserMenuOpen(false);
+										handleLinkClick();
+									}}
+									className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+									role="menuitem"
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										className="h-4 w-4 text-gray-500"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke="currentColor"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+											d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+										/>
+									</svg>
+									<span>{t('sidebar.userProfile')}</span>
+								</Link>
+							)}
+							<button
+								type="button"
+								onClick={() => {
+									toggleLanguage();
+									setUserMenuOpen(false);
+								}}
+								className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-left"
+								role="menuitem"
+								title={t('sidebar.switchLanguage')}
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									className="h-4 w-4 text-gray-500"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
+								</svg>
+								<span>{language.toUpperCase()}</span>
+							</button>
+							<button
+								type="button"
+								onClick={() => {
+									setUserMenuOpen(false);
+									logout();
+								}}
+								className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-left"
+								role="menuitem"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									className="h-4 w-4 text-gray-500"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+									/>
+								</svg>
+								<span>{t('common.logout')}</span>
+							</button>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
     </>

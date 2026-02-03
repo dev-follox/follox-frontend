@@ -233,8 +233,9 @@ const DashboardPage: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const askNextQuestion = () => {
-    if (currentQuestionIndex >= QUESTIONS.length) {
+  const askNextQuestion = (overrideIndex?: number) => {
+    const index = overrideIndex !== undefined ? overrideIndex : currentQuestionIndex;
+    if (index >= QUESTIONS.length) {
       // All questions answered - show completion and tools widget
       const completionMessage: Message = {
         id: `completion-${Date.now()}`,
@@ -246,12 +247,12 @@ const DashboardPage: React.FC = () => {
       return;
     }
 
-    const question = QUESTIONS[currentQuestionIndex];
+    const question = QUESTIONS[index];
     const questionText = t(question.label);
     const optionalText = question.isRequired ? '' : ` (${t('common.optional')})`;
     
     const questionMessage: Message = {
-      id: `question-${currentQuestionIndex}-${Date.now()}`,
+      id: `question-${index}-${Date.now()}`,
       type: 'bot',
       content: `${questionText}${optionalText}`,
       timestamp: new Date(),
@@ -389,9 +390,10 @@ const DashboardPage: React.FC = () => {
 
     // Skip if empty and not required
     if (!inputValue.trim() && !question.isRequired) {
-      setCurrentQuestionIndex((prev) => prev + 1);
-      askNextQuestion();
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
       setInputValue('');
+      askNextQuestion(nextIndex);
       return;
     }
 

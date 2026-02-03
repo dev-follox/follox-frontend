@@ -25,6 +25,7 @@ import DashboardPage from './pages/DashboardPage';
 import AdminCompaniesPage from './pages/AdminCompaniesPage';
 import AdminCompanyDetailsPage from './pages/AdminCompanyDetailsPage';
 import { useTranslation } from './hooks/useTranslation';
+import { UserProfilePage } from './pages/UserProfilePage';
 
 const ProtectedRoute: React.FC = () => {
   const { isLoggedIn, loading } = useAuth();
@@ -78,6 +79,9 @@ const AppContent: React.FC = () => {
             {/* Admin routes */}
             <Route path="/admin/companies" element={<AdminCompaniesPage />} />
             <Route path="/admin/companies/:companyId" element={<AdminCompanyDetailsPage />} />
+
+            {/* User profile routes */}
+            <Route path="/profile" element={<UserProfilePage />} />
           </Route>
         </Route>
 
