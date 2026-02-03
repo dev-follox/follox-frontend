@@ -258,7 +258,7 @@ const UserProfilePage: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="space-y-4 max-w-xl">
+          <div className="space-y-4 max-w-3xl">
             {isEditing ? (
               <>
                 <Input
@@ -320,40 +320,40 @@ const UserProfilePage: React.FC = () => {
                 />
               </>
             ) : (
-              <>
-                <div>
-                  <span className="text-xs font-medium text-gray-500">{t('auth.fullName')}</span>
-                  <p className="text-gray-900">{profile.full_name || '-'}</p>
+              <div className="divide-y divide-gray-200">
+                <div className="flex items-center justify-between gap-4 py-3 first:pt-0">
+                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.fullName')}</span>
+                  <p className="text-sm text-gray-900 text-right break-words">{profile.full_name || '—'}</p>
                 </div>
-                <div>
-                  <span className="text-xs font-medium text-gray-500">{t('auth.email')}</span>
-                  <p className="text-gray-900">{profile.email || '—'}</p>
+                <div className="flex items-center justify-between gap-4 py-3">
+                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.email')}</span>
+                  <p className="text-sm text-gray-900 text-right break-words">{profile.email || '—'}</p>
                 </div>
-                <div>
-                  <span className="text-xs font-medium text-gray-500">{t('auth.phoneNumber')}</span>
-                  <p className="text-gray-900">{profile.phone_number || '—'}</p>
+                <div className="flex items-center justify-between gap-4 py-3">
+                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.phoneNumber')}</span>
+                  <p className="text-sm text-gray-900 text-right break-words">{profile.phone_number || '—'}</p>
                 </div>
-                <div>
-                  <span className="text-xs font-medium text-gray-500">{t('auth.linkedinLink')}</span>
-                  <p className="text-gray-900">{profile.professional_profile_link || '—'}</p>
+                <div className="flex items-center justify-between gap-4 py-3">
+                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.linkedinLink')}</span>
+                  <p className="text-sm text-gray-900 text-right break-words">{profile.professional_profile_link || '—'}</p>
                 </div>
-                <div>
-                  <span className="text-xs font-medium text-gray-500">{t('auth.companyName')}</span>
-                  <p className="text-gray-900">{profile.company_name || '—'}</p>
+                <div className="flex items-center justify-between gap-4 py-3">
+                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.companyName')}</span>
+                  <p className="text-sm text-gray-900 text-right break-words">{profile.company_name || '—'}</p>
                 </div>
-                <div>
-                  <span className="text-xs font-medium text-gray-500">{t('auth.stage')}</span>
-                  <p className="text-gray-900">
+                <div className="flex items-center justify-between gap-4 py-3">
+                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.stage')}</span>
+                  <p className="text-sm text-gray-900 text-right">
                     {profile.stage
                       ? t(profile.stage === 'pre-revenue' ? 'auth.stageOptions.preRevenue' : profile.stage === 'post-PMF' ? 'auth.stageOptions.postPMF' : `auth.stageOptions.${profile.stage}`)
                       : '—'}
                   </p>
                 </div>
-                <div>
-                  <span className="text-xs font-medium text-gray-500">{t('common.description')}</span>
-                  <p className="text-gray-900 whitespace-pre-wrap">{profile.description || '—'}</p>
+                <div className="flex items-start justify-between gap-4 py-3 last:pb-0">
+                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('common.description')}</span>
+                  <p className="text-sm text-gray-900 text-right whitespace-pre-wrap break-words">{profile.description || '—'}</p>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
