@@ -53,6 +53,11 @@ export interface CompanyUpdate {
   description?: string | null;
 }
 
+export interface PasswordUpdate {
+  current_password: string;
+  new_password: string;
+}
+
 // Company Answers types
 export interface CompanyAnswers {
   id: number;

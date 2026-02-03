@@ -1,0 +1,18 @@
+.profile-page {
+  padding: var(--spacing-md);
+  max-width: 48rem;
+
+  &__header {
+    margin-bottom: var(--spacing-md);
+  }
+
+  &__tab {
+    cursor: pointer;
+  }
+
+  &__block {
+    &--danger {
+      border-color: #ef4444; // red-500
+    }
+  }
+}

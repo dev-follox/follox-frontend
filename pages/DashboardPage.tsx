@@ -95,6 +95,7 @@ const DashboardPage: React.FC = () => {
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const startingChatRef = useRef(false);
 
   // Session storage key for chat history
   const getSessionKey = () => `dashboard_chat_${user?.company?.id || 'default'}`;
@@ -172,6 +173,9 @@ const DashboardPage: React.FC = () => {
   const startChat = (startInput: string) => {
     // Only start if not already started or if starting fresh
     if (!chatStarted) {
+      if (startingChatRef.current) return;
+      startingChatRef.current = true;
+
       setChatStarted(true);
       setCurrentQuestionIndex(0); // Always start from the beginning
       const startMessage: Message = {
@@ -180,19 +184,17 @@ const DashboardPage: React.FC = () => {
         content: startInput,
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, startMessage]);
-      // Add welcome message
       const welcomeMessage: Message = {
         id: 'welcome',
         type: 'bot',
         content: t('dashboard.chatbot.welcome'),
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, welcomeMessage]);
-      
-      // Start asking questions
+      setMessages((prev) => [...prev, startMessage, welcomeMessage]);
+
       setTimeout(() => {
-        askNextQuestion();
+        askNextQuestion(0);
+        startingChatRef.current = false;
       }, 500);
     } else {
       // If chat already started, just continue from where we left off

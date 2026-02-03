@@ -456,9 +456,43 @@
     "notFound": "Product not found."
   },
   "authCallback": {
-    "processing": "Processing login...",
+    "processing": "Logging in...",
     "error": "Login error: {message}",
     "unknownError": "Unknown error"
+  },
+  "profile": {
+    "title": "User profile",
+    "notAvailable": "Profile editing is only available for company accounts.",
+    "loadError": "Failed to load profile.",
+    "tabs": {
+      "general": "General info",
+      "security": "Security"
+    },
+    "general": {
+      "title": "General info",
+      "edit": "Edit",
+      "saved": "Profile saved successfully.",
+      "saveError": "Failed to save profile. Try again."
+    },
+    "security": {
+      "changePassword": "Change password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "passwordMismatch": "Passwords do not match.",
+      "changePasswordButton": "Change password",
+      "passwordChanged": "Password changed successfully.",
+      "passwordChangeError": "Failed to change password. Check current password and try again.",
+      "deleteAccount": "Delete account",
+      "deleteWarning": "This action is irreversible. All your data will be permanently deleted.",
+      "deleteAccountButton": "Delete account",
+      "deleteModalTitle": "Delete account",
+      "deleteModalMessage": "This will permanently delete your account and all associated data. This cannot be undone. Type \"delete\" below to confirm.",
+      "deleteModalConfirmLabel": "Type \"delete\" to confirm",
+      "deleteModalConfirmButton": "Delete account",
+      "deleteError": "Failed to delete account. Try again.",
+      "accountDeleted": "Your account has been deleted."
+    }
   },
   "sidebar": {
     "dashboard": "Dashboard",

@@ -46,6 +46,136 @@
         }
       }
     },
+    "/companies/me": {
+      "get": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Get Me",
+        "description": "Get current company profile (authenticated by token).",
+        "operationId": "get_me_companies_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Company"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Update Me",
+        "description": "Update current company profile (authenticated by token).",
+        "operationId": "update_me_companies_me_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Company"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Delete Me",
+        "description": "Delete current company account and all related data (irreversible).",
+        "operationId": "delete_me_companies_me_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/companies/me/password": {
+      "put": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Update My Password",
+        "description": "Update current company password. Requires current password.",
+        "operationId": "update_my_password_companies_me_password_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/companies/{company_id}": {
       "get": {
         "tags": [
@@ -4233,6 +4363,25 @@
           "cancelled"
         ],
         "title": "OrderStatus"
+      },
+      "PasswordUpdate": {
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "title": "Current Password"
+          },
+          "new_password": {
+            "type": "string",
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "current_password",
+          "new_password"
+        ],
+        "title": "PasswordUpdate",
+        "description": "Schema for changing password (current + new)."
       },
       "Positioning": {
         "properties": {

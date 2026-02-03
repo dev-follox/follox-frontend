@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed, Company, CompanyCreate, CompanyUpdate, CompanyAnswers, CompanyAnswersUpdate, ICPDiagnostician, Positioning, ChannelRisk, Experiment, DecisionReview } from '../types';
+import { Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed, Company, CompanyCreate, CompanyUpdate, CompanyAnswers, CompanyAnswersUpdate, PasswordUpdate, ICPDiagnostician, Positioning, ChannelRisk, Experiment, DecisionReview } from '../types';
 
 // In development, use the proxy URL, in production use the actual URL
 const BASE_URL = '/v1';
@@ -305,6 +305,24 @@ const api = {
   getMyCompany: async (companyId: number): Promise<Company> => {
     const response = await axiosInstance.get(`/companies/me/${companyId}`);
     return response.data;
+  },
+
+  getCompanyMe: async (): Promise<Company> => {
+    const response = await axiosInstance.get('/companies/me');
+    return response.data;
+  },
+
+  updateCompanyMe: async (companyData: CompanyUpdate): Promise<Company> => {
+    const response = await axiosInstance.put('/companies/me', companyData);
+    return response.data;
+  },
+
+  updateCompanyPassword: async (data: PasswordUpdate): Promise<void> => {
+    await axiosInstance.put('/companies/me/password', data);
+  },
+
+  deleteCompanyMe: async (): Promise<void> => {
+    await axiosInstance.delete('/companies/me');
   },
 
   updateCompany: async (companyId: number, companyData: CompanyUpdate): Promise<Company> => {
