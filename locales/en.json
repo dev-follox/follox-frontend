@@ -47,25 +47,25 @@
     },
     "tools": {
       "icp": {
-        "name": "ICP Audience Research",
+        "name": "Hypothesis Generator",
         "heading": "Understand your ideal customer",
         "para1": "Generate detailed ideal customer descriptions to skip hours of tedious interviews.",
         "para2": "Go beyond with actionable customer journey maps to make your marketing funnel more effective."
       },
       "positioning": {
-        "name": "Positioning",
+        "name": "CustDev Target Planner",
         "heading": "Nail your value proposition",
         "para1": "Understand how to sell the positive transformation from using your product. Grab the attention of your audience instantly.",
         "para2": "Audit your offer to get customers effortlessly."
       },
       "channelRisk": {
-        "name": "Channel Risk Assessor",
+        "name": "CustDev Interview Designer",
         "heading": "Maximize your reach by choosing the right platforms",
         "para1": "Audit your marketing and distribution channels, evaluating market maturity and CAC. Get a structured risk-opportunity analysis to ensure your product fits the channel perfectly and scales safely.",
         "para2": ""
       },
       "experiment": {
-        "name": "Hypotheses Designer",
+        "name": "CustDev Insights Analyzer",
         "heading": "Stop guessing and start testing",
         "para1": "Design lean, data-driven experiments to validate your sales strategy. From defining hypotheses to setting success metrics, get a structured roadmap for rapid testing and safe scaling based on real data.",
         "para2": ""
@@ -111,7 +111,7 @@
     },
     "tools": {
       "title": "Tools",
-      "description": "Answer questions about your product, then generate Ideal Customer Profile, Positioning, Channel Risk, Experiment, and Decision Review. View history per company."
+      "description": "Answer questions about your product, then generate Hypothesis Generator, CustDev Target Planner, CustDev Interview Designer, CustDev Insights Analyzer, and Decision Review. View history per company."
     },
     "goToModule": "Go to Module"
   },
@@ -175,7 +175,7 @@
   "qa": {
     "title": "Questions & Answers",
     "goToTools": "Go to Tools",
-    "viewIcpDiagnostician": "View Ideal Customer Profile",
+    "viewIcpDiagnostician": "View Hypothesis Generator",
     "editAnswers": "Edit Answers",
     "saveAnswers": "Save Answers",
     "answersSaved": "Answers saved successfully!",
@@ -309,24 +309,24 @@
       "nextSteps": "Next steps"
     },
     "icpDiagnostician": {
-      "title": "Ideal Customer Profile",
-      "noHistory": "No Ideal Customer Profile history. Click \"Generate\" to create the first one.",
-      "generateError": "Failed to generate Ideal Customer Profile. Try again."
+      "title": "Hypothesis Generator",
+      "noHistory": "No Hypothesis Generator history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate Hypothesis Generator. Try again."
     },
     "positioning": {
-      "title": "Positioning",
-      "noHistory": "No Positioning history. Click \"Generate\" to create the first one.",
-      "generateError": "Failed to generate Positioning. Try again."
+      "title": "CustDev Target Planner",
+      "noHistory": "No CustDev Target Planner history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate CustDev Target Planner. Try again."
     },
     "channelRisk": {
-      "title": "Channel Risk",
-      "noHistory": "No Channel Risk history. Click \"Generate\" to create the first one.",
-      "generateError": "Failed to generate Channel Risk. Try again."
+      "title": "CustDev Interview Designer",
+      "noHistory": "No CustDev Interview Designer history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate CustDev Interview Designer. Try again."
     },
     "experiment": {
-      "title": "Experiment",
-      "noHistory": "No Experiment history. Click \"Generate\" to create the first one.",
-      "generateError": "Failed to generate Experiment. Try again."
+      "title": "CustDev Insights Analyzer",
+      "noHistory": "No CustDev Insights Analyzer history. Click \"Generate\" to create the first one.",
+      "generateError": "Failed to generate CustDev Insights Analyzer. Try again."
     },
     "decisionReview": {
       "title": "Decision Review",
@@ -502,10 +502,10 @@
     "tools": "Tools",
     "answers": "Answers",
     "qnaProgress": "Q&A filled",
-    "icpDiagnostician": "Ideal Customer Profile",
-    "positioning": "Positioning",
-    "channelRisk": "Channel Risk",
-    "experiment": "Experiment",
+    "icpDiagnostician": "Hypothesis Generator",
+    "positioning": "CustDev Target Planner",
+    "channelRisk": "CustDev Interview Designer",
+    "experiment": "CustDev Insights Analyzer",
     "decisionReview": "Decision Review",
     "admin": "Admin Module",
     "companies": "Companies",
@@ -599,12 +599,12 @@
       },
       "generateTools": {
         "title": "Tools",
-        "description": "Generate Ideal Customer Profile, Positioning, Channel Risk, Experiment, and Decision Review",
-        "goTo": "Go to Ideal Customer Profile",
-        "icpDiagnostician": "Ideal Customer Profile",
-        "positioning": "Positioning",
-        "channelRisk": "Channel Risk",
-        "experiment": "Experiment",
+        "description": "Generate Hypothesis Generator, CustDev Target Planner, CustDev Interview Designer, CustDev Insights Analyzer, and Decision Review",
+        "goTo": "Go to Hypothesis Generator",
+        "icpDiagnostician": "Hypothesis Generator",
+        "positioning": "CustDev Target Planner",
+        "channelRisk": "CustDev Interview Designer",
+        "experiment": "CustDev Insights Analyzer",
         "decisionReview": "Decision Review"
       }
     }

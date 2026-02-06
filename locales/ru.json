@@ -47,25 +47,25 @@
     },
     "tools": {
       "icp": {
-        "name": "Анализ аудитории",
+        "name": "Генератор гипотез",
         "heading": "Знайте своего покупателя в лицо",
         "para1": "Генерируйте глубокие описания идеальных клиентов вместо рутинных опросов.",
         "para2": "Actionable CJM: пошаговые карты пути клиента для максимальной конверсии"
       },
       "positioning": {
-        "name": "Positioning",
+        "name": "Планировщик CustDev Target",
         "heading": "Ваше ценностное предложение — в центре внимания",
         "para1": "Покажите клиентам не просто функции, а трансформацию их жизни с вашим продуктом. Захватывайте внимание аудитории с первой секунды.",
         "para2": "Анализ: поймите истинную ценность вашего продукта."
       },
       "channelRisk": {
-        "name": "Анализ каналов продаж",
+        "name": "Конструктор интервью CustDev",
         "heading": "Минимизируйте риски при выборе площадок",
         "para1": "Анализируйте зрелость рынка, стоимость привлечения (CAC) и соответствие каналов вашему продукту. Получите структурированный аудит с оценкой рисков и рекомендациями для безопасного масштабирования.",
         "para2": ""
       },
       "experiment": {
-        "name": "Архитектор маркетинговых гипотез",
+        "name": "Анализ инсайтов CustDev",
         "heading": "Хватит гадать — пора тестировать",
         "para1": "Проектируйте быстрые эксперименты для проверки вашей GTM-стратегии по методологии Lean. Получайте чёткие гипотезы, метрики успеха и пошаговый план валидации идей, основанный на данных.",
         "para2": ""
@@ -111,7 +111,7 @@
     },
     "tools": {
       "title": "Инструменты",
-      "description": "Ответьте на вопросы о продукте, затем генерируйте Ideal Customer Profile, Positioning, Channel Risk, Experiment и Decision Review. История хранится по компании."
+      "description": "Ответьте на вопросы о продукте, затем генерируйте гипотезы, target CustDev, интервью CustDev, анализ инсайтов CustDev и Decision Review. История хранится по компании."
     },
     "goToModule": "Перейти к модулю"
   },
@@ -175,7 +175,7 @@
   "qa": {
     "title": "Вопросы и ответы",
     "goToTools": "Перейти к инструментам",
-    "viewIcpDiagnostician": "Перейти к Ideal Customer Profile",
+    "viewIcpDiagnostician": "Перейти к Генератору гипотез",
     "stepOf": "Шаг {current} из {total}",
     "back": "Назад",
     "skip": "Пропустить",
@@ -309,24 +309,24 @@
       "nextSteps": "Следующие шаги"
     },
     "icpDiagnostician": {
-      "title": "Ideal Customer Profile",
-      "noHistory": "История Ideal Customer Profile пуста. Нажмите \"Сгенерировать\" для создания первой.",
-      "generateError": "Не удалось сгенерировать Ideal Customer Profile. Попробуйте снова."
+      "title": "Генератор гипотез",
+      "noHistory": "История Генератора гипотез пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать Генератор гипотез. Попробуйте снова."
     },
     "positioning": {
-      "title": "Positioning",
-      "noHistory": "История Positioning пуста. Нажмите \"Сгенерировать\" для создания первой.",
-      "generateError": "Не удалось сгенерировать Positioning. Попробуйте снова."
+      "title": "Планировщик CustDev Target",
+      "noHistory": "История Планировщика CustDev Target пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать Планировщик CustDev Target. Попробуйте снова."
     },
     "channelRisk": {
-      "title": "Channel Risk",
-      "noHistory": "История Channel Risk пуста. Нажмите \"Сгенерировать\" для создания первой.",
-      "generateError": "Не удалось сгенерировать Channel Risk. Попробуйте снова."
+      "title": "Конструктор интервью CustDev",
+      "noHistory": "История Конструктора интервью CustDev пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать Конструктор интервью CustDev. Попробуйте снова."
     },
     "experiment": {
-      "title": "Experiment",
-      "noHistory": "История Experiment пуста. Нажмите \"Сгенерировать\" для создания первой.",
-      "generateError": "Не удалось сгенерировать Experiment. Попробуйте снова."
+      "title": "Анализ инсайтов CustDev",
+      "noHistory": "История Анализов инсайтов CustDev пуста. Нажмите \"Сгенерировать\" для создания первой.",
+      "generateError": "Не удалось сгенерировать Анализ инсайтов CustDev. Попробуйте снова."
     },
     "decisionReview": {
       "title": "Decision Review",
@@ -502,10 +502,10 @@
     "tools": "Инструменты",
     "answers": "Ответы",
     "qnaProgress": "Заполнено Q&A",
-    "icpDiagnostician": "Ideal Customer Profile",
-    "positioning": "Positioning",
-    "channelRisk": "Channel Risk",
-    "experiment": "Experiment",
+    "icpDiagnostician": "Генератор гипотез",
+    "positioning": "Планировщик CustDev Target",
+    "channelRisk": "Конструктор интервью CustDev",
+    "experiment": "Анализ инсайтов CustDev",
     "decisionReview": "Decision Review",
     "admin": "Админ модуль",
     "companies": "Компании",
@@ -599,12 +599,12 @@
       },
       "generateTools": {
         "title": "Инструменты",
-        "description": "Генерируйте Ideal Customer Profile, Positioning, Channel Risk, Experiment и Decision Review",
-        "goTo": "Перейти к Ideal Customer Profile",
-        "icpDiagnostician": "Ideal Customer Profile",
-        "positioning": "Positioning",
-        "channelRisk": "Channel Risk",
-        "experiment": "Experiment",
+        "description": "Генерируйте Генератор гипотез, Планировщик CustDev Target, Конструктор интервью CustDev, Анализ инсайтов CustDev и Decision Review",
+        "goTo": "Перейти к Генератору гипотез",
+        "icpDiagnostician": "Генератор гипотез",
+        "positioning": "Планировщик CustDev Target",
+        "channelRisk": "Конструктор интервью CustDev",
+        "experiment": "Анализ инсайтов CustDev",
         "decisionReview": "Decision Review"
       }
     }
