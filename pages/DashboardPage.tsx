@@ -15,60 +15,21 @@ interface Message {
 }
 
 interface Question {
-  section: keyof CompanyAnswers['answers'];
-  field: string;
+  field: keyof CompanyAnswers['answers'];
   label: string;
   isRequired?: boolean;
   isMultiline?: boolean;
 }
 
-const SECTION_ORDER = [
-  'product',
-  'market',
-  'customer',
-  'problem',
-  'solution',
-  'distribution',
-  'pricing',
-  'traction',
-  'constraints',
-] as const;
-
+// Order matches flat answers: name, product, client, problem, value_proposition, competitive_advantage, business_model
 const QUESTIONS: Question[] = [
-  // Product section
-  { section: 'product', field: 'name', label: 'dashboard.chatbot.questions.product.name', isRequired: true },
-  { section: 'product', field: 'description', label: 'dashboard.chatbot.questions.product.description', isRequired: true, isMultiline: true },
-  { section: 'product', field: 'category', label: 'dashboard.chatbot.questions.product.category' },
-  { section: 'product', field: 'stage', label: 'dashboard.chatbot.questions.product.stage' },
-  // Market section
-  { section: 'market', field: 'target_market', label: 'dashboard.chatbot.questions.market.targetMarket', isRequired: true },
-  { section: 'market', field: 'geography', label: 'dashboard.chatbot.questions.market.geography' },
-  { section: 'market', field: 'alternatives', label: 'dashboard.chatbot.questions.market.alternatives' },
-  // Customer section
-  { section: 'customer', field: 'role', label: 'dashboard.chatbot.questions.customer.role', isRequired: true },
-  { section: 'customer', field: 'company_stage', label: 'dashboard.chatbot.questions.customer.companyStage' },
-  { section: 'customer', field: 'team_size', label: 'dashboard.chatbot.questions.customer.teamSize' },
-  // Problem section
-  { section: 'problem', field: 'main_pain', label: 'dashboard.chatbot.questions.problem.mainPain', isRequired: true, isMultiline: true },
-  { section: 'problem', field: 'frequency', label: 'dashboard.chatbot.questions.problem.frequency' },
-  { section: 'problem', field: 'current_solution', label: 'dashboard.chatbot.questions.problem.currentSolution', isMultiline: true },
-  // Solution section
-  { section: 'solution', field: 'core_value', label: 'dashboard.chatbot.questions.solution.coreValue', isMultiline: true },
-  { section: 'solution', field: 'differentiator', label: 'dashboard.chatbot.questions.solution.differentiator', isMultiline: true },
-  // Distribution section
-  { section: 'distribution', field: 'known_channels', label: 'dashboard.chatbot.questions.distribution.knownChannels' },
-  { section: 'distribution', field: 'preferred_channel', label: 'dashboard.chatbot.questions.distribution.preferredChannel' },
-  // Pricing section
-  { section: 'pricing', field: 'model', label: 'dashboard.chatbot.questions.pricing.model' },
-  { section: 'pricing', field: 'expected_price', label: 'dashboard.chatbot.questions.pricing.expectedPrice' },
-  // Traction section
-  { section: 'traction', field: 'users', label: 'dashboard.chatbot.questions.traction.users' },
-  { section: 'traction', field: 'revenue', label: 'dashboard.chatbot.questions.traction.revenue' },
-  { section: 'traction', field: 'signals', label: 'dashboard.chatbot.questions.traction.signals', isMultiline: true },
-  // Constraints section
-  { section: 'constraints', field: 'budget', label: 'dashboard.chatbot.questions.constraints.budget' },
-  { section: 'constraints', field: 'time', label: 'dashboard.chatbot.questions.constraints.time' },
-  { section: 'constraints', field: 'team', label: 'dashboard.chatbot.questions.constraints.team' },
+  { field: 'name', label: 'dashboard.chatbot.questions.product.name', isRequired: true },
+  { field: 'product', label: 'dashboard.chatbot.questions.product.description', isRequired: true, isMultiline: true },
+  { field: 'client', label: 'dashboard.chatbot.questions.customer.client', isRequired: true },
+  { field: 'problem', label: 'dashboard.chatbot.questions.problem.mainPain', isRequired: true, isMultiline: true },
+  { field: 'value_proposition', label: 'dashboard.chatbot.questions.solution.coreValue', isMultiline: true },
+  { field: 'competitive_advantage', label: 'dashboard.chatbot.questions.solution.differentiator', isMultiline: true },
+  { field: 'business_model', label: 'dashboard.chatbot.questions.pricing.model', isMultiline: true },
 ];
 
 const DashboardPage: React.FC = () => {
@@ -82,17 +43,7 @@ const DashboardPage: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
   const [saving, setSaving] = useState(false);
-  const [answers, setAnswers] = useState<CompanyAnswers['answers']>({
-    product: {},
-    market: {},
-    customer: {},
-    problem: {},
-    solution: {},
-    distribution: {},
-    pricing: {},
-    traction: {},
-    constraints: {},
-  });
+  const [answers, setAnswers] = useState<CompanyAnswers['answers']>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const startingChatRef = useRef(false);
@@ -268,22 +219,10 @@ const DashboardPage: React.FC = () => {
   const saveAnswer = async (question: Question, value: string) => {
     if (!user?.company?.id) return;
 
-    const section = answers[question.section] || {};
-    let processedValue: any = value.trim();
-
-    // Handle array fields (alternatives, known_channels)
-    if (question.field === 'alternatives' || question.field === 'known_channels') {
-      processedValue = value.split(',').map((item) => item.trim()).filter(Boolean);
-    } else if (question.field === 'expected_price' || question.field === 'users' || question.field === 'revenue') {
-      processedValue = value ? Number(value) : undefined;
-    }
-
+    const processedValue = value.trim();
     const updatedAnswers = {
       ...answers,
-      [question.section]: {
-        ...section,
-        [question.field]: processedValue,
-      },
+      [question.field]: processedValue,
     };
 
     setAnswers(updatedAnswers);

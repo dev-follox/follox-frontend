@@ -4,30 +4,24 @@ import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import type { CompanyAnswers } from '../types';
 
-const QNA_FIELDS: { section: keyof CompanyAnswers['answers']; field: string }[] = [
-  { section: 'product', field: 'name' }, { section: 'product', field: 'description' }, { section: 'product', field: 'category' }, { section: 'product', field: 'stage' },
-  { section: 'market', field: 'target_market' }, { section: 'market', field: 'geography' }, { section: 'market', field: 'alternatives' },
-  { section: 'customer', field: 'role' }, { section: 'customer', field: 'company_stage' }, { section: 'customer', field: 'team_size' },
-  { section: 'problem', field: 'main_pain' }, { section: 'problem', field: 'frequency' }, { section: 'problem', field: 'current_solution' },
-  { section: 'solution', field: 'core_value' }, { section: 'solution', field: 'differentiator' },
-  { section: 'distribution', field: 'known_channels' }, { section: 'distribution', field: 'preferred_channel' },
-  { section: 'pricing', field: 'model' }, { section: 'pricing', field: 'expected_price' },
-  { section: 'traction', field: 'users' }, { section: 'traction', field: 'revenue' }, { section: 'traction', field: 'signals' },
-  { section: 'constraints', field: 'budget' }, { section: 'constraints', field: 'time' }, { section: 'constraints', field: 'team' },
+const QNA_FIELD_KEYS: (keyof CompanyAnswers['answers'])[] = [
+  'name',
+  'product',
+  'client',
+  'problem',
+  'value_proposition',
+  'competitive_advantage',
+  'business_model',
 ];
 
 function getQnaFilledPercent(answers: CompanyAnswers['answers']): number {
   let filled = 0;
-  for (const { section, field } of QNA_FIELDS) {
-    const sectionData = answers[section];
-    if (!sectionData) continue;
-    const value = (sectionData as Record<string, unknown>)[field];
+  for (const key of QNA_FIELD_KEYS) {
+    const value = answers[key];
     if (value === undefined || value === null) continue;
     if (typeof value === 'string' && value.trim().length > 0) filled++;
-    else if (Array.isArray(value) && value.length > 0) filled++;
-    else if (typeof value === 'number' && !Number.isNaN(value)) filled++;
   }
-  return QNA_FIELDS.length === 0 ? 0 : Math.round((filled / QNA_FIELDS.length) * 100);
+  return QNA_FIELD_KEYS.length === 0 ? 0 : Math.round((filled / QNA_FIELD_KEYS.length) * 100);
 }
 
 interface QnaProgressWidgetProps {

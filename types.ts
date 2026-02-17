@@ -58,54 +58,18 @@ export interface PasswordUpdate {
   new_password: string;
 }
 
-// Company Answers types
+// Company Answers types (flat structure: name, product, client, problem, value_proposition, competitive_advantage, business_model)
 export interface CompanyAnswers {
   id: number;
   company_id: number;
   answers: {
-    product?: {
-      name?: string;
-      description?: string;
-      category?: string;
-      stage?: string;
-    };
-    market?: {
-      target_market?: string;
-      geography?: string;
-      alternatives?: string[];
-    };
-    customer?: {
-      role?: string;
-      company_stage?: string;
-      team_size?: string;
-    };
-    problem?: {
-      main_pain?: string;
-      frequency?: string;
-      current_solution?: string;
-    };
-    solution?: {
-      core_value?: string;
-      differentiator?: string;
-    };
-    distribution?: {
-      known_channels?: string[];
-      preferred_channel?: string;
-    };
-    pricing?: {
-      model?: string;
-      expected_price?: string | number;
-    };
-    traction?: {
-      users?: number;
-      revenue?: number;
-      signals?: string;
-    };
-    constraints?: {
-      budget?: string;
-      time?: string;
-      team?: string;
-    };
+    name?: string;
+    product?: string;
+    client?: string;
+    problem?: string;
+    value_proposition?: string;
+    competitive_advantage?: string;
+    business_model?: string;
   };
   created_at: string;
   updated_at: string | null;

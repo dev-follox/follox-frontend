@@ -127,229 +127,59 @@ const AdminCompanyDetailsPage: React.FC = () => {
           <div className="qa-page__content">
               {answers ? (
                 <div className="qa-sections">
-                  {/* Product Section */}
                   <Card className="qa-section">
-                    <h2 className="qa-section__title">{t('qa.sections.product.title')}</h2>
+                    <h2 className="qa-section__title">{t('qa.title')}</h2>
                     <div className="qa-section__fields">
                       <Input
-                        id="product-name"
+                        id="answer-name"
                         label={t('qa.sections.product.name')}
-                        value={answers.answers.product?.name || ''}
+                        value={answers.answers.name || ''}
                         disabled
                       />
                       <Input
-                        id="product-description"
+                        id="answer-product"
                         label={t('qa.sections.product.description')}
                         multiline
                         rows={3}
-                        value={answers.answers.product?.description || ''}
+                        value={answers.answers.product || ''}
                         disabled
                       />
                       <Input
-                        id="product-category"
-                        label={`${t('qa.sections.product.category')} (${t('common.optional')})`}
-                        value={answers.answers.product?.category || ''}
-                        disabled
-                      />
-                      <Input
-                        id="product-stage"
-                        label={`${t('qa.sections.product.stage')} (${t('common.optional')})`}
-                        value={answers.answers.product?.stage || ''}
-                        disabled
-                      />
-                    </div>
-                  </Card>
-
-                  {/* Market Section */}
-                  <Card className="qa-section">
-                    <h2 className="qa-section__title">{t('qa.sections.market.title')}</h2>
-                    <div className="qa-section__fields">
-                      <Input
-                        id="market-target"
-                        label={t('qa.sections.market.targetMarket')}
-                        value={answers.answers.market?.target_market || ''}
-                        disabled
-                      />
-                      <Input
-                        id="market-geography"
-                        label={`${t('qa.sections.market.geography')} (${t('common.optional')})`}
-                        value={answers.answers.market?.geography || ''}
-                        disabled
-                      />
-                      <Input
-                        id="market-alternatives"
-                        label={`${t('qa.sections.market.alternatives')} (${t('common.optional')})`}
-                        value={answers.answers.market?.alternatives?.join(', ') || ''}
-                        disabled
-                      />
-                    </div>
-                  </Card>
-
-                  {/* Customer Section */}
-                  <Card className="qa-section">
-                    <h2 className="qa-section__title">{t('qa.sections.customer.title')}</h2>
-                    <div className="qa-section__fields">
-                      <Input
-                        id="customer-role"
+                        id="answer-client"
                         label={t('qa.sections.customer.role')}
-                        value={answers.answers.customer?.role || ''}
+                        value={answers.answers.client || ''}
                         disabled
                       />
                       <Input
-                        id="customer-company-stage"
-                        label={`${t('qa.sections.customer.companyStage')} (${t('common.optional')})`}
-                        value={answers.answers.customer?.company_stage || ''}
-                        disabled
-                      />
-                      <Input
-                        id="customer-team-size"
-                        label={`${t('qa.sections.customer.teamSize')} (${t('common.optional')})`}
-                        value={answers.answers.customer?.team_size || ''}
-                        disabled
-                      />
-                    </div>
-                  </Card>
-
-                  {/* Problem Section */}
-                  <Card className="qa-section">
-                    <h2 className="qa-section__title">{t('qa.sections.problem.title')}</h2>
-                    <div className="qa-section__fields">
-                      <Input
-                        id="problem-main-pain"
+                        id="answer-problem"
                         label={t('qa.sections.problem.mainPain')}
                         multiline
                         rows={3}
-                        value={answers.answers.problem?.main_pain || ''}
+                        value={answers.answers.problem || ''}
                         disabled
                       />
                       <Input
-                        id="problem-frequency"
-                        label={`${t('qa.sections.problem.frequency')} (${t('common.optional')})`}
-                        value={answers.answers.problem?.frequency || ''}
-                        disabled
-                      />
-                      <Input
-                        id="problem-current-solution"
-                        label={`${t('qa.sections.problem.currentSolution')} (${t('common.optional')})`}
-                        multiline
-                        rows={2}
-                        value={answers.answers.problem?.current_solution || ''}
-                        disabled
-                      />
-                    </div>
-                  </Card>
-
-                  {/* Solution Section */}
-                  <Card className="qa-section">
-                    <h2 className="qa-section__title">{t('qa.sections.solution.title')}</h2>
-                    <div className="qa-section__fields">
-                      <Input
-                        id="solution-core-value"
-                        label={`${t('qa.sections.solution.coreValue')} (${t('common.optional')})`}
+                        id="answer-value-proposition"
+                        label={t('qa.sections.solution.coreValue')}
                         multiline
                         rows={3}
-                        value={answers.answers.solution?.core_value || ''}
+                        value={answers.answers.value_proposition || ''}
                         disabled
                       />
                       <Input
-                        id="solution-differentiator"
-                        label={`${t('qa.sections.solution.differentiator')} (${t('common.optional')})`}
+                        id="answer-competitive-advantage"
+                        label={t('qa.sections.solution.differentiator')}
                         multiline
                         rows={2}
-                        value={answers.answers.solution?.differentiator || ''}
-                        disabled
-                      />
-                    </div>
-                  </Card>
-
-                  {/* Distribution Section */}
-                  <Card className="qa-section">
-                    <h2 className="qa-section__title">{t('qa.sections.distribution.title')}</h2>
-                    <div className="qa-section__fields">
-                      <Input
-                        id="distribution-channels"
-                        label={`${t('qa.sections.distribution.knownChannels')} (${t('common.optional')})`}
-                        value={answers.answers.distribution?.known_channels?.join(', ') || ''}
+                        value={answers.answers.competitive_advantage || ''}
                         disabled
                       />
                       <Input
-                        id="distribution-preferred"
-                        label={`${t('qa.sections.distribution.preferredChannel')} (${t('common.optional')})`}
-                        value={answers.answers.distribution?.preferred_channel || ''}
-                        disabled
-                      />
-                    </div>
-                  </Card>
-
-                  {/* Pricing Section */}
-                  <Card className="qa-section">
-                    <h2 className="qa-section__title">{t('qa.sections.pricing.title')}</h2>
-                    <div className="qa-section__fields">
-                      <Input
-                        id="pricing-model"
-                        label={`${t('qa.sections.pricing.model')} (${t('common.optional')})`}
-                        value={answers.answers.pricing?.model || ''}
-                        disabled
-                      />
-                      <Input
-                        id="pricing-expected"
-                        label={`${t('qa.sections.pricing.expectedPrice')} (${t('common.optional')})`}
-                        type="number"
-                        value={answers.answers.pricing?.expected_price || ''}
-                        disabled
-                      />
-                    </div>
-                  </Card>
-
-                  {/* Traction Section */}
-                  <Card className="qa-section">
-                    <h2 className="qa-section__title">{t('qa.sections.traction.title')}</h2>
-                    <div className="qa-section__fields">
-                      <Input
-                        id="traction-users"
-                        label={`${t('qa.sections.traction.users')} (${t('common.optional')})`}
-                        type="number"
-                        value={answers.answers.traction?.users || ''}
-                        disabled
-                      />
-                      <Input
-                        id="traction-revenue"
-                        label={`${t('qa.sections.traction.revenue')} (${t('common.optional')})`}
-                        type="number"
-                        value={answers.answers.traction?.revenue || ''}
-                        disabled
-                      />
-                      <Input
-                        id="traction-signals"
-                        label={`${t('qa.sections.traction.signals')} (${t('common.optional')})`}
+                        id="answer-business-model"
+                        label={t('qa.sections.pricing.model')}
                         multiline
                         rows={2}
-                        value={answers.answers.traction?.signals || ''}
-                        disabled
-                      />
-                    </div>
-                  </Card>
-
-                  {/* Constraints Section */}
-                  <Card className="qa-section">
-                    <h2 className="qa-section__title">{t('qa.sections.constraints.title')}</h2>
-                    <div className="qa-section__fields">
-                      <Input
-                        id="constraints-budget"
-                        label={`${t('qa.sections.constraints.budget')} (${t('common.optional')})`}
-                        value={answers.answers.constraints?.budget || ''}
-                        disabled
-                      />
-                      <Input
-                        id="constraints-time"
-                        label={`${t('qa.sections.constraints.time')} (${t('common.optional')})`}
-                        value={answers.answers.constraints?.time || ''}
-                        disabled
-                      />
-                      <Input
-                        id="constraints-team"
-                        label={`${t('qa.sections.constraints.team')} (${t('common.optional')})`}
-                        value={answers.answers.constraints?.team || ''}
+                        value={answers.answers.business_model || ''}
                         disabled
                       />
                     </div>

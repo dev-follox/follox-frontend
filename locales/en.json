@@ -538,6 +538,7 @@
         },
         "customer": {
           "role": "What is the role of your ideal customer? (e.g., CTO, Marketing Manager)",
+          "client": "Who is your client? (target audience)",
           "companyStage": "What stage are your target customer companies typically in?",
           "teamSize": "What team size do your target customers typically have?"
         },
