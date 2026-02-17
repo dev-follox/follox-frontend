@@ -115,44 +115,8 @@ export interface CompanyAnswersUpdate {
   answers: CompanyAnswers['answers'];
 }
 
-// Decision types (icp_diagnostician, positioning, channel_risk, experiment, decision_review)
-export interface ICPDiagnostician {
-  id: number;
-  company_id: number;
-  content?: string | null;
-  output_data?: Record<string, unknown> | null;
-  language?: string | null;
-  created_at: string;
-}
-
-export interface Positioning {
-  id: number;
-  company_id: number;
-  content?: string | null;
-  output_data?: Record<string, unknown> | null;
-  language?: string | null;
-  created_at: string;
-}
-
-export interface ChannelRisk {
-  id: number;
-  company_id: number;
-  content?: string | null;
-  output_data?: Record<string, unknown> | null;
-  language?: string | null;
-  created_at: string;
-}
-
-export interface Experiment {
-  id: number;
-  company_id: number;
-  content?: string | null;
-  output_data?: Record<string, unknown> | null;
-  language?: string | null;
-  created_at: string;
-}
-
-export interface DecisionReview {
+/** Shared response shape for all tool generations (hypothesis_generator, custdev_target_planner, custdev_insights_analyzer, custdev_interview_designer) */
+export interface ToolGenerationResponse {
   id: number;
   company_id: number;
   content?: string | null;

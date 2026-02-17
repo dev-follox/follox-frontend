@@ -46,34 +46,28 @@
       "text": "Follox helps you generate hypotheses, so you can take action through real customer conversations, collect feedback, and Follox turn it into clear insights - so you know what to test next, what to ignore, and when it’s time to move forward"
     },
     "tools": {
-      "icp": {
+      "hypothesisGenerator": {
         "name": "Hypothesis Generator",
         "heading": "Understand your ideal customer",
         "para1": "Generate detailed ideal customer descriptions to skip hours of tedious interviews.",
         "para2": "Go beyond with actionable customer journey maps to make your marketing funnel more effective."
       },
-      "positioning": {
+      "custdevTargetPlanner": {
         "name": "CustDev Target Planner",
         "heading": "Nail your value proposition",
         "para1": "Understand how to sell the positive transformation from using your product. Grab the attention of your audience instantly.",
         "para2": "Audit your offer to get customers effortlessly."
       },
-      "channelRisk": {
+      "custdevInterviewDesigner": {
         "name": "CustDev Interview Designer",
         "heading": "Maximize your reach by choosing the right platforms",
         "para1": "Audit your marketing and distribution channels, evaluating market maturity and CAC. Get a structured risk-opportunity analysis to ensure your product fits the channel perfectly and scales safely.",
         "para2": ""
       },
-      "experiment": {
+      "custdevInsightsAnalyzer": {
         "name": "CustDev Insights Analyzer",
         "heading": "Stop guessing and start testing",
         "para1": "Design lean, data-driven experiments to validate your sales strategy. From defining hypotheses to setting success metrics, get a structured roadmap for rapid testing and safe scaling based on real data.",
-        "para2": ""
-      },
-      "decisionReview": {
-        "name": "Strategic Decision Reviewer",
-        "heading": "Ensure your strategy is bulletproof",
-        "para1": "Get a high-level consultant, which is auditing your GTM decisions for risks and hidden constraints. Avoid costly mistakes and ensure alignment with market context.",
         "para2": ""
       }
     },
@@ -111,7 +105,7 @@
     },
     "tools": {
       "title": "Tools",
-      "description": "Answer questions about your product, then generate Hypothesis Generator, CustDev Target Planner, CustDev Interview Designer, CustDev Insights Analyzer, and Decision Review. View history per company."
+      "description": "Answer questions about your product, then generate Hypothesis Generator, CustDev Target Planner, CustDev Interview Designer, and CustDev Insights Analyzer. View history per company."
     },
     "goToModule": "Go to Module"
   },
@@ -175,7 +169,7 @@
   "qa": {
     "title": "Questions & Answers",
     "goToTools": "Go to Tools",
-    "viewIcpDiagnostician": "View Hypothesis Generator",
+    "viewHypothesisGenerator": "View Hypothesis Generator",
     "editAnswers": "Edit Answers",
     "saveAnswers": "Save Answers",
     "answersSaved": "Answers saved successfully!",
@@ -308,30 +302,25 @@
       "impact": "Impact",
       "nextSteps": "Next steps"
     },
-    "icpDiagnostician": {
+    "hypothesisGenerator": {
       "title": "Hypothesis Generator",
       "noHistory": "No Hypothesis Generator history. Click \"Generate\" to create the first one.",
       "generateError": "Failed to generate Hypothesis Generator. Try again."
     },
-    "positioning": {
+    "custdevTargetPlanner": {
       "title": "CustDev Target Planner",
       "noHistory": "No CustDev Target Planner history. Click \"Generate\" to create the first one.",
       "generateError": "Failed to generate CustDev Target Planner. Try again."
     },
-    "channelRisk": {
+    "custdevInterviewDesigner": {
       "title": "CustDev Interview Designer",
       "noHistory": "No CustDev Interview Designer history. Click \"Generate\" to create the first one.",
       "generateError": "Failed to generate CustDev Interview Designer. Try again."
     },
-    "experiment": {
+    "custdevInsightsAnalyzer": {
       "title": "CustDev Insights Analyzer",
       "noHistory": "No CustDev Insights Analyzer history. Click \"Generate\" to create the first one.",
       "generateError": "Failed to generate CustDev Insights Analyzer. Try again."
-    },
-    "decisionReview": {
-      "title": "Decision Review",
-      "noHistory": "No Decision Review history. Click \"Generate\" to create the first one.",
-      "generateError": "Failed to generate Decision Review. Try again."
     }
   },
   "telegram": {
@@ -502,11 +491,10 @@
     "tools": "Tools",
     "answers": "Answers",
     "qnaProgress": "Q&A filled",
-    "icpDiagnostician": "Hypothesis Generator",
-    "positioning": "CustDev Target Planner",
-    "channelRisk": "CustDev Interview Designer",
-    "experiment": "CustDev Insights Analyzer",
-    "decisionReview": "Decision Review",
+    "hypothesisGenerator": "Hypothesis Generator",
+    "custdevTargetPlanner": "CustDev Target Planner",
+    "custdevInterviewDesigner": "CustDev Interview Designer",
+    "custdevInsightsAnalyzer": "CustDev Insights Analyzer",
     "admin": "Admin Module",
     "companies": "Companies",
     "switchLanguage": "Switch Language",
@@ -599,13 +587,12 @@
       },
       "generateTools": {
         "title": "Tools",
-        "description": "Generate Hypothesis Generator, CustDev Target Planner, CustDev Interview Designer, CustDev Insights Analyzer, and Decision Review",
+        "description": "Generate Hypothesis Generator, CustDev Target Planner, CustDev Interview Designer, and CustDev Insights Analyzer",
         "goTo": "Go to Hypothesis Generator",
-        "icpDiagnostician": "Hypothesis Generator",
-        "positioning": "CustDev Target Planner",
-        "channelRisk": "CustDev Interview Designer",
-        "experiment": "CustDev Insights Analyzer",
-        "decisionReview": "Decision Review"
+        "hypothesisGenerator": "Hypothesis Generator",
+        "custdevTargetPlanner": "CustDev Target Planner",
+        "custdevInterviewDesigner": "CustDev Interview Designer",
+        "custdevInsightsAnalyzer": "CustDev Insights Analyzer"
       }
     }
   },

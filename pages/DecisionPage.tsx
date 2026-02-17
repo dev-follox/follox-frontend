@@ -8,9 +8,7 @@ import Button from '../components/Button';
 import Spinner from '../components/Spinner';
 import DecisionOutputView, { DecisionVariant } from '../components/DecisionOutputView';
 import api from '../services/api';
-import type { ICPDiagnostician, Positioning, ChannelRisk, Experiment, DecisionReview } from '../types';
-
-type DecisionItem = ICPDiagnostician | Positioning | ChannelRisk | Experiment | DecisionReview;
+import type { ToolGenerationResponse } from '../types';
 
 interface DecisionPageProps {
   variant: DecisionVariant;
@@ -19,47 +17,40 @@ interface DecisionPageProps {
 const CONFIG: Record<
   DecisionVariant,
   {
-    generate: (id: number, body: { language?: string }) => Promise<DecisionItem>;
-    getHistory: (id: number) => Promise<DecisionItem[]>;
+    generate: (id: number, body: { language?: string }) => Promise<ToolGenerationResponse>;
+    getHistory: (id: number) => Promise<ToolGenerationResponse[]>;
     titleKey: string;
     emptyKey: string;
     errorKey: string;
   }
 > = {
-  icp_diagnostician: {
-    generate: (id, b) => api.generateIcpDiagnostician(id, b),
-    getHistory: api.getIcpDiagnosticianHistory,
-    titleKey: 'decisions.icpDiagnostician.title',
-    emptyKey: 'decisions.icpDiagnostician.noHistory',
-    errorKey: 'decisions.icpDiagnostician.generateError',
+  hypothesis_generator: {
+    generate: (id, b) => api.generateHypothesisGenerator(id, b),
+    getHistory: api.getHypothesisGeneratorHistory,
+    titleKey: 'decisions.hypothesisGenerator.title',
+    emptyKey: 'decisions.hypothesisGenerator.noHistory',
+    errorKey: 'decisions.hypothesisGenerator.generateError',
   },
-  positioning: {
-    generate: (id, b) => api.generatePositioning(id, b),
-    getHistory: api.getPositioningHistory,
-    titleKey: 'decisions.positioning.title',
-    emptyKey: 'decisions.positioning.noHistory',
-    errorKey: 'decisions.positioning.generateError',
+  custdev_target_planner: {
+    generate: (id, b) => api.generateCustdevTargetPlanner(id, b),
+    getHistory: api.getCustdevTargetPlannerHistory,
+    titleKey: 'decisions.custdevTargetPlanner.title',
+    emptyKey: 'decisions.custdevTargetPlanner.noHistory',
+    errorKey: 'decisions.custdevTargetPlanner.generateError',
   },
-  channel_risk: {
-    generate: (id, b) => api.generateChannelRisk(id, b),
-    getHistory: api.getChannelRiskHistory,
-    titleKey: 'decisions.channelRisk.title',
-    emptyKey: 'decisions.channelRisk.noHistory',
-    errorKey: 'decisions.channelRisk.generateError',
+  custdev_interview_designer: {
+    generate: (id, b) => api.generateCustdevInterviewDesigner(id, b),
+    getHistory: api.getCustdevInterviewDesignerHistory,
+    titleKey: 'decisions.custdevInterviewDesigner.title',
+    emptyKey: 'decisions.custdevInterviewDesigner.noHistory',
+    errorKey: 'decisions.custdevInterviewDesigner.generateError',
   },
-  experiment: {
-    generate: (id, b) => api.generateExperiment(id, b),
-    getHistory: api.getExperimentHistory,
-    titleKey: 'decisions.experiment.title',
-    emptyKey: 'decisions.experiment.noHistory',
-    errorKey: 'decisions.experiment.generateError',
-  },
-  decision_review: {
-    generate: (id, b) => api.generateDecisionReview(id, b),
-    getHistory: api.getDecisionReviewHistory,
-    titleKey: 'decisions.decisionReview.title',
-    emptyKey: 'decisions.decisionReview.noHistory',
-    errorKey: 'decisions.decisionReview.generateError',
+  custdev_insights_analyzer: {
+    generate: (id, b) => api.generateCustdevInsightsAnalyzer(id, b),
+    getHistory: api.getCustdevInsightsAnalyzerHistory,
+    titleKey: 'decisions.custdevInsightsAnalyzer.title',
+    emptyKey: 'decisions.custdevInsightsAnalyzer.noHistory',
+    errorKey: 'decisions.custdevInsightsAnalyzer.generateError',
   },
 };
 
@@ -70,7 +61,7 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
   const { showToast } = useToast();
   const cfg = CONFIG[variant];
 
-  const [history, setHistory] = useState<DecisionItem[]>([]);
+  const [history, setHistory] = useState<ToolGenerationResponse[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [hasAnswers, setHasAnswers] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);

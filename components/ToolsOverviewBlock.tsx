@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 
-const TOOL_IDS = ['icp', 'positioning', 'channelRisk', 'experiment', 'decisionReview'] as const;
+const TOOL_IDS = ['hypothesisGenerator', 'custdevTargetPlanner', 'custdevInterviewDesigner', 'custdevInsightsAnalyzer'] as const;
 
 const TOOL_SCREENSHOTS: Record<(typeof TOOL_IDS)[number], string> = {
-  icp: '/assets/icp.png',
-  positioning: '/assets/positioning.png',
-  channelRisk: '/assets/channel_risk.png',
-  experiment: '/assets/experiment.png',
-  decisionReview: '/assets/decision_review.png',
+  hypothesisGenerator: '/assets/hypothesis_generator.png',
+  custdevTargetPlanner: '/assets/custdev_target_planner.png',
+  custdevInterviewDesigner: '/assets/custdev_interview_designer.png',
+  custdevInsightsAnalyzer: '/assets/custdev_insights_analyzer.png',
 };
 
 const ToolsOverviewBlock: React.FC = () => {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<(typeof TOOL_IDS)[number]>('icp');
+  const [selected, setSelected] = useState<(typeof TOOL_IDS)[number]>('hypothesisGenerator');
 
   return (
     <div className="landing-tools">

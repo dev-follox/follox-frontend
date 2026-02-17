@@ -500,11 +500,10 @@ const DashboardPage: React.FC = () => {
               <h3 className="dashboard-chatbot__tools-title">{t('dashboard.chatbot.tools.title')}</h3>
               <div className="dashboard-chatbot__tools-grid">
                 {[
-                  { id: 'icp', path: '/tools/icp-diagnostician', nameKey: 'sidebar.icpDiagnostician', descKey: 'landing.tools.icp.para1' },
-                  { id: 'positioning', path: '/tools/positioning', nameKey: 'sidebar.positioning', descKey: 'landing.tools.positioning.para1' },
-                  { id: 'channelRisk', path: '/tools/channel-risk', nameKey: 'sidebar.channelRisk', descKey: 'landing.tools.channelRisk.para1' },
-                  { id: 'experiment', path: '/tools/experiment', nameKey: 'sidebar.experiment', descKey: 'landing.tools.experiment.para1' },
-                  { id: 'decisionReview', path: '/tools/decision-review', nameKey: 'sidebar.decisionReview', descKey: 'landing.tools.decisionReview.para1' },
+                  { id: 'hypothesisGenerator', path: '/tools/hypothesis-generator', nameKey: 'sidebar.hypothesisGenerator', descKey: 'landing.tools.hypothesisGenerator.para1' },
+                  { id: 'custdevTargetPlanner', path: '/tools/custdev-target-planner', nameKey: 'sidebar.custdevTargetPlanner', descKey: 'landing.tools.custdevTargetPlanner.para1' },
+                  { id: 'custdevInterviewDesigner', path: '/tools/custdev-interview-designer', nameKey: 'sidebar.custdevInterviewDesigner', descKey: 'landing.tools.custdevInterviewDesigner.para1' },
+                  { id: 'custdevInsightsAnalyzer', path: '/tools/custdev-insights-analyzer', nameKey: 'sidebar.custdevInsightsAnalyzer', descKey: 'landing.tools.custdevInsightsAnalyzer.para1' },
                 ].map((tool) => (
                   <a
                     key={tool.id}

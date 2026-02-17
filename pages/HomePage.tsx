@@ -101,20 +101,17 @@ const HomePage: React.FC = () => {
               </div>
               <div className="landing-footer__tools">
                 <h4 className="landing-footer__heading">{t('landing.footer.tools')}</h4>
-                <Link to="/tools/icp-diagnostician" className="landing-footer__link">
-                  {t('sidebar.icpDiagnostician')}
+                <Link to="/tools/hypothesis-generator" className="landing-footer__link">
+                  {t('sidebar.hypothesisGenerator')}
                 </Link>
-                <Link to="/tools/positioning" className="landing-footer__link">
-                  {t('sidebar.positioning')}
+                <Link to="/tools/custdev-target-planner" className="landing-footer__link">
+                  {t('sidebar.custdevTargetPlanner')}
                 </Link>
-                <Link to="/tools/channel-risk" className="landing-footer__link">
-                  {t('sidebar.channelRisk')}
+                <Link to="/tools/custdev-interview-designer" className="landing-footer__link">
+                  {t('sidebar.custdevInterviewDesigner')}
                 </Link>
-                <Link to="/tools/experiment" className="landing-footer__link">
-                  {t('sidebar.experiment')}
-                </Link>
-                <Link to="/tools/decision-review" className="landing-footer__link">
-                  {t('sidebar.decisionReview')}
+                <Link to="/tools/custdev-insights-analyzer" className="landing-footer__link">
+                  {t('sidebar.custdevInsightsAnalyzer')}
                 </Link>
               </div>
             </div>

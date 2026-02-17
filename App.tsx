@@ -66,11 +66,10 @@ const AppContent: React.FC = () => {
             
             {/* Tools Module - Company only */}
             <Route path="/tools/qa" element={<CompanyQAPage />} />
-            <Route path="/tools/icp-diagnostician" element={<DecisionPage variant="icp_diagnostician" />} />
-            <Route path="/tools/positioning" element={<DecisionPage variant="positioning" />} />
-            <Route path="/tools/channel-risk" element={<DecisionPage variant="channel_risk" />} />
-            <Route path="/tools/experiment" element={<DecisionPage variant="experiment" />} />
-            <Route path="/tools/decision-review" element={<DecisionPage variant="decision_review" />} />
+            <Route path="/tools/hypothesis-generator" element={<DecisionPage variant="hypothesis_generator" />} />
+            <Route path="/tools/custdev-target-planner" element={<DecisionPage variant="custdev_target_planner" />} />
+            <Route path="/tools/custdev-interview-designer" element={<DecisionPage variant="custdev_interview_designer" />} />
+            <Route path="/tools/custdev-insights-analyzer" element={<DecisionPage variant="custdev_insights_analyzer" />} />
             
             {/* Blogger routes */}
             <Route path="/blogger/products" element={<BloggerProductsDetailedPage />} />

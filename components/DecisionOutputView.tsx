@@ -1,38 +1,118 @@
 import React from 'react';
 import Card from './Card';
 
-export type DecisionVariant = 'icp_diagnostician' | 'positioning' | 'channel_risk' | 'experiment' | 'decision_review';
-
-interface RecommendationItem {
-  category?: string;
-  recommendation?: string;
-  confidence?: string;
-  rationale?: string;
-}
-
-interface IdealCustomerProfile {
-  company_size?: string;
-  industry?: string;
-  role?: string;
-  pain_points?: string[];
-}
+export type DecisionVariant =
+  | 'hypothesis_generator'
+  | 'custdev_target_planner'
+  | 'custdev_insights_analyzer'
+  | 'custdev_interview_designer';
 
 interface DecisionOutputViewProps {
   outputData: Record<string, unknown> | null | undefined;
   variant: DecisionVariant;
-  /** Fallback when output_data is empty; e.g. content */
   fallback?: string | null;
   t: (key: string) => string;
 }
 
-const formatLabel = (key: string): string => {
-  return key
-    .split(/[_\s]+/)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(' ');
-};
+// ─── Data Extraction ──────────────────────────────────────────────────────────
 
-/** Renders a generic object as key-value rows */
+/**
+ * All 4 variants share the same envelope shape:
+ *   output_data.content[0].text  → the real payload (markdown or JSON string)
+ *
+ * The `content` field on the root object is a Python-repr string like:
+ *   "{'content': [{'type': 'text', 'text': '...'}]}"
+ * We never need that — output_data is already properly parsed JSON.
+ */
+function extractText(outputData: Record<string, unknown> | null | undefined): string | null {
+  if (!outputData) return null;
+
+  // Primary path: output_data.content[].text  (already-parsed JSON array)
+  const content = outputData.content;
+  if (Array.isArray(content) && content.length > 0) {
+    const texts = content
+      .filter((item): item is Record<string, unknown> =>
+        item != null && typeof item === 'object' && typeof (item as any).text === 'string'
+      )
+      .map((item) => (item.text as string).trim())
+      .filter(Boolean);
+    if (texts.length > 0) return texts.join('\n\n');
+  }
+
+  return null;
+}
+
+/**
+ * Parses JSON from text, repairing truncated responses from the API.
+ *
+ * The API responses are often cut off mid-JSON (no closing brackets).
+ * Strategy:
+ *   1. Strip ```json ... ``` fence if present
+ *   2. Try parsing as-is (works for complete responses)
+ *   3. Repair by closing unclosed strings, arrays, and objects, then parse again
+ */
+function parseJson(text: string): unknown {
+  const trimmed = text.trim();
+
+  // Extract the raw JSON portion
+  let raw = trimmed;
+  const fenceMatch = trimmed.match(/^```(?:json)?\s*\n([\s\S]*)$/);
+  if (fenceMatch) {
+    // Strip trailing fence if present, keep if truncated (no closing fence = truncated)
+    raw = fenceMatch[1].replace(/\n?```\s*$/, '').trim();
+  } else {
+    const start = trimmed.indexOf('{');
+    if (start !== -1) raw = trimmed.slice(start);
+  }
+
+  // 1. Try as-is (complete response)
+  try { return JSON.parse(raw); } catch { /* fall through to repair */ }
+
+  // 2. Repair truncated JSON
+  // Walk character-by-character tracking string/bracket state
+  let i = 0;
+  let inString = false;
+  let escaped = false;
+  const stack: string[] = [];
+
+  while (i < raw.length) {
+    const ch = raw[i];
+    if (escaped) { escaped = false; i++; continue; }
+    if (ch === '\\' && inString) { escaped = true; i++; continue; }
+    if (ch === '"') { inString = !inString; i++; continue; }
+    if (inString) { i++; continue; }
+    if (ch === '{') stack.push('}');
+    else if (ch === '[') stack.push(']');
+    else if (ch === '}' || ch === ']') stack.pop();
+    i++;
+  }
+
+  let repaired = raw;
+
+  // Close any unclosed string
+  if (inString) repaired += '"';
+
+  // Remove trailing incomplete key-value pairs that would be invalid JSON:
+  //   , "key": "partial_value    ← mid-value truncation
+  //   , "key":                   ← key with no value
+  //   , "key"                    ← dangling key
+  //   ,                          ← trailing comma
+  repaired = repaired.replace(/,\s*"[^"]*"?\s*:\s*"[^"]*$/, '');
+  repaired = repaired.replace(/,\s*"[^"]*"?\s*:\s*$/, '');
+  repaired = repaired.replace(/,\s*"[^"]*"?\s*$/, '');
+  repaired = repaired.replace(/,\s*$/, '');
+
+  // Close all unclosed brackets/braces in reverse open order
+  repaired += stack.reverse().join('');
+
+  try { return JSON.parse(repaired); } catch { return null; }
+}
+
+// ─── Shared Helpers ───────────────────────────────────────────────────────────
+
+const formatLabel = (key: string): string =>
+  key.split(/[_\s]+/).map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+
 const RenderKeyValue: React.FC<{ data: Record<string, unknown>; t: (k: string) => string }> = ({ data, t }) => (
   <dl className="space-y-2">
     {Object.entries(data).map(([k, v]) => {
@@ -44,18 +124,18 @@ const RenderKeyValue: React.FC<{ data: Record<string, unknown>; t: (k: string) =
             <dd className="mt-1 text-gray-600">
               <ul className="list-disc list-inside space-y-1">
                 {v.map((item, i) => (
-                  <li key={i}>{typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item)}</li>
+                  <li key={i}>{typeof item === 'object' ? JSON.stringify(item) : String(item)}</li>
                 ))}
               </ul>
             </dd>
           </div>
         );
       }
-      if (typeof v === 'object' && v !== null) {
+      if (typeof v === 'object') {
         return (
           <div key={k}>
             <dt className="font-medium text-gray-700">{formatLabel(k)}</dt>
-            <dd className="mt-1 text-gray-600">
+            <dd className="mt-1 text-gray-600 pl-3 border-l-2 border-gray-200">
               <RenderKeyValue data={v as Record<string, unknown>} t={t} />
             </dd>
           </div>
@@ -71,279 +151,281 @@ const RenderKeyValue: React.FC<{ data: Record<string, unknown>; t: (k: string) =
   </dl>
 );
 
-/** ICP-specific: recommendations, ideal_customer_profile, next_steps */
-const IcpDiagnosticianOutput: React.FC<{ data: Record<string, unknown>; t: (k: string) => string }> = ({ data, t }) => {
-  const recommendations = (data.recommendations as RecommendationItem[] | undefined) ?? [];
-  const icp = (data.ideal_customer_profile as IdealCustomerProfile | undefined) ?? {};
-  const nextSteps = (data.next_steps as string[] | undefined) ?? [];
+// ─── Markdown Renderer (hypothesis_generator) ────────────────────────────────
+
+/**
+ * Renders the raw markdown text output from hypothesis_generator.
+ * Handles: # headings, **bold**, > blockquotes, - lists, | tables, --- dividers.
+ */
+function renderInline(text: string): React.ReactNode[] {
+  const parts: React.ReactNode[] = [];
+  const regex = /\*\*(.*?)\*\*|\*(.*?)\*|`(.*?)`/g;
+  let last = 0; let match; let key = 0;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > last) parts.push(<span key={key++}>{text.slice(last, match.index)}</span>);
+    if (match[1] != null) parts.push(<strong key={key++}>{match[1]}</strong>);
+    else if (match[2] != null) parts.push(<em key={key++}>{match[2]}</em>);
+    else if (match[3] != null) parts.push(<code key={key++} className="bg-gray-100 text-gray-800 px-1 rounded text-sm font-mono">{match[3]}</code>);
+    last = regex.lastIndex;
+  }
+  if (last < text.length) parts.push(<span key={key++}>{text.slice(last)}</span>);
+  return parts;
+}
+
+function renderMarkdownTable(lines: string[]): React.ReactNode {
+  const rows = lines
+    .filter((l) => !l.match(/^\|[\s-|]+\|$/))
+    .map((l) => l.split('|').slice(1, -1).map((cell) => cell.trim()));
+
+  if (rows.length === 0) return null;
+  const [header, ...body] = rows;
 
   return (
-    <div className="decision-output decision-output--icp space-y-8">
-      {/* 1. Recommendations */}
-      {recommendations.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.icp.recommendations')}</h3>
-          <div className="space-y-4">
-            {recommendations.map((r, i) => (
-              <Card key={i} className="p-4 decision-output__card">
-                {r.category && <p className="font-semibold text-primary-text mb-2">{r.category}</p>}
-                <p className="text-gray-700 mb-2">{r.recommendation}</p>
-                {r.confidence && <p className="text-sm text-gray-500"><strong>{t('decisions.icp.confidence')}:</strong> {r.confidence}</p>}
-                {r.rationale && <p className="text-sm text-gray-600 mt-2">{r.rationale}</p>}
-              </Card>
+    <div className="overflow-x-auto my-4">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-gray-100">
+            {header.map((cell, i) => (
+              <th key={i} className="border border-gray-200 px-3 py-2 text-left font-semibold text-gray-700">
+                {renderInline(cell)}
+              </th>
             ))}
-          </div>
-        </section>
-      )}
+          </tr>
+        </thead>
+        <tbody>
+          {body.map((row, i) => (
+            <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+              {row.map((cell, j) => (
+                <td key={j} className="border border-gray-200 px-3 py-2 text-gray-700">
+                  {renderInline(cell)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
-      {/* 2. Ideal Customer Profile */}
-      {(icp.company_size || icp.industry || icp.role || (icp.pain_points && icp.pain_points.length > 0)) && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.icp.idealCustomerProfile')}</h3>
-          <Card className="p-4">
-            <dl className="grid gap-3 sm:grid-cols-1">
-              {icp.company_size && (
-                <>
-                  <dt className="font-medium text-gray-700">{t('decisions.icp.companySize')}</dt>
-                  <dd className="text-gray-600">{icp.company_size}</dd>
-                </>
-              )}
-              {icp.industry && (
-                <>
-                  <dt className="font-medium text-gray-700">{t('decisions.icp.industry')}</dt>
-                  <dd className="text-gray-600">{icp.industry}</dd>
-                </>
-              )}
-              {icp.role && (
-                <>
-                  <dt className="font-medium text-gray-700">{t('decisions.icp.role')}</dt>
-                  <dd className="text-gray-600">{icp.role}</dd>
-                </>
-              )}
-              {icp.pain_points && icp.pain_points.length > 0 && (
-                <>
-                  <dt className="font-medium text-gray-700">{t('decisions.icp.painPoints')}</dt>
-                  <dd className="text-gray-600">
-                    <ul className="list-disc list-inside space-y-1">
-                      {icp.pain_points.map((p, i) => (
-                        <li key={i}>{p}</li>
-                      ))}
-                    </ul>
-                  </dd>
-                </>
-              )}
-            </dl>
+const MarkdownOutput: React.FC<{ text: string }> = ({ text }) => {
+  const lines = text.split('\n');
+  const elements: React.ReactNode[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // H1
+    if (line.startsWith('# ')) {
+      elements.push(<h1 key={i} className="text-2xl font-bold text-gray-900 mt-6 mb-3 pb-2 border-b border-gray-200">{renderInline(line.slice(2))}</h1>);
+    }
+    // H2
+    else if (line.startsWith('## ')) {
+      elements.push(<h2 key={i} className="text-xl font-semibold text-gray-800 mt-6 mb-2">{renderInline(line.slice(3))}</h2>);
+    }
+    // H3
+    else if (line.startsWith('### ')) {
+      elements.push(<h3 key={i} className="text-base font-semibold text-gray-700 mt-4 mb-1">{renderInline(line.slice(4))}</h3>);
+    }
+    // Divider
+    else if (line.trim() === '---') {
+      elements.push(<hr key={i} className="my-4 border-gray-200" />);
+    }
+    // Blockquote
+    else if (line.startsWith('> ')) {
+      const content = line.slice(2);
+      const isWarning = content.includes('⚠️') || content.toLowerCase().includes('critical') || content.toLowerCase().includes('risk');
+      elements.push(
+        <blockquote key={i} className={`my-3 px-4 py-3 rounded-r border-l-4 text-sm ${isWarning ? 'border-amber-400 bg-amber-50 text-amber-800' : 'border-blue-400 bg-blue-50 text-blue-800'}`}>
+          {renderInline(content)}
+        </blockquote>
+      );
+    }
+    // Table
+    else if (line.startsWith('|')) {
+      const tableLines: string[] = [];
+      while (i < lines.length && lines[i].startsWith('|')) {
+        tableLines.push(lines[i]);
+        i++;
+      }
+      elements.push(<React.Fragment key={i}>{renderMarkdownTable(tableLines)}</React.Fragment>);
+      continue;
+    }
+    // Unordered list
+    else if (line.startsWith('- ')) {
+      const items: string[] = [];
+      while (i < lines.length && lines[i].startsWith('- ')) {
+        items.push(lines[i].slice(2));
+        i++;
+      }
+      elements.push(
+        <ul key={i} className="list-disc list-inside space-y-1 my-2 text-gray-700">
+          {items.map((item, j) => <li key={j}>{renderInline(item)}</li>)}
+        </ul>
+      );
+      continue;
+    }
+    // Non-empty paragraph
+    else if (line.trim() !== '') {
+      elements.push(<p key={i} className="text-gray-700 leading-relaxed my-1">{renderInline(line)}</p>);
+    }
+
+    i++;
+  }
+
+  return <div className="decision-output decision-output--hypothesis-generator space-y-1">{elements}</div>;
+};
+
+// ─── CustDev Target Planner ───────────────────────────────────────────────────
+
+interface TargetSegment {
+  segment_id?: number;
+  segment_name?: string;
+  description?: string;
+  why_early_adopters?: {
+    pain_level?: string;
+    current_spend?: string;
+    willingness_to_try_new_solutions?: string;
+    can_articulate_the_problem?: string;
+  };
+  specific_characteristics?: string[];
+  where_to_find_them?: {
+    online?: string[];
+    offline?: string[];
+    through?: string[];
+  };
+  screening_criteria_must_have?: string[];
+  red_flags_exclude_if?: string[];
+}
+
+interface CustomerSegmentationRoot {
+  customer_segmentation_for_validation?: {
+    context_analysis?: { startup_name?: string; stage?: string; critical_gap?: string; approach?: string };
+    context_note?: string;
+    hypothesis_being_tested?: string;
+    assumption_risk_level?: string;
+    rationale?: string;
+    primary_target_segments?: TargetSegment[];
+    primary_target_segments_early_adopters?: TargetSegment[];
+  };
+}
+
+const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => string }> = ({ text, t }) => {
+  const parsed = parseJson(text) as CustomerSegmentationRoot | null;
+  const data = parsed?.customer_segmentation_for_validation;
+
+  if (!data) return <MarkdownOutput text={text} />;
+
+  const segments = data.primary_target_segments_early_adopters ?? data.primary_target_segments ?? [];
+  const ctx = data.context_analysis;
+
+  return (
+    <div className="decision-output decision-output--custdev-target-planner space-y-8">
+      {/* Context Analysis */}
+      {ctx && (ctx.critical_gap || ctx.approach) && (
+        <section>
+          <h3 className="decision-output__section-title">Context Analysis</h3>
+          <Card className="p-4 space-y-2 text-sm">
+            {ctx.startup_name && <p><span className="font-medium text-gray-600">Startup:</span> {ctx.startup_name}</p>}
+            {ctx.stage && <p><span className="font-medium text-gray-600">Stage:</span> {ctx.stage}</p>}
+            {ctx.critical_gap && <p className="text-gray-700 mt-1">{ctx.critical_gap}</p>}
+            {ctx.approach && <p className="text-gray-700 mt-1 italic">{ctx.approach}</p>}
           </Card>
         </section>
       )}
 
-      {/* 3. Next Steps */}
-      {nextSteps.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.icp.nextSteps')}</h3>
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">
-            {nextSteps.map((step, i) => (
-              <li key={i}>{step}</li>
-            ))}
-          </ol>
+      {/* Hypothesis */}
+      {data.hypothesis_being_tested && (
+        <section>
+          <h3 className="decision-output__section-title">Hypothesis Being Tested</h3>
+          <p className="text-gray-700">{data.hypothesis_being_tested}</p>
+          {data.assumption_risk_level && (
+            <p className="mt-1 text-sm font-medium text-red-600">Risk level: {data.assumption_risk_level}</p>
+          )}
+          {data.rationale && <p className="mt-2 text-sm text-gray-600">{data.rationale}</p>}
         </section>
       )}
-    </div>
-  );
-};
 
-/** Resolve data: backend may put payload in output_data.output or at top level */
-const resolveData = (outputData: Record<string, unknown> | null | undefined): Record<string, unknown> => {
-  if (!outputData || typeof outputData !== 'object') return {};
-  const o = (outputData as { output?: unknown }).output;
-  if (o && typeof o === 'object' && o !== null) return o as Record<string, unknown>;
-  return outputData;
-};
-
-// --- Positioning ---
-interface ValueProposition {
-  proposition?: string;
-  target_segment?: string;
-  proof_points?: string[];
-}
-interface MessagingFramework {
-  primary_message?: string;
-  supporting_messages?: string[];
-}
-const PositioningOutput: React.FC<{ data: Record<string, unknown>; t: (k: string) => string }> = ({ data, t }) => {
-  const decisionType = (data.decision_type as string) || '';
-  const statement = (data.positioning_statement as string) || '';
-  const valueProps = (data.value_propositions as ValueProposition[]) ?? [];
-  const messaging = (data.messaging_framework as MessagingFramework) ?? {};
-  const nextSteps = (data.next_steps as string[]) ?? [];
-  return (
-    <div className="decision-output decision-output--positioning space-y-8">
-      {statement && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.positioningView.positioningStatement')}</h3>
-          <p className="text-gray-700">{statement}</p>
-        </section>
-      )}
-      {valueProps.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.positioningView.valuePropositions')}</h3>
-          <div className="space-y-4">
-            {valueProps.map((v, i) => (
-              <Card key={i} className="p-4 decision-output__card">
-                {v.proposition && <p className="font-semibold text-primary-text mb-2">{v.proposition}</p>}
-                {v.target_segment && <p className="text-sm text-gray-600 mb-2">{v.target_segment}</p>}
-                {v.proof_points && v.proof_points.length > 0 && (
-                  <ul className="list-disc list-inside text-gray-700 space-y-1">
-                    {v.proof_points.map((p, j) => <li key={j}>{p}</li>)}
-                  </ul>
+      {/* Segments */}
+      {segments.length > 0 && (
+        <section>
+          <h3 className="decision-output__section-title">Primary Target Segments</h3>
+          <div className="space-y-6">
+            {segments.map((seg, i) => (
+              <Card key={seg.segment_id ?? i} className="p-5 space-y-4">
+                {/* Header */}
+                {(seg.segment_name || seg.segment_id != null) && (
+                  <h4 className="text-base font-semibold text-primary-text">
+                    {seg.segment_id != null && `${seg.segment_id}. `}{seg.segment_name ?? 'Segment'}
+                  </h4>
                 )}
-              </Card>
-            ))}
-          </div>
-        </section>
-      )}
-      {(messaging.primary_message || (messaging.supporting_messages && messaging.supporting_messages.length > 0)) && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.positioningView.messagingFramework')}</h3>
-          <Card className="p-4">
-            {messaging.primary_message && <p className="font-medium text-gray-800 mb-2">{messaging.primary_message}</p>}
-            {messaging.supporting_messages && messaging.supporting_messages.length > 0 && (
-              <ul className="list-disc list-inside text-gray-700 space-y-1">
-                {messaging.supporting_messages.map((s, i) => <li key={i}>{s}</li>)}
-              </ul>
-            )}
-          </Card>
-        </section>
-      )}
-      {nextSteps.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.positioningView.nextSteps')}</h3>
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">{nextSteps.map((s, i) => <li key={i}>{s}</li>)}</ol>
-        </section>
-      )}
-    </div>
-  );
-};
+                {seg.description && <p className="text-gray-700 text-sm">{seg.description}</p>}
 
-// --- Channel Risk ---
-interface ChannelAssessment {
-  channel?: string;
-  risk_level?: string;
-  opportunity_score?: number;
-  rationale?: string;
-  estimated_cac?: string;
-  recommended_priority?: number;
-}
-interface RiskFactor {
-  factor?: string;
-  impact?: string;
-  mitigation?: string;
-}
-const ChannelRiskOutput: React.FC<{ data: Record<string, unknown>; t: (k: string) => string }> = ({ data, t }) => {
-  const decisionType = (data.decision_type as string) || '';
-  const assessments = (data.channel_assessments as ChannelAssessment[]) ?? [];
-  const riskFactors = (data.risk_factors as RiskFactor[]) ?? [];
-  const recommended = (data.recommended_channels as string[]) ?? [];
-  const nextSteps = (data.next_steps as string[]) ?? [];
-  return (
-    <div className="decision-output decision-output--channel-risk space-y-8">
-      {assessments.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.channelRiskView.channelAssessments')}</h3>
-          <div className="space-y-4">
-            {assessments.map((a, i) => (
-              <Card key={i} className="p-4 decision-output__card">
-                <div className="flex flex-wrap items-center gap-2 mb-2">
-                  {a.channel && <span className="font-semibold text-primary-text">{a.channel}</span>}
-                  {a.risk_level != null && <span className="text-sm text-gray-500">{t('decisions.channelRiskView.riskLevel')}: {a.risk_level}</span>}
-                  {a.opportunity_score != null && <span className="text-sm text-gray-500">{t('decisions.channelRiskView.opportunityScore')}: {a.opportunity_score}</span>}
-                  {a.recommended_priority != null && <span className="text-sm text-gray-500">{t('decisions.channelRiskView.priority')}: {a.recommended_priority}</span>}
-                </div>
-                {a.rationale && <p className="text-gray-700 mb-1">{a.rationale}</p>}
-                {a.estimated_cac && <p className="text-sm text-gray-600">{t('decisions.channelRiskView.estimatedCac')}: {a.estimated_cac}</p>}
-              </Card>
-            ))}
-          </div>
-        </section>
-      )}
-      {riskFactors.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.channelRiskView.riskFactors')}</h3>
-          <div className="space-y-4">
-            {riskFactors.map((r, i) => (
-              <Card key={i} className="p-4 decision-output__card">
-                {r.factor && <p className="font-semibold text-primary-text mb-2">{r.factor}</p>}
-                {r.impact && <p className="text-gray-700 mb-1">{r.impact}</p>}
-                {r.mitigation && <p className="text-sm text-gray-600">{t('decisions.channelRiskView.mitigation')}: {r.mitigation}</p>}
-              </Card>
-            ))}
-          </div>
-        </section>
-      )}
-      {recommended.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.channelRiskView.recommendedChannels')}</h3>
-          <ul className="list-disc list-inside text-gray-700 space-y-1">{recommended.map((c, i) => <li key={i}>{c}</li>)}</ul>
-        </section>
-      )}
-      {nextSteps.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.channelRiskView.nextSteps')}</h3>
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">{nextSteps.map((s, i) => <li key={i}>{s}</li>)}</ol>
-        </section>
-      )}
-    </div>
-  );
-};
+                {/* Why early adopters */}
+                {seg.why_early_adopters && (
+                  <div>
+                    <h5 className="text-sm font-semibold text-gray-700 mb-2">Why Early Adopters</h5>
+                    <dl className="grid gap-2 text-sm">
+                      {Object.entries(seg.why_early_adopters).map(([k, v]) =>
+                        v ? (
+                          <div key={k}>
+                            <dt className="font-medium text-gray-600">{formatLabel(k)}</dt>
+                            <dd className="text-gray-700">{v}</dd>
+                          </div>
+                        ) : null
+                      )}
+                    </dl>
+                  </div>
+                )}
 
-// --- Experiment ---
-interface SuccessMetric {
-  metric?: string;
-  target?: string;
-  measurement?: string;
-}
-interface ExperimentItem {
-  experiment_id?: string;
-  hypothesis?: string;
-  methodology?: string;
-  success_metrics?: SuccessMetric[];
-  duration?: string;
-  budget?: string;
-  risk_level?: string;
-}
-interface PrioritizationItem {
-  experiment_id?: string;
-  priority?: number;
-  rationale?: string;
-}
-const ExperimentOutput: React.FC<{ data: Record<string, unknown>; t: (k: string) => string }> = ({ data, t }) => {
-  const decisionType = (data.decision_type as string) || '';
-  const experiments = (data.experiments as ExperimentItem[]) ?? [];
-  const prioritization = (data.prioritization as PrioritizationItem[]) ?? [];
-  const nextSteps = (data.next_steps as string[]) ?? [];
-  return (
-    <div className="decision-output decision-output--experiment space-y-8">
-      {experiments.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.experimentView.experiments')}</h3>
-          <div className="space-y-4">
-            {experiments.map((e, i) => (
-              <Card key={i} className="p-4 decision-output__card">
-                <div className="flex flex-wrap items-center gap-2 mb-2">
-                  {e.experiment_id && <span className="font-semibold text-primary-text">{e.experiment_id}</span>}
-                  {e.duration != null && <span className="text-sm text-gray-500">{t('decisions.experimentView.duration')}: {e.duration}</span>}
-                  {e.budget != null && <span className="text-sm text-gray-500">{t('decisions.experimentView.budget')}: {e.budget}</span>}
-                  {e.risk_level != null && <span className="text-sm text-gray-500">{t('decisions.experimentView.riskLevel')}: {e.risk_level}</span>}
-                </div>
-                {e.hypothesis && <p className="font-medium text-gray-800 mb-2">{e.hypothesis}</p>}
-                {e.methodology && <p className="text-gray-700 mb-2">{e.methodology}</p>}
-                {e.success_metrics && e.success_metrics.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-sm font-medium text-gray-700 mb-1">{t('decisions.experimentView.successMetrics')}</p>
-                    <ul className="list-disc list-inside text-gray-600 space-y-1 text-sm">
-                      {e.success_metrics.map((m, j) => (
-                        <li key={j}>{m.metric} — {m.target} ({m.measurement})</li>
-                      ))}
+                {/* Specific characteristics */}
+                {seg.specific_characteristics && seg.specific_characteristics.length > 0 && (
+                  <div>
+                    <h5 className="text-sm font-semibold text-gray-700 mb-2">Specific Characteristics</h5>
+                    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                      {seg.specific_characteristics.map((c, j) => <li key={j}>{c}</li>)}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Where to find them */}
+                {seg.where_to_find_them && (
+                  <div>
+                    <h5 className="text-sm font-semibold text-gray-700 mb-2">Where to Find Them</h5>
+                    <div className="space-y-2 text-sm">
+                      {(['online', 'offline', 'through'] as const).map((channel) => {
+                        const items = seg.where_to_find_them![channel];
+                        if (!items?.length) return null;
+                        return (
+                          <div key={channel}>
+                            <span className="font-medium text-gray-600 capitalize">{channel}: </span>
+                            <ul className="list-disc list-inside text-gray-700 mt-1 ml-2">
+                              {items.map((s, j) => <li key={j}>{s}</li>)}
+                            </ul>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Screening criteria */}
+                {seg.screening_criteria_must_have && seg.screening_criteria_must_have.length > 0 && (
+                  <div>
+                    <h5 className="text-sm font-semibold text-gray-700 mb-2">Screening Criteria (Must Have)</h5>
+                    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                      {seg.screening_criteria_must_have.map((c, j) => <li key={j}>{c}</li>)}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Red flags */}
+                {seg.red_flags_exclude_if && seg.red_flags_exclude_if.length > 0 && (
+                  <div>
+                    <h5 className="text-sm font-semibold text-red-600 mb-2">Red Flags (Exclude If)</h5>
+                    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                      {seg.red_flags_exclude_if.map((c, j) => <li key={j}>{c}</li>)}
                     </ul>
                   </div>
                 )}
@@ -352,182 +434,388 @@ const ExperimentOutput: React.FC<{ data: Record<string, unknown>; t: (k: string)
           </div>
         </section>
       )}
-      {prioritization.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.experimentView.prioritization')}</h3>
-          <div className="space-y-2">
-            {prioritization.map((p, i) => (
-              <div key={i} className="flex gap-2 items-baseline">
-                {p.experiment_id != null && <span className="font-medium text-primary-text w-12">{p.experiment_id}</span>}
-                {p.rationale && <span className="text-gray-700 ml-3">{p.rationale}</span>}
-              </div>
-            ))}
+    </div>
+  );
+};
+
+// ─── CustDev Interview Designer ───────────────────────────────────────────────
+
+interface HypothesisToDefine {
+  type?: string;
+  template?: string;
+  status?: string;
+  priority?: string;
+}
+
+interface AnalysisRoot {
+  meta?: {
+    startup_name?: string;
+    product_stage?: string;
+    target_market?: string;
+    analysis_date?: string;
+    analyst_note?: string;
+  };
+  interview_data_summary?: {
+    status?: string;
+    interviews_received?: number;
+    interviews_analyzed?: number;
+    assessment?: string;
+  };
+  evidence_extraction?: Record<string, unknown>;
+  hypothesis_validation_analysis?: {
+    hypotheses_provided?: number;
+    status?: string;
+    critical_gap?: string;
+    hypotheses_that_need_to_be_defined?: HypothesisToDefine[];
+  };
+  interview_plan_compliance?: { status?: string; assessment?: string };
+  innovation_accounting?: Record<string, unknown>;
+}
+
+interface InterviewDesignerRoot { analysis?: AnalysisRoot }
+
+const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) => string }> = ({ text, t }) => {
+  const parsed = parseJson(text) as InterviewDesignerRoot | null;
+  const analysis = parsed?.analysis;
+
+  if (!analysis) return <MarkdownOutput text={text} />;
+
+  const { meta, interview_data_summary, evidence_extraction, hypothesis_validation_analysis, interview_plan_compliance } = analysis;
+
+  return (
+    <div className="decision-output decision-output--custdev-interview-designer space-y-8">
+      {/* Meta */}
+      {meta && (
+        <section>
+          <h3 className="decision-output__section-title">Meta</h3>
+          <Card className="p-4 space-y-2 text-sm">
+            {meta.startup_name && <p><span className="font-medium text-gray-600">Startup:</span> {meta.startup_name}</p>}
+            {meta.product_stage && <p><span className="font-medium text-gray-600">Stage:</span> {meta.product_stage}</p>}
+            {meta.target_market && <p><span className="font-medium text-gray-600">Target market:</span> {meta.target_market}</p>}
+            {meta.analysis_date && <p><span className="font-medium text-gray-600">Date:</span> {meta.analysis_date}</p>}
+            {meta.analyst_note && (
+              <p className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded text-amber-800">{meta.analyst_note}</p>
+            )}
+          </Card>
+        </section>
+      )}
+
+      {/* Interview data summary */}
+      {interview_data_summary && (
+        <section>
+          <h3 className="decision-output__section-title">Interview Data Summary</h3>
+          <Card className="p-4 space-y-2 text-sm">
+            {interview_data_summary.status && (
+              <p><span className="font-medium text-gray-600">Status:</span>{' '}
+                <span className={interview_data_summary.status.startsWith('NO') ? 'text-red-600 font-medium' : 'text-gray-700'}>
+                  {interview_data_summary.status}
+                </span>
+              </p>
+            )}
+            {interview_data_summary.interviews_received != null && (
+              <p><span className="font-medium text-gray-600">Interviews received:</span> {interview_data_summary.interviews_received}</p>
+            )}
+            {interview_data_summary.interviews_analyzed != null && (
+              <p><span className="font-medium text-gray-600">Interviews analyzed:</span> {interview_data_summary.interviews_analyzed}</p>
+            )}
+            {interview_data_summary.assessment && (
+              <p className="mt-2 text-gray-700">{interview_data_summary.assessment}</p>
+            )}
+          </Card>
+        </section>
+      )}
+
+      {/* Evidence extraction */}
+      {evidence_extraction && Object.keys(evidence_extraction).length > 0 && (
+        <section>
+          <h3 className="decision-output__section-title">Evidence Extraction</h3>
+          <div className="space-y-4">
+            {Object.entries(evidence_extraction).map(([key, val]) => {
+              if (val == null || typeof val !== 'object') return null;
+              return (
+                <Card key={key} className="p-4">
+                  <h5 className="text-sm font-semibold text-gray-700 mb-2">{formatLabel(key)}</h5>
+                  <RenderKeyValue data={val as Record<string, unknown>} t={t} />
+                </Card>
+              );
+            })}
           </div>
         </section>
       )}
-      {nextSteps.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.experimentView.nextSteps')}</h3>
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">{nextSteps.map((s, i) => <li key={i}>{s}</li>)}</ol>
+
+      {/* Hypothesis validation */}
+      {hypothesis_validation_analysis && (
+        <section>
+          <h3 className="decision-output__section-title">Hypothesis Validation</h3>
+          <Card className="p-4 space-y-4">
+            {hypothesis_validation_analysis.status && (
+              <p className="text-sm font-medium">
+                Status:{' '}
+                <span className={hypothesis_validation_analysis.status.startsWith('NO') ? 'text-red-600' : 'text-gray-700'}>
+                  {hypothesis_validation_analysis.status}
+                </span>
+              </p>
+            )}
+            {hypothesis_validation_analysis.critical_gap && (
+              <p className="p-3 bg-amber-50 border border-amber-200 rounded text-amber-800 text-sm">
+                {hypothesis_validation_analysis.critical_gap}
+              </p>
+            )}
+            {hypothesis_validation_analysis.hypotheses_that_need_to_be_defined &&
+              hypothesis_validation_analysis.hypotheses_that_need_to_be_defined.length > 0 && (
+                <div className="space-y-3">
+                  <h5 className="text-sm font-semibold text-gray-700">Hypotheses That Need to Be Defined</h5>
+                  {hypothesis_validation_analysis.hypotheses_that_need_to_be_defined.map((h, i) => (
+                    <div key={i} className="p-3 border-l-4 border-amber-300 bg-amber-50/60 rounded-r space-y-1 text-sm">
+                      {h.type && <p className="font-semibold text-gray-800">{h.type}</p>}
+                      {h.template && <p className="text-gray-700 italic">{h.template}</p>}
+                      {h.priority && (
+                        <p className={`font-medium ${h.priority.toLowerCase().includes('critical') ? 'text-red-600' : 'text-amber-700'}`}>
+                          Priority: {h.priority}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+          </Card>
+        </section>
+      )}
+
+      {/* Interview plan compliance */}
+      {interview_plan_compliance && (
+        <section>
+          <h3 className="decision-output__section-title">Interview Plan Compliance</h3>
+          <Card className="p-4 text-sm space-y-2">
+            {interview_plan_compliance.status && (
+              <p><span className="font-medium text-gray-600">Status:</span>{' '}
+                <span className={interview_plan_compliance.status.startsWith('NO') ? 'text-red-600' : 'text-gray-700'}>
+                  {interview_plan_compliance.status}
+                </span>
+              </p>
+            )}
+            {interview_plan_compliance.assessment && (
+              <p className="text-gray-700">{interview_plan_compliance.assessment}</p>
+            )}
+          </Card>
         </section>
       )}
     </div>
   );
 };
 
-// --- Decision Review ---
+// ─── CustDev Insights Analyzer (Interview Guide) ──────────────────────────────
+
 interface RiskItem {
-  risk?: string;
+  risk_id?: string;
+  category?: string;
+  description?: string;
   severity?: string;
+  likelihood?: string;
   mitigation?: string;
 }
-interface RecommendationItemDr {
-  area?: string;
-  recommendation?: string;
-  priority?: string;
-  impact?: string;
+
+interface InterviewBatch {
+  batch_number?: number;
+  batch_name?: string;
+  num_interviews?: string | number;
+  goal?: string;
+  duration_per_interview?: string;
+  format_preference?: string[];
+  format_rationale?: string;
+  prerequisite?: string;
 }
-const DecisionReviewOutput: React.FC<{ data: Record<string, unknown>; t: (k: string) => string }> = ({ data, t }) => {
-  const decisionType = (data.decision_type as string) || '';
-  const score = data.decision_quality_score as number | undefined;
-  const strengths = (data.strengths as string[]) ?? [];
-  const weaknesses = (data.weaknesses as string[]) ?? [];
-  const risks = (data.risks as RiskItem[]) ?? [];
-  const recommendations = (data.recommendations as RecommendationItemDr[]) ?? [];
-  const nextSteps = (data.next_steps as string[]) ?? [];
+
+interface InterviewGuideRoot {
+  interview_guide?: {
+    metadata?: {
+      hypothesis_being_tested?: string;
+      target_segment?: string;
+      interview_goal?: string;
+      duration?: string;
+      format?: string;
+      language?: string;
+      product_name?: string;
+      product_stage?: string;
+      target_market?: string;
+      methodology?: string;
+    };
+    risk_assessment?: {
+      overall_risk_level?: string;
+      risks?: RiskItem[];
+      critical_risks?: RiskItem[];
+    };
+    pre_interview_preparation?: { what_you_are_actually_testing?: string[] };
+    recommended_approach?: {
+      phase?: string;
+      rationale?: string;
+      interview_batches?: InterviewBatch[];
+    };
+    [key: string]: unknown; // for batch_1_interview_guide etc.
+  };
+}
+
+const severityColor = (s?: string) => {
+  const l = (s ?? '').toLowerCase();
+  if (l === 'critical') return 'border-red-500 bg-red-50';
+  if (l === 'high') return 'border-orange-400 bg-orange-50';
+  return 'border-yellow-300 bg-yellow-50';
+};
+
+const CustdevInsightsAnalyzerOutput: React.FC<{ text: string; t: (k: string) => string }> = ({ text, t }) => {
+  const parsed = parseJson(text) as InterviewGuideRoot | null;
+  const guide = parsed?.interview_guide;
+
+  if (!guide) return <MarkdownOutput text={text} />;
+
+  const { metadata, risk_assessment, pre_interview_preparation, recommended_approach } = guide;
+  const risks = risk_assessment?.risks ?? risk_assessment?.critical_risks ?? [];
+
+  // Any extra top-level keys (e.g. batch_1_interview_guide)
+  const extraSections = Object.entries(guide).filter(
+    ([k]) => !['metadata', 'risk_assessment', 'pre_interview_preparation', 'recommended_approach'].includes(k)
+  );
+
   return (
-    <div className="decision-output decision-output--decision-review space-y-8">
-      {score != null && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.decisionReviewView.qualityScore')}</h3>
-          <p className="text-gray-700">{score}/10</p>
+    <div className="decision-output decision-output--custdev-insights-analyzer space-y-8">
+      {/* Metadata */}
+      {metadata && (
+        <section>
+          <h3 className="decision-output__section-title">Interview Guide Metadata</h3>
+          <Card className="p-4 space-y-2 text-sm">
+            {metadata.hypothesis_being_tested && (
+              <p><span className="font-medium text-gray-600">Hypothesis:</span> {metadata.hypothesis_being_tested}</p>
+            )}
+            {metadata.target_segment && (
+              <p><span className="font-medium text-gray-600">Target segment:</span> {metadata.target_segment}</p>
+            )}
+            {metadata.interview_goal && (
+              <p><span className="font-medium text-gray-600">Goal:</span> {metadata.interview_goal}</p>
+            )}
+            {metadata.duration && <p><span className="font-medium text-gray-600">Duration:</span> {metadata.duration}</p>}
+            {metadata.format && <p><span className="font-medium text-gray-600">Format:</span> {metadata.format}</p>}
+            {metadata.language && <p><span className="font-medium text-gray-600">Language:</span> {metadata.language}</p>}
+          </Card>
         </section>
       )}
-      {strengths.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.decisionReviewView.strengths')}</h3>
-          <ul className="list-disc list-inside text-gray-700 space-y-1">{strengths.map((s, i) => <li key={i}>{s}</li>)}</ul>
-        </section>
-      )}
-      {weaknesses.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.decisionReviewView.weaknesses')}</h3>
-          <ul className="list-disc list-inside text-gray-700 space-y-1">{weaknesses.map((w, i) => <li key={i}>{w}</li>)}</ul>
-        </section>
-      )}
-      {risks.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.decisionReviewView.risks')}</h3>
-          <div className="space-y-4">
+
+      {/* Risk Assessment */}
+      {(risk_assessment?.overall_risk_level || risks.length > 0) && (
+        <section>
+          <h3 className="decision-output__section-title">Risk Assessment</h3>
+          <div className="space-y-3">
+            {risk_assessment?.overall_risk_level && (
+              <p className="text-sm font-semibold text-red-600">
+                Overall Risk Level: {risk_assessment.overall_risk_level}
+              </p>
+            )}
             {risks.map((r, i) => (
-              <Card key={i} className="p-4 decision-output__card">
-                {r.risk && <p className="font-semibold text-primary-text mb-2">{r.risk}</p>}
-                {r.severity != null && <p className="text-sm text-gray-500 mb-1">{t('decisions.decisionReviewView.severity')}: {r.severity}</p>}
-                {r.mitigation && <p className="text-gray-700">{t('decisions.decisionReviewView.mitigation')}: {r.mitigation}</p>}
-              </Card>
-            ))}
-          </div>
-        </section>
-      )}
-      {recommendations.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.decisionReviewView.recommendations')}</h3>
-          <div className="space-y-4">
-            {recommendations.map((r, i) => (
-              <Card key={i} className="p-4 decision-output__card">
-                {r.area && <p className="font-semibold text-primary-text mb-2">{r.area}</p>}
-                {r.recommendation && <p className="text-gray-700 mb-1">{r.recommendation}</p>}
-                <div className="flex flex-wrap gap-2 text-sm text-gray-600">
-                  {r.priority != null && <span>{t('decisions.decisionReviewView.priority')}: {r.priority}</span>}
-                  {r.impact != null && <span>{t('decisions.decisionReviewView.impact')}: {r.impact}</span>}
+              <div key={r.risk_id ?? i} className={`p-4 border-l-4 rounded-r text-sm space-y-1 ${severityColor(r.severity)}`}>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {r.risk_id && <span className="font-mono font-bold text-gray-700">{r.risk_id}</span>}
+                  {r.category && <span className="font-semibold text-gray-800">{r.category}</span>}
+                  {r.severity && (
+                    <span className={`ml-auto text-xs font-bold uppercase px-2 py-0.5 rounded ${r.severity === 'critical' ? 'bg-red-200 text-red-800' : 'bg-orange-200 text-orange-800'}`}>
+                      {r.severity}
+                    </span>
+                  )}
                 </div>
-              </Card>
+                {r.description && <p className="text-gray-700">{r.description}</p>}
+                {r.mitigation && (
+                  <p className="text-gray-700"><span className="font-medium">Mitigation:</span> {r.mitigation}</p>
+                )}
+              </div>
             ))}
           </div>
         </section>
       )}
-      {nextSteps.length > 0 && (
-        <section className="decision-output__section">
-          <h3 className="decision-output__section-title">{t('decisions.decisionReviewView.nextSteps')}</h3>
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">{nextSteps.map((s, i) => <li key={i}>{s}</li>)}</ol>
+
+      {/* Pre-interview Preparation */}
+      {pre_interview_preparation?.what_you_are_actually_testing &&
+        pre_interview_preparation.what_you_are_actually_testing.length > 0 && (
+          <section>
+            <h3 className="decision-output__section-title">Pre-Interview Preparation</h3>
+            <Card className="p-4">
+              <h5 className="text-sm font-semibold text-gray-700 mb-2">What You Are Actually Testing</h5>
+              <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                {pre_interview_preparation.what_you_are_actually_testing.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </Card>
+          </section>
+        )}
+
+      {/* Recommended Approach */}
+      {recommended_approach && (
+        <section>
+          <h3 className="decision-output__section-title">Recommended Approach</h3>
+          <Card className="p-4 space-y-4">
+            {recommended_approach.phase && (
+              <p className="font-semibold text-primary-text">{recommended_approach.phase}</p>
+            )}
+            {recommended_approach.rationale && (
+              <p className="text-sm text-gray-700">{recommended_approach.rationale}</p>
+            )}
+            {recommended_approach.interview_batches && recommended_approach.interview_batches.length > 0 && (
+              <div className="space-y-3">
+                <h5 className="text-sm font-semibold text-gray-700">Interview Batches</h5>
+                {recommended_approach.interview_batches.map((b, i) => (
+                  <Card key={i} className="p-3 space-y-1 text-sm">
+                    <p className="font-semibold text-gray-800">
+                      Batch {b.batch_number}{b.batch_name ? `: ${b.batch_name}` : ''}
+                    </p>
+                    {b.num_interviews && <p className="text-gray-600">Interviews: {b.num_interviews}</p>}
+                    {b.goal && <p className="text-gray-700">{b.goal}</p>}
+                    {b.duration_per_interview && <p className="text-gray-600">Duration: {b.duration_per_interview}</p>}
+                    {b.format_preference && <p className="text-gray-600">Format: {b.format_preference.join(', ')}</p>}
+                    {b.prerequisite && (
+                      <p className="text-amber-700"><span className="font-medium">Prerequisite:</span> {b.prerequisite}</p>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            )}
+          </Card>
         </section>
       )}
+
+      {/* Extra sections (e.g. batch_1_interview_guide) */}
+      {extraSections.map(([key, val]) => {
+        if (!val || typeof val !== 'object') return null;
+        return (
+          <section key={key}>
+            <h3 className="decision-output__section-title">{formatLabel(key)}</h3>
+            <Card className="p-4">
+              <RenderKeyValue data={val as Record<string, unknown>} t={t} />
+            </Card>
+          </section>
+        );
+      })}
     </div>
   );
 };
 
-/** Generic: each top-level key as a step/section */
-const GenericDecisionOutput: React.FC<{ data: Record<string, unknown>; t: (k: string) => string }> = ({ data, t }) => (
-  <div className="decision-output decision-output--generic space-y-8">
-    {Object.entries(data).map(([key, value], idx) => {
-      if (value == null) return null;
-      const title = formatLabel(key);
-      return (
-        <section key={key} className="decision-output__section">
-          <h3 className="decision-output__section-title">
-            {t('decisions.step')} {idx + 1}: {title}
-          </h3>
-          {Array.isArray(value) ? (
-            value.every((v) => typeof v === 'string') ? (
-              <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                {(value as string[]).map((s, i) => (
-                  <li key={i}>{s}</li>
-                ))}
-              </ol>
-            ) : (
-              <div className="space-y-4">
-                {(value as unknown[]).map((item, i) =>
-                  typeof item === 'object' && item !== null && !Array.isArray(item) ? (
-                    <Card key={i} className="p-4">
-                      <RenderKeyValue data={item as Record<string, unknown>} t={t} />
-                    </Card>
-                  ) : (
-                    <div key={i} className="text-gray-700">
-                      {typeof item === 'object' ? JSON.stringify(item) : String(item)}
-                    </div>
-                  )
-                )}
-              </div>
-            )
-          ) : typeof value === 'object' && value !== null ? (
-            <Card className="p-4">
-              <RenderKeyValue data={value as Record<string, unknown>} t={t} />
-            </Card>
-          ) : (
-            <p className="text-gray-700">{String(value)}</p>
-          )}
-        </section>
-      );
-    })}
-  </div>
-);
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 const DecisionOutputView: React.FC<DecisionOutputViewProps> = ({ outputData, variant, fallback, t }) => {
-  if (outputData && Object.keys(outputData).length > 0) {
-    const data = resolveData(outputData);
-    const hasData = data && Object.keys(data).length > 0;
-    if (hasData) {
-      if (variant === 'icp_diagnostician') return <IcpDiagnosticianOutput data={data} t={t} />;
-      if (variant === 'positioning') return <PositioningOutput data={data} t={t} />;
-      if (variant === 'channel_risk') return <ChannelRiskOutput data={data} t={t} />;
-      if (variant === 'experiment') return <ExperimentOutput data={data} t={t} />;
-      if (variant === 'decision_review') return <DecisionReviewOutput data={data} t={t} />;
-    }
-    return <GenericDecisionOutput data={outputData} t={t} />;
+  // 1. Extract the real text payload from output_data.content[].text
+  const text = extractText(outputData);
+
+  // 2. If we have text, dispatch to the right renderer
+  if (text) {
+    if (variant === 'hypothesis_generator') return <MarkdownOutput text={text} />;
+    if (variant === 'custdev_target_planner') return <CustdevTargetPlannerOutput text={text} t={t} />;
+    if (variant === 'custdev_interview_designer') return <CustdevInterviewDesignerOutput text={text} t={t} />;
+    if (variant === 'custdev_insights_analyzer') return <CustdevInsightsAnalyzerOutput text={text} t={t} />;
   }
 
-  if (fallback) {
-    return (
-      <div className="decision-output decision-output--fallback">
-        <pre className="whitespace-pre-wrap text-sm text-gray-700 bg-gray-50 p-4 rounded">
-          {fallback}
-        </pre>
-      </div>
-    );
-  }
+  // 3. Fallback: render raw string as markdown
+  if (fallback) return <MarkdownOutput text={fallback} />;
 
+  // 4. Nothing to show
   return (
-    <div className="decision-output decision-output__empty text-gray-500 italic">
+    <div className="decision-output decision-output__empty text-gray-500 italic text-sm">
       {t('decisions.noOutput')}
     </div>
   );

@@ -130,54 +130,44 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 						</div>
 						<div className="space-y-0.5 ml-2 border-l-2 border-gray-200 pl-2">
 							<Link
-								to="/tools/icp-diagnostician"
+								to="/tools/hypothesis-generator"
 								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/tools/icp-diagnostician') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
+									isActive('/tools/hypothesis-generator') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
 								}`}
 							>
-								<span className={`mr-2 ${isActive('/tools/icp-diagnostician') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
-								<span>{t('sidebar.icpDiagnostician')}</span>
+								<span className={`mr-2 ${isActive('/tools/hypothesis-generator') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
+								<span>{t('sidebar.hypothesisGenerator')}</span>
 							</Link>
 							<Link
-								to="/tools/positioning"
+								to="/tools/custdev-target-planner"
 								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/tools/positioning') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
+									isActive('/tools/custdev-target-planner') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
 								}`}
 							>
-								<span className={`mr-2 ${isActive('/tools/positioning') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
-								<span>{t('sidebar.positioning')}</span>
+								<span className={`mr-2 ${isActive('/tools/custdev-target-planner') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
+								<span>{t('sidebar.custdevTargetPlanner')}</span>
 							</Link>
 							<Link
-								to="/tools/channel-risk"
+								to="/tools/custdev-interview-designer"
 								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/tools/channel-risk') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
+									isActive('/tools/custdev-interview-designer') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
 								}`}
 							>
-								<span className={`mr-2 ${isActive('/tools/channel-risk') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
-								<span>{t('sidebar.channelRisk')}</span>
+								<span className={`mr-2 ${isActive('/tools/custdev-interview-designer') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
+								<span>{t('sidebar.custdevInterviewDesigner')}</span>
 							</Link>
 							<Link
-								to="/tools/experiment"
+								to="/tools/custdev-insights-analyzer"
 								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/tools/experiment') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
+									isActive('/tools/custdev-insights-analyzer') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
 								}`}
 							>
-								<span className={`mr-2 ${isActive('/tools/experiment') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
-								<span>{t('sidebar.experiment')}</span>
-							</Link>
-							<Link
-								to="/tools/decision-review"
-								onClick={handleLinkClick}
-								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/tools/decision-review') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
-								}`}
-							>
-								<span className={`mr-2 ${isActive('/tools/decision-review') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
-								<span>{t('sidebar.decisionReview')}</span>
+								<span className={`mr-2 ${isActive('/tools/custdev-insights-analyzer') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
+								<span>{t('sidebar.custdevInsightsAnalyzer')}</span>
 							</Link>
 						</div>
 					</div>
