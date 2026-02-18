@@ -70,6 +70,7 @@ export interface CompanyAnswers {
     value_proposition?: string;
     competitive_advantage?: string;
     business_model?: string;
+    interview_data?: string;
   };
   created_at: string;
   updated_at: string | null;

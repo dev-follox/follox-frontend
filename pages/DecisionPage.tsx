@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,8 @@ import { useToast } from '../contexts/ToastContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import Spinner from '../components/Spinner';
+import Dialog from '../components/Dialog';
+import Input from '../components/Input';
 import DecisionOutputView, { DecisionVariant } from '../components/DecisionOutputView';
 import api from '../services/api';
 import type { ToolGenerationResponse } from '../types';
@@ -67,6 +69,25 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+  const [interviewDialogOpen, setInterviewDialogOpen] = useState(false);
+  const [interviewData, setInterviewData] = useState('');
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
+
+  // Pre-fill interview data when opening dialog for custdev_insights_analyzer
+  useEffect(() => {
+    if (interviewDialogOpen && variant === 'custdev_insights_analyzer' && user?.company?.id) {
+      api.getCompanyAnswers(user.company.id).then((res) => {
+        if (isMountedRef.current && res.answers?.interview_data != null) {
+          setInterviewData(res.answers.interview_data);
+        }
+      }).catch(() => {});
+    }
+  }, [interviewDialogOpen, variant, user?.company?.id]);
 
   useEffect(() => {
     if (!user?.company?.id) return;
@@ -98,57 +119,6 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
         
         if (cancelled) return;
         setHasAnswers(hasAnswers);
-        
-        // Only auto-regenerate if:
-        // 1. We have answers
-        // 2. Tool was previously generated (has history)
-        // 3. Answers were updated after last generation
-        if (hasAnswers && list.length > 0) {
-          // Get answer update timestamp
-          const answersUpdated = localStorage.getItem(`answers_last_updated_${user.company.id}`);
-          // Get tool generation timestamp (use latest history item if not in localStorage)
-          let toolGenerated = localStorage.getItem(`tool_last_generated_${user.company.id}_${variant}`);
-          
-          // If no timestamp in localStorage, use the latest history item's created_at
-          if (!toolGenerated && list.length > 0) {
-            toolGenerated = list[0].created_at;
-            // Store it for future reference
-            localStorage.setItem(`tool_last_generated_${user.company.id}_${variant}`, toolGenerated);
-          }
-          
-          // Check if answers were updated after last generation
-          const needsRegeneration = answersUpdated && toolGenerated && 
-            new Date(answersUpdated) > new Date(toolGenerated);
-          
-          if (needsRegeneration) {
-            setGenerating(true);
-            try {
-              const requestLanguage = language === 'en' ? 'en' : 'ru';
-              const item = await cfg.generate(user.company.id, { language: requestLanguage });
-              if (cancelled) return;
-              
-              // Update generation timestamp
-              localStorage.setItem(`tool_last_generated_${user.company.id}_${variant}`, new Date().toISOString());
-              
-              setHistory((prev) => [item, ...prev]);
-              setSelectedId(item.id);
-              showToast({
-                message: t('decisions.autoRegenerated'),
-                type: 'success',
-                duration: 4000,
-              });
-            } catch (e) {
-              if (!cancelled) {
-                console.error('Auto-regeneration failed:', e);
-                // Don't show error toast for auto-regeneration, just log it
-              }
-            } finally {
-              if (!cancelled) {
-                setGenerating(false);
-              }
-            }
-          }
-        }
       } catch (e) {
         if (!cancelled) {
           setError(t('decisions.loadHistoryError'));
@@ -163,7 +133,37 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
     return () => { cancelled = true; };
   }, [user?.company?.id, variant, t, language, cfg]);
 
-  const handleGenerate = async () => {
+  const runGeneration = () => {
+    if (!user?.company?.id) return;
+    setGenerating(true);
+    setError(null);
+    showToast({
+      message: t('decisions.generationStarted'),
+      type: 'info',
+      duration: 4000,
+    });
+    const requestLanguage = language === 'en' ? 'en' : 'ru';
+    cfg
+      .generate(user.company.id, { language: requestLanguage })
+      .then((item) => {
+        if (!isMountedRef.current) return;
+        localStorage.setItem(`tool_last_generated_${user.company.id}_${variant}`, new Date().toISOString());
+        setHistory((prev) => [item, ...prev]);
+        setSelectedId(item.id);
+        showToast({ message: t('decisions.generationCompleted'), type: 'success', duration: 3000 });
+      })
+      .catch((e) => {
+        if (!isMountedRef.current) return;
+        setError(t(cfg.errorKey));
+        console.error(e);
+        showToast({ message: t(cfg.errorKey), type: 'error', duration: 4000 });
+      })
+      .finally(() => {
+        if (isMountedRef.current) setGenerating(false);
+      });
+  };
+
+  const handleGenerate = () => {
     if (!user?.company?.id) return;
     if (hasAnswers === false) {
       showToast({
@@ -174,23 +174,34 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
       });
       return;
     }
+    if (variant === 'custdev_insights_analyzer') {
+      setInterviewData('');
+      setInterviewDialogOpen(true);
+      return;
+    }
+    runGeneration();
+  };
+
+  const handleInterviewDialogSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user?.company?.id) return;
+    setInterviewDialogOpen(false);
     setGenerating(true);
     setError(null);
     try {
-      // Send language by locale: en → English, ru → Russian
-      const requestLanguage = language === 'en' ? 'en' : 'ru';
-      const item = await cfg.generate(user.company.id, { language: requestLanguage });
-      
-      // Update generation timestamp
-      localStorage.setItem(`tool_last_generated_${user.company.id}_${variant}`, new Date().toISOString());
-      
-      setHistory((prev) => [item, ...prev]);
-      setSelectedId(item.id);
-    } catch (e) {
-      setError(t(cfg.errorKey));
-      console.error(e);
-    } finally {
-      setGenerating(false);
+      const current = await api.getCompanyAnswers(user.company.id);
+      const updatedAnswers = { ...current.answers, interview_data: interviewData.trim() || undefined };
+      await api.updateCompanyAnswers(user.company.id, { answers: updatedAnswers });
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`answers_last_updated_${user.company.id}`, new Date().toISOString());
+      }
+      runGeneration();
+    } catch (err) {
+      console.error(err);
+      if (isMountedRef.current) {
+        setGenerating(false);
+        showToast({ message: t('qa.saveError'), type: 'error', duration: 4000 });
+      }
     }
   };
 
@@ -216,8 +227,8 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
             <Button onClick={() => navigate('/tools/qa')} variant="secondary">
               {t('decisions.editAnswers')}
             </Button>
-            <Button onClick={handleGenerate} disabled={generating}>
-              {history.length > 0 ? t('decisions.regenerate') : t('decisions.generate')}
+            <Button onClick={handleGenerate} disabled={generating} isLoading={generating}>
+              {generating ? t('decisions.generating') : (history.length > 0 ? t('decisions.regenerate') : t('decisions.generate'))}
             </Button>
           </div>
         </div>
@@ -262,11 +273,7 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
         </aside>
 
         <main className="decision-page__main">
-          {generating ? (
-            <div className="decision-page__main-loader">
-              <Spinner size="large" />
-            </div>
-          ) : loading && history.length === 0 ? (
+          {loading && history.length === 0 ? (
             <div className="flex justify-center items-center h-64">
               <Spinner size="large" />
             </div>
@@ -302,6 +309,29 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
           )}
         </main>
       </div>
+
+      {variant === 'custdev_insights_analyzer' && (
+        <Dialog
+          isOpen={interviewDialogOpen}
+          onClose={() => setInterviewDialogOpen(false)}
+          title={t('decisions.custdevInsightsAnalyzer.interviewDataDialogTitle')}
+          onSubmit={handleInterviewDialogSubmit}
+          actions={[
+            { label: t('common.cancel'), variant: 'secondary', onClick: () => setInterviewDialogOpen(false) },
+            { label: t('decisions.custdevInsightsAnalyzer.submitAndGenerate'), variant: 'primary', type: 'submit' },
+          ]}
+        >
+          <Input
+            id="interview-data"
+            label={t('decisions.custdevInsightsAnalyzer.interviewDataLabel')}
+            multiline
+            rows={8}
+            value={interviewData}
+            onChange={(e) => setInterviewData(e.target.value)}
+            placeholder={t('decisions.custdevInsightsAnalyzer.interviewDataPlaceholder')}
+          />
+        </Dialog>
+      )}
     </div>
   );
 };

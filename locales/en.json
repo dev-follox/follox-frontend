@@ -238,6 +238,9 @@
   "decisions": {
     "autoRegenerated": "Automatically regenerated based on your updated answers.",
     "inProgress": "In progress",
+    "generationStarted": "Generation started. You can navigate away and come back later.",
+    "generationCompleted": "Generation completed.",
+    "generating": "Generating…",
     "editAnswers": "Edit Answers",
     "generate": "Generate",
     "regenerate": "Regenerate",
@@ -320,7 +323,11 @@
     "custdevInsightsAnalyzer": {
       "title": "CustDev Insights Analyzer",
       "noHistory": "No CustDev Insights Analyzer history. Click \"Generate\" to create the first one.",
-      "generateError": "Failed to generate CustDev Insights Analyzer. Try again."
+      "generateError": "Failed to generate CustDev Insights Analyzer. Try again.",
+      "interviewDataDialogTitle": "Enter interview data",
+      "interviewDataLabel": "Interview data",
+      "interviewDataPlaceholder": "Paste or type your customer interview notes, transcripts, or insights here…",
+      "submitAndGenerate": "Save and generate"
     }
   },
   "telegram": {

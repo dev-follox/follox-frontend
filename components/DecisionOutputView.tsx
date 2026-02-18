@@ -315,11 +315,11 @@ const HypothesisGeneratorOutput: React.FC<{ text: string; t: (k: string) => stri
 
                 <div className="flex items-center justify-between pt-2 border-t border-gray-200">
                   <span className={`text-xs font-bold uppercase px-2 py-1 rounded ${
-                    (h.risk_level ?? '').toLowerCase() === 'critical' ? 'bg-red-100 text-red-800' :
-                    (h.risk_level ?? '').toLowerCase() === 'high' ? 'bg-orange-100 text-orange-800' :
+                    h.risk_level.toLowerCase() === 'critical' ? 'bg-red-100 text-red-800' :
+                    h.risk_level.toLowerCase() === 'high' ? 'bg-orange-100 text-orange-800' :
                     'bg-yellow-100 text-yellow-800'
                   }`}>
-                    {h.risk_level ?? '—'}
+                    {h.risk_level}
                   </span>
                 </div>
 
@@ -1133,8 +1133,8 @@ const CustdevInsightsAnalyzerOutput: React.FC<{ text: string; t: (k: string) => 
                     <div key={i} className="p-3 border-l-4 border-amber-300 bg-amber-50/60 rounded-r space-y-1 text-sm">
                       {h.type && <p className="font-semibold text-gray-800 capitalize">{h.type}</p>}
                       {h.template && <p className="text-gray-700 italic">{h.template}</p>}
-                      {h.priority != null && (
-                        <p className={`font-medium ${(h.priority ?? '').toString().toLowerCase().includes('critical') ? 'text-red-600' : 'text-amber-700'}`}>
+                      {h.priority && (
+                        <p className={`font-medium ${h.priority.toLowerCase().includes('critical') ? 'text-red-600' : 'text-amber-700'}`}>
                           Priority: {h.priority}
                         </p>
                       )}
