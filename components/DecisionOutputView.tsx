@@ -151,10 +151,228 @@ const RenderKeyValue: React.FC<{ data: Record<string, unknown>; t: (k: string) =
   </dl>
 );
 
-// ─── Markdown Renderer (hypothesis_generator) ────────────────────────────────
+// ─── Hypothesis Generator ─────────────────────────────────────────────────────
+
+interface HypothesisAnalysisRoot {
+  hypothesis_analysis?: {
+    startup_summary?: {
+      product_name?: string;
+      stage?: string;
+      critical_observation?: string;
+    };
+    leap_of_faith_assumptions?: Array<{
+      id: number;
+      assumption: string;
+      risk_level: string;
+      risk_emoji?: string;
+    }>;
+    hypotheses?: Array<{
+      hypothesis_id: string;
+      title: string;
+      type: string;
+      statement: string;
+      assumption_being_tested: string;
+      if_true_expect?: string[];
+      if_false_see?: string[];
+      minimum_success_criteria?: {
+        metrics?: Array<{ metric_name: string; target: string }>;
+        qualitative_signals?: string[];
+      };
+      risk_level: string;
+      why_this_matters: string;
+    }>;
+    recommended_testing_sequence?: {
+      phases?: Array<{
+        phase_number: number;
+        phase_name: string;
+        timeline: string;
+        hypotheses_to_test: string[];
+        method: string;
+        sample_size: string;
+        rationale: string;
+      }>;
+    };
+    mvp_recommendation?: {
+      mvp_type: string;
+      purpose: string;
+      success_metric: string;
+      timeline: string;
+    };
+  };
+}
+
+const HypothesisGeneratorOutput: React.FC<{ text: string; t: (k: string) => string }> = ({ text, t }) => {
+  const parsed = parseJson(text) as HypothesisAnalysisRoot | null;
+  const data = parsed?.hypothesis_analysis;
+
+  if (!data) return <MarkdownOutput text={text} />;
+
+  return (
+    <div className="decision-output decision-output--hypothesis-generator space-y-8">
+      {/* Startup Summary */}
+      {data.startup_summary && (
+        <section>
+          <h3 className="decision-output__section-title">Startup Summary</h3>
+          <Card className="p-4 space-y-2 text-sm">
+            {data.startup_summary.product_name && (
+              <p><span className="font-medium text-gray-600">Product:</span> {data.startup_summary.product_name}</p>
+            )}
+            {data.startup_summary.stage && (
+              <p><span className="font-medium text-gray-600">Stage:</span> {data.startup_summary.stage}</p>
+            )}
+            {data.startup_summary.critical_observation && (
+              <blockquote className="mt-2 p-3 border-l-4 border-amber-400 bg-amber-50 text-amber-800 text-sm">
+                ⚠️ {data.startup_summary.critical_observation}
+              </blockquote>
+            )}
+          </Card>
+        </section>
+      )}
+
+      {/* Leap-of-Faith Assumptions */}
+      {data.leap_of_faith_assumptions && data.leap_of_faith_assumptions.length > 0 && (
+        <section>
+          <h3 className="decision-output__section-title">Leap-of-Faith Assumptions</h3>
+          <div className="space-y-2">
+            {data.leap_of_faith_assumptions.map((assumption) => (
+              <Card key={assumption.id} className="p-3 flex items-start gap-3">
+                <span className="text-xl flex-shrink-0">{assumption.risk_emoji ?? '🔴'}</span>
+                <div className="flex-1 text-sm">
+                  <p className="font-medium text-gray-800">{assumption.id}. {assumption.assumption}</p>
+                  <p className="text-xs text-gray-600 mt-1 uppercase font-semibold">{assumption.risk_level}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Hypotheses */}
+      {data.hypotheses && data.hypotheses.length > 0 && (
+        <section>
+          <h3 className="decision-output__section-title">Hypotheses to Test</h3>
+          <div className="space-y-6">
+            {data.hypotheses.map((h) => (
+              <Card key={h.hypothesis_id} className="p-5 space-y-4">
+                <div>
+                  <h4 className="text-base font-bold text-primary-text">
+                    {h.hypothesis_id}: {h.title}
+                  </h4>
+                  <p className="text-xs text-gray-600 mt-1">Type: <span className="font-medium">{h.type}</span></p>
+                </div>
+
+                <div>
+                  <h5 className="text-sm font-semibold text-gray-700 mb-1">Statement</h5>
+                  <p className="text-sm text-gray-700 italic">{h.statement}</p>
+                </div>
+
+                <div>
+                  <h5 className="text-sm font-semibold text-gray-700 mb-1">Assumption Being Tested</h5>
+                  <p className="text-sm text-gray-700">{h.assumption_being_tested}</p>
+                </div>
+
+                {h.if_true_expect && h.if_true_expect.length > 0 && (
+                  <div>
+                    <h5 className="text-sm font-semibold text-green-700 mb-1">If True, We Expect</h5>
+                    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                      {h.if_true_expect.map((item, i) => <li key={i}>{item}</li>)}
+                    </ul>
+                  </div>
+                )}
+
+                {h.if_false_see && h.if_false_see.length > 0 && (
+                  <div>
+                    <h5 className="text-sm font-semibold text-red-700 mb-1">If False, We'll See</h5>
+                    <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                      {h.if_false_see.map((item, i) => <li key={i}>{item}</li>)}
+                    </ul>
+                  </div>
+                )}
+
+                {h.minimum_success_criteria && (
+                  <div>
+                    <h5 className="text-sm font-semibold text-gray-700 mb-2">Minimum Success Criteria</h5>
+                    {h.minimum_success_criteria.metrics && h.minimum_success_criteria.metrics.length > 0 && (
+                      <div className="mb-2">
+                        <p className="text-xs font-medium text-gray-600 mb-1">Metrics</p>
+                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                          {h.minimum_success_criteria.metrics.map((m, i) => (
+                            <li key={i}><span className="font-medium">{m.metric_name}:</span> {m.target}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {h.minimum_success_criteria.qualitative_signals && h.minimum_success_criteria.qualitative_signals.length > 0 && (
+                      <div>
+                        <p className="text-xs font-medium text-gray-600 mb-1">Qualitative Signals</p>
+                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                          {h.minimum_success_criteria.qualitative_signals.map((s, i) => <li key={i}>{s}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                  <span className={`text-xs font-bold uppercase px-2 py-1 rounded ${
+                    h.risk_level.toLowerCase() === 'critical' ? 'bg-red-100 text-red-800' :
+                    h.risk_level.toLowerCase() === 'high' ? 'bg-orange-100 text-orange-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {h.risk_level}
+                  </span>
+                </div>
+
+                <div className="text-sm text-gray-700">
+                  <span className="font-medium">Why This Matters:</span> {h.why_this_matters}
+                </div>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Testing Sequence */}
+      {data.recommended_testing_sequence?.phases && data.recommended_testing_sequence.phases.length > 0 && (
+        <section>
+          <h3 className="decision-output__section-title">Recommended Testing Sequence</h3>
+          <div className="space-y-3">
+            {data.recommended_testing_sequence.phases.map((phase) => (
+              <Card key={phase.phase_number} className="p-4 space-y-2 text-sm">
+                <h5 className="font-semibold text-gray-800">
+                  Phase {phase.phase_number}: {phase.phase_name}
+                </h5>
+                <p className="text-gray-600">Timeline: {phase.timeline}</p>
+                <p className="text-gray-700">Hypotheses: {phase.hypotheses_to_test.join(', ')}</p>
+                <p className="text-gray-700">Method: {phase.method}</p>
+                <p className="text-gray-700">Sample Size: {phase.sample_size}</p>
+                <p className="text-gray-600 italic">{phase.rationale}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* MVP Recommendation */}
+      {data.mvp_recommendation && (
+        <section>
+          <h3 className="decision-output__section-title">MVP Recommendation</h3>
+          <Card className="p-4 space-y-2 text-sm">
+            <p><span className="font-medium text-gray-600">Type:</span> {data.mvp_recommendation.mvp_type}</p>
+            <p><span className="font-medium text-gray-600">Purpose:</span> {data.mvp_recommendation.purpose}</p>
+            <p><span className="font-medium text-gray-600">Success Metric:</span> {data.mvp_recommendation.success_metric}</p>
+            <p><span className="font-medium text-gray-600">Timeline:</span> {data.mvp_recommendation.timeline}</p>
+          </Card>
+        </section>
+      )}
+    </div>
+  );
+};
+
+// ─── Markdown Renderer (Fallback) ─────────────────────────────────────────────
 
 /**
- * Renders the raw markdown text output from hypothesis_generator.
+ * Renders raw markdown text as fallback.
  * Handles: # headings, **bold**, > blockquotes, - lists, | tables, --- dividers.
  */
 function renderInline(text: string): React.ReactNode[] {
@@ -438,7 +656,347 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
   );
 };
 
-// ─── CustDev Interview Designer ───────────────────────────────────────────────
+// ─── CustDev Interview Designer (Designs Interview Guides) ────────────────────
+
+interface RiskItem {
+  risk_id?: string;
+  category?: string;
+  description?: string;
+  severity?: string;
+  likelihood?: string;
+  mitigation?: string;
+}
+
+interface InterviewSection {
+  section_number: number;
+  section_name: string;
+  duration: string;
+  goal: string;
+  key_questions?: Array<{
+    question: string;
+    why_this_works?: string;
+    listen_for?: string[];
+    follow_ups?: string[];
+  }>;
+  what_not_to_ask?: Array<{
+    bad_question: string;
+    why_bad: string;
+  }>;
+}
+
+interface InterviewBatch {
+  batch_number?: number;
+  batch_name?: string;
+  num_interviews?: string | number;
+  goal?: string;
+  duration_per_interview?: string;
+  format_preference?: string[];
+  format_rationale?: string;
+  prerequisite?: string;
+}
+
+interface InterviewGuideRoot {
+  interview_guide?: {
+    metadata?: {
+      startup_name?: string;
+      product_stage?: string;
+      hypothesis_being_tested?: string;
+      target_segment?: string;
+      interview_goal?: string;
+      duration?: string;
+      format?: string;
+      language?: string;
+    };
+    risk_assessment?: {
+      overall_risk_level?: string;
+      risks?: RiskItem[];
+      critical_risks?: RiskItem[];
+    };
+    pre_interview_preparation?: {
+      what_you_are_actually_testing?: string[];
+      success_looks_like?: string[];
+      failure_looks_like?: string[];
+    };
+    recommended_approach?: {
+      phase?: string;
+      rationale?: string;
+      interview_batches?: InterviewBatch[];
+    };
+    interview_sections?: InterviewSection[];
+    post_interview_capture?: {
+      immediate_notes?: string[];
+      validation_scoring?: {
+        criteria?: Array<{ criterion: string; scale: string }>;
+      };
+      quality_checklist?: {
+        good_signs?: string[];
+        bad_signs?: string[];
+      };
+    };
+    [key: string]: unknown;
+  };
+}
+
+const severityColor = (s?: string) => {
+  const l = (s ?? '').toLowerCase();
+  if (l === 'critical') return 'border-red-500 bg-red-50';
+  if (l === 'high') return 'border-orange-400 bg-orange-50';
+  return 'border-yellow-300 bg-yellow-50';
+};
+
+const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) => string }> = ({ text, t }) => {
+  const parsed = parseJson(text) as InterviewGuideRoot | null;
+  const guide = parsed?.interview_guide;
+
+  if (!guide) return <MarkdownOutput text={text} />;
+
+  const { metadata, risk_assessment, pre_interview_preparation, recommended_approach, interview_sections, post_interview_capture } = guide;
+  const risks = risk_assessment?.risks ?? risk_assessment?.critical_risks ?? [];
+
+  // Extra sections (batch guides)
+  const extraSections = Object.entries(guide).filter(
+    ([k]) => !['metadata', 'risk_assessment', 'pre_interview_preparation', 'recommended_approach', 'interview_sections', 'post_interview_capture'].includes(k)
+  );
+
+  return (
+    <div className="decision-output decision-output--custdev-interview-designer space-y-8">
+      {/* Metadata */}
+      {metadata && (
+        <section>
+          <h3 className="decision-output__section-title">Interview Guide Metadata</h3>
+          <Card className="p-4 space-y-2 text-sm">
+            {metadata.startup_name && <p><span className="font-medium text-gray-600">Startup:</span> {metadata.startup_name}</p>}
+            {metadata.product_stage && <p><span className="font-medium text-gray-600">Stage:</span> {metadata.product_stage}</p>}
+            {metadata.hypothesis_being_tested && (
+              <p className="text-gray-700 mt-2"><span className="font-medium text-gray-600">Hypothesis:</span> {metadata.hypothesis_being_tested}</p>
+            )}
+            {metadata.target_segment && <p><span className="font-medium text-gray-600">Target segment:</span> {metadata.target_segment}</p>}
+            {metadata.interview_goal && (
+              <p className="text-gray-700"><span className="font-medium text-gray-600">Goal:</span> {metadata.interview_goal}</p>
+            )}
+            {metadata.duration && <p><span className="font-medium text-gray-600">Duration:</span> {metadata.duration}</p>}
+            {metadata.format && <p><span className="font-medium text-gray-600">Format:</span> {metadata.format}</p>}
+          </Card>
+        </section>
+      )}
+
+      {/* Risk Assessment */}
+      {(risk_assessment?.overall_risk_level || risks.length > 0) && (
+        <section>
+          <h3 className="decision-output__section-title">Risk Assessment</h3>
+          <div className="space-y-3">
+            {risk_assessment?.overall_risk_level && (
+              <p className="text-sm font-semibold text-red-600">
+                Overall Risk Level: {risk_assessment.overall_risk_level}
+              </p>
+            )}
+            {risks.map((r, i) => (
+              <div key={r.risk_id ?? i} className={`p-4 border-l-4 rounded-r text-sm space-y-1 ${severityColor(r.severity)}`}>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {r.risk_id && <span className="font-mono font-bold text-gray-700">{r.risk_id}</span>}
+                  {r.category && <span className="font-semibold text-gray-800">{r.category}</span>}
+                  {r.severity && (
+                    <span className={`ml-auto text-xs font-bold uppercase px-2 py-0.5 rounded ${
+                      r.severity === 'critical' ? 'bg-red-200 text-red-800' : 'bg-orange-200 text-orange-800'
+                    }`}>
+                      {r.severity}
+                    </span>
+                  )}
+                </div>
+                {r.description && <p className="text-gray-700">{r.description}</p>}
+                {r.likelihood && <p className="text-xs text-gray-600">Likelihood: {r.likelihood}</p>}
+                {r.mitigation && (
+                  <p className="text-gray-700 mt-2"><span className="font-medium">Mitigation:</span> {r.mitigation}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Pre-Interview Preparation */}
+      {pre_interview_preparation && (
+        <section>
+          <h3 className="decision-output__section-title">Pre-Interview Preparation</h3>
+          <Card className="p-4 space-y-3">
+            {pre_interview_preparation.what_you_are_actually_testing &&
+              pre_interview_preparation.what_you_are_actually_testing.length > 0 && (
+                <div>
+                  <h5 className="text-sm font-semibold text-gray-700 mb-2">What You Are Actually Testing</h5>
+                  <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                    {pre_interview_preparation.what_you_are_actually_testing.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            {pre_interview_preparation.success_looks_like && pre_interview_preparation.success_looks_like.length > 0 && (
+              <div>
+                <h5 className="text-sm font-semibold text-green-700 mb-2">Success Looks Like</h5>
+                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                  {pre_interview_preparation.success_looks_like.map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
+              </div>
+            )}
+            {pre_interview_preparation.failure_looks_like && pre_interview_preparation.failure_looks_like.length > 0 && (
+              <div>
+                <h5 className="text-sm font-semibold text-red-700 mb-2">Failure Looks Like</h5>
+                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                  {pre_interview_preparation.failure_looks_like.map((item, i) => <li key={i}>{item}</li>)}
+                </ul>
+              </div>
+            )}
+          </Card>
+        </section>
+      )}
+
+      {/* Recommended Approach */}
+      {recommended_approach && (
+        <section>
+          <h3 className="decision-output__section-title">Recommended Approach</h3>
+          <Card className="p-4 space-y-4">
+            {recommended_approach.phase && <p className="font-semibold text-primary-text">{recommended_approach.phase}</p>}
+            {recommended_approach.rationale && <p className="text-sm text-gray-700">{recommended_approach.rationale}</p>}
+            {recommended_approach.interview_batches && recommended_approach.interview_batches.length > 0 && (
+              <div className="space-y-3">
+                <h5 className="text-sm font-semibold text-gray-700">Interview Batches</h5>
+                {recommended_approach.interview_batches.map((b, i) => (
+                  <Card key={i} className="p-3 space-y-1 text-sm">
+                    <p className="font-semibold text-gray-800">
+                      Batch {b.batch_number}{b.batch_name ? `: ${b.batch_name}` : ''}
+                    </p>
+                    {b.num_interviews && <p className="text-gray-600">Interviews: {b.num_interviews}</p>}
+                    {b.goal && <p className="text-gray-700">{b.goal}</p>}
+                    {b.duration_per_interview && <p className="text-gray-600">Duration: {b.duration_per_interview}</p>}
+                    {b.format_preference && <p className="text-gray-600">Format: {b.format_preference.join(', ')}</p>}
+                    {b.format_rationale && <p className="text-gray-600 italic text-xs">{b.format_rationale}</p>}
+                    {b.prerequisite && (
+                      <p className="text-amber-700"><span className="font-medium">Prerequisite:</span> {b.prerequisite}</p>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            )}
+          </Card>
+        </section>
+      )}
+
+      {/* Interview Sections */}
+      {interview_sections && interview_sections.length > 0 && (
+        <section>
+          <h3 className="decision-output__section-title">Interview Sections</h3>
+          <div className="space-y-4">
+            {interview_sections.map((section) => (
+              <Card key={section.section_number} className="p-4 space-y-3">
+                <div>
+                  <h5 className="font-semibold text-gray-800">
+                    Section {section.section_number}: {section.section_name}
+                  </h5>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Duration: {section.duration} • Goal: {section.goal}
+                  </p>
+                </div>
+
+                {section.key_questions && section.key_questions.length > 0 && (
+                  <div className="space-y-3">
+                    {section.key_questions.map((q, i) => (
+                      <div key={i} className="p-3 bg-gray-50 rounded border border-gray-200 space-y-2 text-sm">
+                        <p className="font-medium text-gray-800">{q.question}</p>
+                        {q.why_this_works && (
+                          <p className="text-xs text-gray-600 italic">Why: {q.why_this_works}</p>
+                        )}
+                        {q.listen_for && q.listen_for.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-gray-600">Listen for:</p>
+                            <ul className="list-disc list-inside text-xs text-gray-700">
+                              {q.listen_for.map((item, j) => <li key={j}>{item}</li>)}
+                            </ul>
+                          </div>
+                        )}
+                        {q.follow_ups && q.follow_ups.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-gray-600">Follow-ups:</p>
+                            <ul className="list-disc list-inside text-xs text-gray-700">
+                              {q.follow_ups.map((item, j) => <li key={j}>{item}</li>)}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {section.what_not_to_ask && section.what_not_to_ask.length > 0 && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded space-y-2">
+                    <p className="text-sm font-semibold text-red-700">❌ What NOT to Ask</p>
+                    {section.what_not_to_ask.map((bad, i) => (
+                      <div key={i} className="text-xs text-gray-700">
+                        <p className="font-medium text-red-600">{bad.bad_question}</p>
+                        <p className="text-gray-600 italic">Why: {bad.why_bad}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Post-Interview Capture */}
+      {post_interview_capture && (
+        <section>
+          <h3 className="decision-output__section-title">Post-Interview Capture</h3>
+          <Card className="p-4 space-y-3 text-sm">
+            {post_interview_capture.immediate_notes && post_interview_capture.immediate_notes.length > 0 && (
+              <div>
+                <h5 className="text-sm font-semibold text-gray-700 mb-1">Immediate Notes to Capture</h5>
+                <ul className="list-disc list-inside text-gray-700 space-y-1">
+                  {post_interview_capture.immediate_notes.map((note, i) => <li key={i}>{note}</li>)}
+                </ul>
+              </div>
+            )}
+            {post_interview_capture.quality_checklist && (
+              <div className="grid md:grid-cols-2 gap-3">
+                {post_interview_capture.quality_checklist.good_signs && post_interview_capture.quality_checklist.good_signs.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-green-700 mb-1">✅ Good Interview Signs</p>
+                    <ul className="list-disc list-inside text-xs text-gray-700">
+                      {post_interview_capture.quality_checklist.good_signs.map((s, i) => <li key={i}>{s}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {post_interview_capture.quality_checklist.bad_signs && post_interview_capture.quality_checklist.bad_signs.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-red-700 mb-1">❌ Bad Interview Signs</p>
+                    <ul className="list-disc list-inside text-xs text-gray-700">
+                      {post_interview_capture.quality_checklist.bad_signs.map((s, i) => <li key={i}>{s}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </Card>
+        </section>
+      )}
+
+      {/* Extra sections */}
+      {extraSections.map(([key, val]) => {
+        if (!val || typeof val !== 'object') return null;
+        return (
+          <section key={key}>
+            <h3 className="decision-output__section-title">{formatLabel(key)}</h3>
+            <Card className="p-4">
+              <RenderKeyValue data={val as Record<string, unknown>} t={t} />
+            </Card>
+          </section>
+        );
+      })}
+    </div>
+  );
+};
+
+// ─── CustDev Insights Analyzer (Analyzes Interview Data) ──────────────────────
 
 interface HypothesisToDefine {
   type?: string;
@@ -469,25 +1027,31 @@ interface AnalysisRoot {
     hypotheses_that_need_to_be_defined?: HypothesisToDefine[];
   };
   interview_plan_compliance?: { status?: string; assessment?: string };
+  pivot_or_persevere?: {
+    recommendation?: string;
+    reasoning?: string;
+    confidence?: string;
+    next_actions?: Array<{ action: string; timeline: string; priority: string }>;
+  };
   innovation_accounting?: Record<string, unknown>;
 }
 
-interface InterviewDesignerRoot { analysis?: AnalysisRoot }
+interface InsightsAnalyzerRoot { analysis?: AnalysisRoot }
 
-const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) => string }> = ({ text, t }) => {
-  const parsed = parseJson(text) as InterviewDesignerRoot | null;
+const CustdevInsightsAnalyzerOutput: React.FC<{ text: string; t: (k: string) => string }> = ({ text, t }) => {
+  const parsed = parseJson(text) as InsightsAnalyzerRoot | null;
   const analysis = parsed?.analysis;
 
   if (!analysis) return <MarkdownOutput text={text} />;
 
-  const { meta, interview_data_summary, evidence_extraction, hypothesis_validation_analysis, interview_plan_compliance } = analysis;
+  const { meta, interview_data_summary, evidence_extraction, hypothesis_validation_analysis, interview_plan_compliance, pivot_or_persevere } = analysis;
 
   return (
-    <div className="decision-output decision-output--custdev-interview-designer space-y-8">
+    <div className="decision-output decision-output--custdev-insights-analyzer space-y-8">
       {/* Meta */}
       {meta && (
         <section>
-          <h3 className="decision-output__section-title">Meta</h3>
+          <h3 className="decision-output__section-title">Analysis Meta</h3>
           <Card className="p-4 space-y-2 text-sm">
             {meta.startup_name && <p><span className="font-medium text-gray-600">Startup:</span> {meta.startup_name}</p>}
             {meta.product_stage && <p><span className="font-medium text-gray-600">Stage:</span> {meta.product_stage}</p>}
@@ -546,7 +1110,7 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
       {/* Hypothesis validation */}
       {hypothesis_validation_analysis && (
         <section>
-          <h3 className="decision-output__section-title">Hypothesis Validation</h3>
+          <h3 className="decision-output__section-title">Hypothesis Validation Analysis</h3>
           <Card className="p-4 space-y-4">
             {hypothesis_validation_analysis.status && (
               <p className="text-sm font-medium">
@@ -567,7 +1131,7 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
                   <h5 className="text-sm font-semibold text-gray-700">Hypotheses That Need to Be Defined</h5>
                   {hypothesis_validation_analysis.hypotheses_that_need_to_be_defined.map((h, i) => (
                     <div key={i} className="p-3 border-l-4 border-amber-300 bg-amber-50/60 rounded-r space-y-1 text-sm">
-                      {h.type && <p className="font-semibold text-gray-800">{h.type}</p>}
+                      {h.type && <p className="font-semibold text-gray-800 capitalize">{h.type}</p>}
                       {h.template && <p className="text-gray-700 italic">{h.template}</p>}
                       {h.priority && (
                         <p className={`font-medium ${h.priority.toLowerCase().includes('critical') ? 'text-red-600' : 'text-amber-700'}`}>
@@ -600,198 +1164,46 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
           </Card>
         </section>
       )}
-    </div>
-  );
-};
 
-// ─── CustDev Insights Analyzer (Interview Guide) ──────────────────────────────
-
-interface RiskItem {
-  risk_id?: string;
-  category?: string;
-  description?: string;
-  severity?: string;
-  likelihood?: string;
-  mitigation?: string;
-}
-
-interface InterviewBatch {
-  batch_number?: number;
-  batch_name?: string;
-  num_interviews?: string | number;
-  goal?: string;
-  duration_per_interview?: string;
-  format_preference?: string[];
-  format_rationale?: string;
-  prerequisite?: string;
-}
-
-interface InterviewGuideRoot {
-  interview_guide?: {
-    metadata?: {
-      hypothesis_being_tested?: string;
-      target_segment?: string;
-      interview_goal?: string;
-      duration?: string;
-      format?: string;
-      language?: string;
-      product_name?: string;
-      product_stage?: string;
-      target_market?: string;
-      methodology?: string;
-    };
-    risk_assessment?: {
-      overall_risk_level?: string;
-      risks?: RiskItem[];
-      critical_risks?: RiskItem[];
-    };
-    pre_interview_preparation?: { what_you_are_actually_testing?: string[] };
-    recommended_approach?: {
-      phase?: string;
-      rationale?: string;
-      interview_batches?: InterviewBatch[];
-    };
-    [key: string]: unknown; // for batch_1_interview_guide etc.
-  };
-}
-
-const severityColor = (s?: string) => {
-  const l = (s ?? '').toLowerCase();
-  if (l === 'critical') return 'border-red-500 bg-red-50';
-  if (l === 'high') return 'border-orange-400 bg-orange-50';
-  return 'border-yellow-300 bg-yellow-50';
-};
-
-const CustdevInsightsAnalyzerOutput: React.FC<{ text: string; t: (k: string) => string }> = ({ text, t }) => {
-  const parsed = parseJson(text) as InterviewGuideRoot | null;
-  const guide = parsed?.interview_guide;
-
-  if (!guide) return <MarkdownOutput text={text} />;
-
-  const { metadata, risk_assessment, pre_interview_preparation, recommended_approach } = guide;
-  const risks = risk_assessment?.risks ?? risk_assessment?.critical_risks ?? [];
-
-  // Any extra top-level keys (e.g. batch_1_interview_guide)
-  const extraSections = Object.entries(guide).filter(
-    ([k]) => !['metadata', 'risk_assessment', 'pre_interview_preparation', 'recommended_approach'].includes(k)
-  );
-
-  return (
-    <div className="decision-output decision-output--custdev-insights-analyzer space-y-8">
-      {/* Metadata */}
-      {metadata && (
+      {/* Pivot or Persevere */}
+      {pivot_or_persevere && (
         <section>
-          <h3 className="decision-output__section-title">Interview Guide Metadata</h3>
-          <Card className="p-4 space-y-2 text-sm">
-            {metadata.hypothesis_being_tested && (
-              <p><span className="font-medium text-gray-600">Hypothesis:</span> {metadata.hypothesis_being_tested}</p>
-            )}
-            {metadata.target_segment && (
-              <p><span className="font-medium text-gray-600">Target segment:</span> {metadata.target_segment}</p>
-            )}
-            {metadata.interview_goal && (
-              <p><span className="font-medium text-gray-600">Goal:</span> {metadata.interview_goal}</p>
-            )}
-            {metadata.duration && <p><span className="font-medium text-gray-600">Duration:</span> {metadata.duration}</p>}
-            {metadata.format && <p><span className="font-medium text-gray-600">Format:</span> {metadata.format}</p>}
-            {metadata.language && <p><span className="font-medium text-gray-600">Language:</span> {metadata.language}</p>}
-          </Card>
-        </section>
-      )}
-
-      {/* Risk Assessment */}
-      {(risk_assessment?.overall_risk_level || risks.length > 0) && (
-        <section>
-          <h3 className="decision-output__section-title">Risk Assessment</h3>
-          <div className="space-y-3">
-            {risk_assessment?.overall_risk_level && (
-              <p className="text-sm font-semibold text-red-600">
-                Overall Risk Level: {risk_assessment.overall_risk_level}
-              </p>
-            )}
-            {risks.map((r, i) => (
-              <div key={r.risk_id ?? i} className={`p-4 border-l-4 rounded-r text-sm space-y-1 ${severityColor(r.severity)}`}>
-                <div className="flex items-center gap-2 flex-wrap">
-                  {r.risk_id && <span className="font-mono font-bold text-gray-700">{r.risk_id}</span>}
-                  {r.category && <span className="font-semibold text-gray-800">{r.category}</span>}
-                  {r.severity && (
-                    <span className={`ml-auto text-xs font-bold uppercase px-2 py-0.5 rounded ${r.severity === 'critical' ? 'bg-red-200 text-red-800' : 'bg-orange-200 text-orange-800'}`}>
-                      {r.severity}
-                    </span>
+          <h3 className="decision-output__section-title">Pivot or Persevere Decision</h3>
+          <Card className="p-4 space-y-3">
+            {pivot_or_persevere.recommendation && (
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">
+                  {pivot_or_persevere.recommendation === 'PERSEVERE' ? '🎯' :
+                   pivot_or_persevere.recommendation === 'PIVOT' ? '🔀' :
+                   pivot_or_persevere.recommendation === 'ITERATE' ? '🔄' : '⛔'}
+                </span>
+                <div>
+                  <p className="font-bold text-lg text-primary-text">{pivot_or_persevere.recommendation}</p>
+                  {pivot_or_persevere.confidence && (
+                    <p className="text-xs text-gray-600">Confidence: {pivot_or_persevere.confidence}</p>
                   )}
                 </div>
-                {r.description && <p className="text-gray-700">{r.description}</p>}
-                {r.mitigation && (
-                  <p className="text-gray-700"><span className="font-medium">Mitigation:</span> {r.mitigation}</p>
-                )}
               </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Pre-interview Preparation */}
-      {pre_interview_preparation?.what_you_are_actually_testing &&
-        pre_interview_preparation.what_you_are_actually_testing.length > 0 && (
-          <section>
-            <h3 className="decision-output__section-title">Pre-Interview Preparation</h3>
-            <Card className="p-4">
-              <h5 className="text-sm font-semibold text-gray-700 mb-2">What You Are Actually Testing</h5>
-              <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                {pre_interview_preparation.what_you_are_actually_testing.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </Card>
-          </section>
-        )}
-
-      {/* Recommended Approach */}
-      {recommended_approach && (
-        <section>
-          <h3 className="decision-output__section-title">Recommended Approach</h3>
-          <Card className="p-4 space-y-4">
-            {recommended_approach.phase && (
-              <p className="font-semibold text-primary-text">{recommended_approach.phase}</p>
             )}
-            {recommended_approach.rationale && (
-              <p className="text-sm text-gray-700">{recommended_approach.rationale}</p>
+            {pivot_or_persevere.reasoning && (
+              <p className="text-sm text-gray-700 p-3 bg-gray-50 rounded">{pivot_or_persevere.reasoning}</p>
             )}
-            {recommended_approach.interview_batches && recommended_approach.interview_batches.length > 0 && (
-              <div className="space-y-3">
-                <h5 className="text-sm font-semibold text-gray-700">Interview Batches</h5>
-                {recommended_approach.interview_batches.map((b, i) => (
-                  <Card key={i} className="p-3 space-y-1 text-sm">
-                    <p className="font-semibold text-gray-800">
-                      Batch {b.batch_number}{b.batch_name ? `: ${b.batch_name}` : ''}
-                    </p>
-                    {b.num_interviews && <p className="text-gray-600">Interviews: {b.num_interviews}</p>}
-                    {b.goal && <p className="text-gray-700">{b.goal}</p>}
-                    {b.duration_per_interview && <p className="text-gray-600">Duration: {b.duration_per_interview}</p>}
-                    {b.format_preference && <p className="text-gray-600">Format: {b.format_preference.join(', ')}</p>}
-                    {b.prerequisite && (
-                      <p className="text-amber-700"><span className="font-medium">Prerequisite:</span> {b.prerequisite}</p>
-                    )}
-                  </Card>
-                ))}
+            {pivot_or_persevere.next_actions && pivot_or_persevere.next_actions.length > 0 && (
+              <div>
+                <h5 className="text-sm font-semibold text-gray-700 mb-2">Next Actions</h5>
+                <div className="space-y-2">
+                  {pivot_or_persevere.next_actions.map((action, i) => (
+                    <div key={i} className="p-2 bg-blue-50 rounded text-sm">
+                      <p className="font-medium text-gray-800">{action.action}</p>
+                      <p className="text-xs text-gray-600">Timeline: {action.timeline} • Priority: {action.priority}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </Card>
         </section>
       )}
-
-      {/* Extra sections (e.g. batch_1_interview_guide) */}
-      {extraSections.map(([key, val]) => {
-        if (!val || typeof val !== 'object') return null;
-        return (
-          <section key={key}>
-            <h3 className="decision-output__section-title">{formatLabel(key)}</h3>
-            <Card className="p-4">
-              <RenderKeyValue data={val as Record<string, unknown>} t={t} />
-            </Card>
-          </section>
-        );
-      })}
     </div>
   );
 };
@@ -804,7 +1216,7 @@ const DecisionOutputView: React.FC<DecisionOutputViewProps> = ({ outputData, var
 
   // 2. If we have text, dispatch to the right renderer
   if (text) {
-    if (variant === 'hypothesis_generator') return <MarkdownOutput text={text} />;
+    if (variant === 'hypothesis_generator') return <HypothesisGeneratorOutput text={text} t={t} />;
     if (variant === 'custdev_target_planner') return <CustdevTargetPlannerOutput text={text} t={t} />;
     if (variant === 'custdev_interview_designer') return <CustdevInterviewDesignerOutput text={text} t={t} />;
     if (variant === 'custdev_insights_analyzer') return <CustdevInsightsAnalyzerOutput text={text} t={t} />;
