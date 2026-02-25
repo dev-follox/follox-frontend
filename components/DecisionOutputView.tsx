@@ -16,18 +16,9 @@ interface DecisionOutputViewProps {
 
 // ─── Data Extraction ──────────────────────────────────────────────────────────
 
-/**
- * All 4 variants share the same envelope shape:
- *   output_data.content[0].text  → the real payload (markdown or JSON string)
- *
- * The `content` field on the root object is a Python-repr string like:
- *   "{'content': [{'type': 'text', 'text': '...'}]}"
- * We never need that — output_data is already properly parsed JSON.
- */
 function extractText(outputData: Record<string, unknown> | null | undefined): string | null {
   if (!outputData) return null;
 
-  // Primary path: output_data.content[].text  (already-parsed JSON array)
   const content = outputData.content;
   if (Array.isArray(content) && content.length > 0) {
     const texts = content
@@ -42,34 +33,20 @@ function extractText(outputData: Record<string, unknown> | null | undefined): st
   return null;
 }
 
-/**
- * Parses JSON from text, repairing truncated responses from the API.
- *
- * The API responses are often cut off mid-JSON (no closing brackets).
- * Strategy:
- *   1. Strip ```json ... ``` fence if present
- *   2. Try parsing as-is (works for complete responses)
- *   3. Repair by closing unclosed strings, arrays, and objects, then parse again
- */
 function parseJson(text: string): unknown {
   const trimmed = text.trim();
 
-  // Extract the raw JSON portion
   let raw = trimmed;
   const fenceMatch = trimmed.match(/^```(?:json)?\s*\n([\s\S]*)$/);
   if (fenceMatch) {
-    // Strip trailing fence if present, keep if truncated (no closing fence = truncated)
     raw = fenceMatch[1].replace(/\n?```\s*$/, '').trim();
   } else {
     const start = trimmed.indexOf('{');
     if (start !== -1) raw = trimmed.slice(start);
   }
 
-  // 1. Try as-is (complete response)
   try { return JSON.parse(raw); } catch { /* fall through to repair */ }
 
-  // 2. Repair truncated JSON
-  // Walk character-by-character tracking string/bracket state
   let i = 0;
   let inString = false;
   let escaped = false;
@@ -89,20 +66,13 @@ function parseJson(text: string): unknown {
 
   let repaired = raw;
 
-  // Close any unclosed string
   if (inString) repaired += '"';
 
-  // Remove trailing incomplete key-value pairs that would be invalid JSON:
-  //   , "key": "partial_value    ← mid-value truncation
-  //   , "key":                   ← key with no value
-  //   , "key"                    ← dangling key
-  //   ,                          ← trailing comma
   repaired = repaired.replace(/,\s*"[^"]*"?\s*:\s*"[^"]*$/, '');
   repaired = repaired.replace(/,\s*"[^"]*"?\s*:\s*$/, '');
   repaired = repaired.replace(/,\s*"[^"]*"?\s*$/, '');
   repaired = repaired.replace(/,\s*$/, '');
 
-  // Close all unclosed brackets/braces in reverse open order
   repaired += stack.reverse().join('');
 
   try { return JSON.parse(repaired); } catch { return null; }
@@ -161,42 +131,47 @@ interface HypothesisAnalysisRoot {
       critical_observation?: string;
     };
     leap_of_faith_assumptions?: Array<{
-      id: number;
-      assumption: string;
-      risk_level: string;
+      id?: number;
+      assumption?: string;
+      risk_level?: string;
       risk_emoji?: string;
     }>;
     hypotheses?: Array<{
-      hypothesis_id: string;
-      title: string;
-      type: string;
-      statement: string;
-      assumption_being_tested: string;
+      hypothesis_id?: string;
+      title?: string;
+      type?: string;
+      statement?: string;
+      assumption_being_tested?: string;
       if_true_expect?: string[];
       if_false_see?: string[];
       minimum_success_criteria?: {
-        metrics?: Array<{ metric_name: string; target: string }>;
+        metrics?: Array<{ metric_name?: string; target?: string }>;
         qualitative_signals?: string[];
       };
-      risk_level: string;
-      why_this_matters: string;
+      risk_level?: string;
+      why_this_matters?: string;
     }>;
     recommended_testing_sequence?: {
       phases?: Array<{
-        phase_number: number;
-        phase_name: string;
-        timeline: string;
-        hypotheses_to_test: string[];
-        method: string;
-        sample_size: string;
-        rationale: string;
+        phase_number?: number;
+        phase_name?: string;
+        timeline?: string;
+        hypotheses_to_test?: string[];
+        method?: string;
+        sample_size?: string;
+        rationale?: string;
       }>;
     };
+    metrics_to_track?: {
+        leading_indicators?: string[];
+        lagging_indicators?: string[];
+        innovation_accounting_baseline?: string;
+    };
     mvp_recommendation?: {
-      mvp_type: string;
-      purpose: string;
-      success_metric: string;
-      timeline: string;
+      mvp_type?: string;
+      purpose?: string;
+      success_metric?: string;
+      timeline?: string;
     };
   };
 }
@@ -313,7 +288,7 @@ const HypothesisGeneratorOutput: React.FC<{ text: string; t: (k: string) => stri
                   </div>
                 )}
 
-                <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                {h.risk_level && <div className="flex items-center justify-between pt-2 border-t border-gray-200">
                   <span className={`text-xs font-bold uppercase px-2 py-1 rounded ${
                     h.risk_level.toLowerCase() === 'critical' ? 'bg-red-100 text-red-800' :
                     h.risk_level.toLowerCase() === 'high' ? 'bg-orange-100 text-orange-800' :
@@ -321,7 +296,7 @@ const HypothesisGeneratorOutput: React.FC<{ text: string; t: (k: string) => stri
                   }`}>
                     {h.risk_level}
                   </span>
-                </div>
+                </div>}
 
                 <div className="text-sm text-gray-700">
                   <span className="font-medium">Why This Matters:</span> {h.why_this_matters}
@@ -371,10 +346,6 @@ const HypothesisGeneratorOutput: React.FC<{ text: string; t: (k: string) => stri
 
 // ─── Markdown Renderer (Fallback) ─────────────────────────────────────────────
 
-/**
- * Renders raw markdown text as fallback.
- * Handles: # headings, **bold**, > blockquotes, - lists, | tables, --- dividers.
- */
 function renderInline(text: string): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
   const regex = /\*\*(.*?)\*\*|\*(.*?)\*|`(.*?)`/g;
@@ -434,23 +405,18 @@ const MarkdownOutput: React.FC<{ text: string }> = ({ text }) => {
   while (i < lines.length) {
     const line = lines[i];
 
-    // H1
     if (line.startsWith('# ')) {
       elements.push(<h1 key={i} className="text-2xl font-bold text-gray-900 mt-6 mb-3 pb-2 border-b border-gray-200">{renderInline(line.slice(2))}</h1>);
     }
-    // H2
     else if (line.startsWith('## ')) {
       elements.push(<h2 key={i} className="text-xl font-semibold text-gray-800 mt-6 mb-2">{renderInline(line.slice(3))}</h2>);
     }
-    // H3
     else if (line.startsWith('### ')) {
       elements.push(<h3 key={i} className="text-base font-semibold text-gray-700 mt-4 mb-1">{renderInline(line.slice(4))}</h3>);
     }
-    // Divider
     else if (line.trim() === '---') {
       elements.push(<hr key={i} className="my-4 border-gray-200" />);
     }
-    // Blockquote
     else if (line.startsWith('> ')) {
       const content = line.slice(2);
       const isWarning = content.includes('⚠️') || content.toLowerCase().includes('critical') || content.toLowerCase().includes('risk');
@@ -460,7 +426,6 @@ const MarkdownOutput: React.FC<{ text: string }> = ({ text }) => {
         </blockquote>
       );
     }
-    // Table
     else if (line.startsWith('|')) {
       const tableLines: string[] = [];
       while (i < lines.length && lines[i].startsWith('|')) {
@@ -470,7 +435,6 @@ const MarkdownOutput: React.FC<{ text: string }> = ({ text }) => {
       elements.push(<React.Fragment key={i}>{renderMarkdownTable(tableLines)}</React.Fragment>);
       continue;
     }
-    // Unordered list
     else if (line.startsWith('- ')) {
       const items: string[] = [];
       while (i < lines.length && lines[i].startsWith('- ')) {
@@ -484,7 +448,6 @@ const MarkdownOutput: React.FC<{ text: string }> = ({ text }) => {
       );
       continue;
     }
-    // Non-empty paragraph
     else if (line.trim() !== '') {
       elements.push(<p key={i} className="text-gray-700 leading-relaxed my-1">{renderInline(line)}</p>);
     }
@@ -540,7 +503,6 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
 
   return (
     <div className="decision-output decision-output--custdev-target-planner space-y-8">
-      {/* Context Analysis */}
       {ctx && (ctx.critical_gap || ctx.approach) && (
         <section>
           <h3 className="decision-output__section-title">Context Analysis</h3>
@@ -553,7 +515,6 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
         </section>
       )}
 
-      {/* Hypothesis */}
       {data.hypothesis_being_tested && (
         <section>
           <h3 className="decision-output__section-title">Hypothesis Being Tested</h3>
@@ -565,14 +526,12 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
         </section>
       )}
 
-      {/* Segments */}
       {segments.length > 0 && (
         <section>
           <h3 className="decision-output__section-title">Primary Target Segments</h3>
           <div className="space-y-6">
             {segments.map((seg, i) => (
               <Card key={seg.segment_id ?? i} className="p-5 space-y-4">
-                {/* Header */}
                 {(seg.segment_name || seg.segment_id != null) && (
                   <h4 className="text-base font-semibold text-primary-text">
                     {seg.segment_id != null && `${seg.segment_id}. `}{seg.segment_name ?? 'Segment'}
@@ -580,7 +539,6 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
                 )}
                 {seg.description && <p className="text-gray-700 text-sm">{seg.description}</p>}
 
-                {/* Why early adopters */}
                 {seg.why_early_adopters && (
                   <div>
                     <h5 className="text-sm font-semibold text-gray-700 mb-2">Why Early Adopters</h5>
@@ -597,7 +555,6 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
                   </div>
                 )}
 
-                {/* Specific characteristics */}
                 {seg.specific_characteristics && seg.specific_characteristics.length > 0 && (
                   <div>
                     <h5 className="text-sm font-semibold text-gray-700 mb-2">Specific Characteristics</h5>
@@ -607,7 +564,6 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
                   </div>
                 )}
 
-                {/* Where to find them */}
                 {seg.where_to_find_them && (
                   <div>
                     <h5 className="text-sm font-semibold text-gray-700 mb-2">Where to Find Them</h5>
@@ -628,7 +584,6 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
                   </div>
                 )}
 
-                {/* Screening criteria */}
                 {seg.screening_criteria_must_have && seg.screening_criteria_must_have.length > 0 && (
                   <div>
                     <h5 className="text-sm font-semibold text-gray-700 mb-2">Screening Criteria (Must Have)</h5>
@@ -638,7 +593,6 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
                   </div>
                 )}
 
-                {/* Red flags */}
                 {seg.red_flags_exclude_if && seg.red_flags_exclude_if.length > 0 && (
                   <div>
                     <h5 className="text-sm font-semibold text-red-600 mb-2">Red Flags (Exclude If)</h5>
@@ -656,7 +610,7 @@ const CustdevTargetPlannerOutput: React.FC<{ text: string; t: (k: string) => str
   );
 };
 
-// ─── CustDev Interview Designer (Designs Interview Guides) ────────────────────
+// ─── CustDev Interview Designer ───────────────────────────────────────────────
 
 interface RiskItem {
   risk_id?: string;
@@ -668,19 +622,19 @@ interface RiskItem {
 }
 
 interface InterviewSection {
-  section_number: number;
-  section_name: string;
-  duration: string;
-  goal: string;
+  section_number?: number;
+  section_name?: string;
+  duration?: string;
+  goal?: string;
   key_questions?: Array<{
-    question: string;
+    question?: string;
     why_this_works?: string;
     listen_for?: string[];
     follow_ups?: string[];
   }>;
   what_not_to_ask?: Array<{
-    bad_question: string;
-    why_bad: string;
+    bad_question?: string;
+    why_bad?: string;
   }>;
 }
 
@@ -726,7 +680,7 @@ interface InterviewGuideRoot {
     post_interview_capture?: {
       immediate_notes?: string[];
       validation_scoring?: {
-        criteria?: Array<{ criterion: string; scale: string }>;
+        criteria?: Array<{ criterion?: string; scale?: string }>;
       };
       quality_checklist?: {
         good_signs?: string[];
@@ -753,14 +707,12 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
   const { metadata, risk_assessment, pre_interview_preparation, recommended_approach, interview_sections, post_interview_capture } = guide;
   const risks = risk_assessment?.risks ?? risk_assessment?.critical_risks ?? [];
 
-  // Extra sections (batch guides)
   const extraSections = Object.entries(guide).filter(
     ([k]) => !['metadata', 'risk_assessment', 'pre_interview_preparation', 'recommended_approach', 'interview_sections', 'post_interview_capture'].includes(k)
   );
 
   return (
     <div className="decision-output decision-output--custdev-interview-designer space-y-8">
-      {/* Metadata */}
       {metadata && (
         <section>
           <h3 className="decision-output__section-title">Interview Guide Metadata</h3>
@@ -780,7 +732,6 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
         </section>
       )}
 
-      {/* Risk Assessment */}
       {(risk_assessment?.overall_risk_level || risks.length > 0) && (
         <section>
           <h3 className="decision-output__section-title">Risk Assessment</h3>
@@ -814,7 +765,6 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
         </section>
       )}
 
-      {/* Pre-Interview Preparation */}
       {pre_interview_preparation && (
         <section>
           <h3 className="decision-output__section-title">Pre-Interview Preparation</h3>
@@ -850,7 +800,6 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
         </section>
       )}
 
-      {/* Recommended Approach */}
       {recommended_approach && (
         <section>
           <h3 className="decision-output__section-title">Recommended Approach</h3>
@@ -881,7 +830,6 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
         </section>
       )}
 
-      {/* Interview Sections */}
       {interview_sections && interview_sections.length > 0 && (
         <section>
           <h3 className="decision-output__section-title">Interview Sections</h3>
@@ -943,7 +891,6 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
         </section>
       )}
 
-      {/* Post-Interview Capture */}
       {post_interview_capture && (
         <section>
           <h3 className="decision-output__section-title">Post-Interview Capture</h3>
@@ -980,7 +927,6 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
         </section>
       )}
 
-      {/* Extra sections */}
       {extraSections.map(([key, val]) => {
         if (!val || typeof val !== 'object') return null;
         return (
@@ -993,6 +939,172 @@ const CustdevInterviewDesignerOutput: React.FC<{ text: string; t: (k: string) =>
         );
       })}
     </div>
+  );
+};
+
+// ─── CustDev Insights Analyzer — Evidence helpers ─────────────────────────────
+
+/**
+ * Renders one item from an evidence_from_past (or similar) array.
+ * Gives special treatment to `quote` (blockquote), `behavior` (headline),
+ * `frequency` and `last_occurrence` (meta chips).
+ * Any remaining keys are rendered as labelled rows.
+ */
+const EvidencePastItem: React.FC<{ item: Record<string, unknown>; index: number }> = ({ item, index }) => {
+  const { quote, behavior, frequency, last_occurrence, ...rest } = item;
+
+  return (
+    <div className="p-3 rounded-lg border border-gray-100 bg-white shadow-sm space-y-2">
+      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">#{index + 1}</p>
+
+      {behavior && (
+        <p className="text-sm text-gray-800 font-medium">{String(behavior)}</p>
+      )}
+
+      {(frequency || last_occurrence) && (
+        <div className="flex flex-wrap gap-x-4 gap-y-1">
+          {frequency && (
+            <p className="text-xs text-gray-500">
+              <span className="font-semibold text-gray-600">Frequency: </span>{String(frequency)}
+            </p>
+          )}
+          {last_occurrence && (
+            <p className="text-xs text-gray-500">
+              <span className="font-semibold text-gray-600">Last seen: </span>{String(last_occurrence)}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Any extra keys not explicitly handled above */}
+      {Object.entries(rest).map(([k, v]) => (
+        v != null && (
+          <p key={k} className="text-xs text-gray-500">
+            <span className="font-semibold text-gray-600 capitalize">{formatLabel(k)}: </span>
+            {typeof v === 'object' ? JSON.stringify(v) : String(v)}
+          </p>
+        )
+      ))}
+
+      {quote && (
+        <blockquote className="mt-1 pl-3 border-l-4 border-purple-300 bg-purple-50 rounded-r py-2 pr-2">
+          <p className="text-sm text-purple-900 italic leading-relaxed">"{String(quote)}"</p>
+        </blockquote>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Recursively renders any evidence value without ever falling back to JSON.stringify.
+ *
+ * - primitive      → plain text
+ * - string[]       → bulleted list
+ * - object[] where items have behavior/quote → EvidencePastItem cards
+ * - object[]       → generic left-bordered blocks
+ * - object         → recurse key/value
+ */
+const EvidenceValue: React.FC<{ value: unknown }> = ({ value }) => {
+  if (value == null) return null;
+
+  if (typeof value !== 'object') {
+    return <span className="text-gray-700">{String(value)}</span>;
+  }
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return <span className="text-gray-400 italic">—</span>;
+
+    const allPrimitive = value.every(v => v == null || typeof v !== 'object');
+    if (allPrimitive) {
+      return (
+        <ul className="mt-1 space-y-1 list-none pl-0">
+          {value.map((item, i) => (
+            <li key={i} className="flex gap-2 text-sm text-gray-700">
+              <span className="mt-0.5 text-blue-400 shrink-0">›</span>
+              <span>{String(item ?? '—')}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    // Detect evidence_from_past-style items (have behavior or quote key)
+    const looksLikeEvidence = value.some(
+      v => v != null && typeof v === 'object' && ('behavior' in v || 'quote' in v)
+    );
+
+    if (looksLikeEvidence) {
+      return (
+        <div className="mt-1 space-y-3">
+          {value.map((item, i) =>
+            item != null && typeof item === 'object' && !Array.isArray(item)
+              ? <EvidencePastItem key={i} item={item as Record<string, unknown>} index={i} />
+              : <p key={i} className="text-sm text-gray-700">{String(item)}</p>
+          )}
+        </div>
+      );
+    }
+
+    // Generic array of objects
+    return (
+      <div className="mt-1 space-y-2">
+        {value.map((item, i) => (
+          <div key={i} className="pl-3 border-l-2 border-blue-200 space-y-0.5">
+            {typeof item !== 'object' || item == null
+              ? <p className="text-sm text-gray-700">{String(item)}</p>
+              : Object.entries(item as Record<string, unknown>).map(([k, v]) => (
+                  <p key={k} className="text-sm">
+                    <span className="font-medium text-gray-500 capitalize mr-1">{formatLabel(k)}:</span>
+                    <span className="text-gray-700">
+                      {/* recurse so nested objects don't hit JSON.stringify */}
+                      {typeof v === 'object'
+                        ? <EvidenceValue value={v} />
+                        : String(v ?? '—')}
+                    </span>
+                  </p>
+                ))
+            }
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Plain object → recurse
+  return (
+    <div className="mt-1 space-y-2 pl-2 border-l-2 border-gray-100">
+      {Object.entries(value as Record<string, unknown>).map(([k, v]) => (
+        <div key={k}>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-0.5">{formatLabel(k)}</p>
+          <EvidenceValue value={v} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+/**
+ * One card per top-level evidence category with a colour-coded left border.
+ */
+const EVIDENCE_BORDER_COLORS: Record<string, string> = {
+  confirmed: 'border-l-green-400',
+  validated: 'border-l-green-400',
+  refuted: 'border-l-red-400',
+  invalidated: 'border-l-red-400',
+  signals: 'border-l-blue-400',
+  quotes: 'border-l-purple-400',
+  pain_points: 'border-l-orange-400',
+  problem_validation: 'border-l-amber-400',
+  willingness_to_pay: 'border-l-emerald-400',
+};
+
+const EvidenceCard: React.FC<{ label: string; data: unknown }> = ({ label, data }) => {
+  const colorClass = EVIDENCE_BORDER_COLORS[label.toLowerCase()] ?? 'border-l-gray-300';
+  return (
+    <Card className={`p-4 border-l-4 ${colorClass}`}>
+      <h5 className="text-sm font-semibold text-gray-700 mb-3 capitalize">{formatLabel(label)}</h5>
+      <EvidenceValue value={data} />
+    </Card>
   );
 };
 
@@ -1089,19 +1201,14 @@ const CustdevInsightsAnalyzerOutput: React.FC<{ text: string; t: (k: string) => 
         </section>
       )}
 
-      {/* Evidence extraction */}
+      {/* Evidence extraction — uses EvidenceCard + EvidenceValue, never JSON.stringify */}
       {evidence_extraction && Object.keys(evidence_extraction).length > 0 && (
         <section>
           <h3 className="decision-output__section-title">Evidence Extraction</h3>
           <div className="space-y-4">
             {Object.entries(evidence_extraction).map(([key, val]) => {
-              if (val == null || typeof val !== 'object') return null;
-              return (
-                <Card key={key} className="p-4">
-                  <h5 className="text-sm font-semibold text-gray-700 mb-2">{formatLabel(key)}</h5>
-                  <RenderKeyValue data={val as Record<string, unknown>} t={t} />
-                </Card>
-              );
+              if (val == null) return null;
+              return <EvidenceCard key={key} label={key} data={val} />;
             })}
           </div>
         </section>
@@ -1211,10 +1318,8 @@ const CustdevInsightsAnalyzerOutput: React.FC<{ text: string; t: (k: string) => 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const DecisionOutputView: React.FC<DecisionOutputViewProps> = ({ outputData, variant, fallback, t }) => {
-  // 1. Extract the real text payload from output_data.content[].text
   const text = extractText(outputData);
 
-  // 2. If we have text, dispatch to the right renderer
   if (text) {
     if (variant === 'hypothesis_generator') return <HypothesisGeneratorOutput text={text} t={t} />;
     if (variant === 'custdev_target_planner') return <CustdevTargetPlannerOutput text={text} t={t} />;
@@ -1222,10 +1327,8 @@ const DecisionOutputView: React.FC<DecisionOutputViewProps> = ({ outputData, var
     if (variant === 'custdev_insights_analyzer') return <CustdevInsightsAnalyzerOutput text={text} t={t} />;
   }
 
-  // 3. Fallback: render raw string as markdown
   if (fallback) return <MarkdownOutput text={fallback} />;
 
-  // 4. Nothing to show
   return (
     <div className="decision-output decision-output__empty text-gray-500 italic text-sm">
       {t('decisions.noOutput')}
