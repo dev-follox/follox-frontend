@@ -2,6 +2,7 @@
 import React from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { IterationProvider } from './contexts/IterationContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { useAuth } from './hooks/useAuth';
@@ -95,9 +96,11 @@ const App: React.FC = () => {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <ToastProvider>
-          <AppContent />
-        </ToastProvider>
+        <IterationProvider>
+          <ToastProvider>
+            <AppContent />
+          </ToastProvider>
+        </IterationProvider>
       </AuthProvider>
     </LanguageProvider>
   );

@@ -10,7 +10,10 @@ import Dialog from '../components/Dialog';
 import Input from '../components/Input';
 import DecisionOutputView, { DecisionVariant } from '../components/DecisionOutputView';
 import api from '../services/api';
-import type { ToolGenerationResponse } from '../types';
+import type { ToolOutput, ToolType } from '../types';
+import { useIteration } from '../hooks/useIteration';
+import GenerationHistory from '../components/GenerationHistory';
+import IterationContextBanner from '../components/IterationContextBanner';
 
 interface DecisionPageProps {
   variant: DecisionVariant;
@@ -19,8 +22,8 @@ interface DecisionPageProps {
 const CONFIG: Record<
   DecisionVariant,
   {
-    generate: (id: number, body: { language?: string }) => Promise<ToolGenerationResponse>;
-    getHistory: (id: number) => Promise<ToolGenerationResponse[]>;
+    generate: (id: number, body: { language?: string; interview_data?: string }) => Promise<ToolOutput>;
+    toolType: ToolType;
     titleKey: string;
     emptyKey: string;
     errorKey: string;
@@ -28,28 +31,28 @@ const CONFIG: Record<
 > = {
   hypothesis_generator: {
     generate: (id, b) => api.generateHypothesisGenerator(id, b),
-    getHistory: api.getHypothesisGeneratorHistory,
+    toolType: 'hypothesis_generator',
     titleKey: 'decisions.hypothesisGenerator.title',
     emptyKey: 'decisions.hypothesisGenerator.noHistory',
     errorKey: 'decisions.hypothesisGenerator.generateError',
   },
   custdev_target_planner: {
     generate: (id, b) => api.generateCustdevTargetPlanner(id, b),
-    getHistory: api.getCustdevTargetPlannerHistory,
+    toolType: 'custdev_target_planner',
     titleKey: 'decisions.custdevTargetPlanner.title',
     emptyKey: 'decisions.custdevTargetPlanner.noHistory',
     errorKey: 'decisions.custdevTargetPlanner.generateError',
   },
   custdev_interview_designer: {
     generate: (id, b) => api.generateCustdevInterviewDesigner(id, b),
-    getHistory: api.getCustdevInterviewDesignerHistory,
+    toolType: 'custdev_interview_designer',
     titleKey: 'decisions.custdevInterviewDesigner.title',
     emptyKey: 'decisions.custdevInterviewDesigner.noHistory',
     errorKey: 'decisions.custdevInterviewDesigner.generateError',
   },
   custdev_insights_analyzer: {
     generate: (id, b) => api.generateCustdevInsightsAnalyzer(id, b),
-    getHistory: api.getCustdevInsightsAnalyzerHistory,
+    toolType: 'custdev_insights_analyzer',
     titleKey: 'decisions.custdevInsightsAnalyzer.title',
     emptyKey: 'decisions.custdevInsightsAnalyzer.noHistory',
     errorKey: 'decisions.custdevInsightsAnalyzer.generateError',
@@ -62,9 +65,9 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const cfg = CONFIG[variant];
+  const { currentIteration } = useIteration();
 
-  const [history, setHistory] = useState<ToolGenerationResponse[]>([]);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [currentOutput, setCurrentOutput] = useState<ToolOutput | null>(null);
   const [hasAnswers, setHasAnswers] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -72,6 +75,8 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
   const isMountedRef = useRef(true);
   const [interviewDialogOpen, setInterviewDialogOpen] = useState(false);
   const [interviewData, setInterviewData] = useState('');
+  const [historyRefreshToken, setHistoryRefreshToken] = useState(0);
+  const [contextRefreshToken, setContextRefreshToken] = useState(0);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -94,31 +99,23 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    
-    const checkAndRegenerate = async () => {
+
+    const checkAnswers = async () => {
       try {
-        // Load history first
-        const list = await cfg.getHistory(user.company.id);
-        if (cancelled) return;
-        
-        setHistory(list);
-        if (list.length > 0) setSelectedId(list[0].id);
-        
-        // Check if we have answers
-        let hasAnswers = false;
+        let hasAnswersFlag = false;
         try {
           await api.getCompanyAnswers(user.company.id);
-          hasAnswers = true;
+          hasAnswersFlag = true;
         } catch (e: any) {
           if (e?.response?.status === 404) {
-            hasAnswers = false;
+            hasAnswersFlag = false;
           } else {
             throw e;
           }
         }
-        
-        if (cancelled) return;
-        setHasAnswers(hasAnswers);
+        if (!cancelled) {
+          setHasAnswers(hasAnswersFlag);
+        }
       } catch (e) {
         if (!cancelled) {
           setError(t('decisions.loadHistoryError'));
@@ -128,12 +125,14 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
         if (!cancelled) setLoading(false);
       }
     };
-    
-    checkAndRegenerate();
-    return () => { cancelled = true; };
-  }, [user?.company?.id, variant, t, language, cfg]);
 
-  const runGeneration = () => {
+    checkAnswers();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.company?.id, t]);
+
+  const runGeneration = (extraBody?: { interview_data?: string }) => {
     if (!user?.company?.id) return;
     setGenerating(true);
     setError(null);
@@ -143,13 +142,18 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
       duration: 4000,
     });
     const requestLanguage = language === 'en' ? 'en' : 'ru';
+    const body: { language?: string; interview_data?: string } = {
+      language: requestLanguage,
+      ...(extraBody ?? {}),
+    };
     cfg
-      .generate(user.company.id, { language: requestLanguage })
+      .generate(user.company.id, body)
       .then((item) => {
         if (!isMountedRef.current) return;
         localStorage.setItem(`tool_last_generated_${user.company.id}_${variant}`, new Date().toISOString());
-        setHistory((prev) => [item, ...prev]);
-        setSelectedId(item.id);
+        setCurrentOutput(item);
+        setHistoryRefreshToken((prev) => prev + 1);
+        setContextRefreshToken((prev) => prev + 1);
         showToast({ message: t('decisions.generationCompleted'), type: 'success', duration: 3000 });
       })
       .catch((e) => {
@@ -195,7 +199,7 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
       if (typeof window !== 'undefined') {
         localStorage.setItem(`answers_last_updated_${user.company.id}`, new Date().toISOString());
       }
-      runGeneration();
+      runGeneration({ interview_data: interviewData.trim() || undefined });
     } catch (err) {
       console.error(err);
       if (isMountedRef.current) {
@@ -207,8 +211,6 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
 
   const formatDate = (s: string) =>
     new Date(s).toLocaleString(language, { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-
-  const selected = history.find((h) => h.id === selectedId) ?? history[0];
 
   if (!user?.company?.id) {
     return (
@@ -236,60 +238,26 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
       </div>
 
       <div className="decision-page__body">
-        <aside className="decision-page__sidebar">
-          <h2 className="decision-page__sidebar-title">{t('decisions.history')}</h2>
-          {history.length === 0 ? (
-            <p className="decision-page__empty text-gray-500 text-sm">{t(cfg.emptyKey)}</p>
-          ) : (
-            <ul className="decision-page__list">
-              {generating && (
-                <li>
-                  <button
-                    type="button"
-                    disabled
-                    className="decision-page__list-item decision-page__list-item--generating"
-                  >
-                    <span className="decision-page__list-date">{t('decisions.inProgress')}</span>
-                  </button>
-                </li>
-              )}
-              {history.map((item) => {
-                const isInactive = generating;
-                return (
-                  <li key={item.id}>
-                    <button
-                      type="button"
-                      onClick={() => !generating && setSelectedId(item.id)}
-                      disabled={generating}
-                      className={`decision-page__list-item ${selectedId === item.id && !generating ? 'decision-page__list-item--active' : ''} ${isInactive ? 'decision-page__list-item--inactive' : ''}`}
-                    >
-                      <span className="decision-page__list-date">{formatDate(item.created_at)}</span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </aside>
-
         <main className="decision-page__main">
-          {loading && history.length === 0 ? (
+          <IterationContextBanner variant={variant} refreshToken={contextRefreshToken} />
+
+          {loading && !currentOutput ? (
             <div className="flex justify-center items-center h-64">
               <Spinner size="large" />
             </div>
-          ) : selected ? (
+          ) : currentOutput ? (
             <Card className="decision-page__card">
               <div className="decision-page__card-header">
-                <span className="decision-page__card-date">{formatDate(selected.created_at)}</span>
+                <span className="decision-page__card-date">{formatDate(currentOutput.created_at)}</span>
               </div>
               <DecisionOutputView
-                outputData={selected.output_data ?? undefined}
+                outputData={currentOutput.output_json ?? undefined}
                 variant={variant}
-                fallback={selected.content}
+                fallback={currentOutput.output_raw ?? undefined}
                 t={t}
               />
             </Card>
-          ) : history.length === 0 ? (
+          ) : (
             <Card className="decision-page__empty-card">
               {hasAnswers === false ? (
                 <>
@@ -302,11 +270,17 @@ const DecisionPage: React.FC<DecisionPageProps> = ({ variant }) => {
                 <p className="decision-page__empty-text">{t('decisions.noDataYet')}</p>
               )}
             </Card>
-          ) : (
-            <Card className="p-8 text-center text-gray-500">
-              <p>{t(cfg.emptyKey)}</p>
-            </Card>
           )}
+
+          <GenerationHistory
+            iterationId={currentIteration?.id ?? null}
+            toolType={cfg.toolType}
+            variant={variant}
+            refreshToken={historyRefreshToken}
+            onSelectOutput={(output) => {
+              setCurrentOutput(output);
+            }}
+          />
         </main>
       </div>
 

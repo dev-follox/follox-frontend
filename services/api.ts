@@ -1,5 +1,28 @@
 import axios from 'axios';
-import { Product, ProductCreate, ProductUpdate, Order, Analytics, OrderStatus, AffiliateLink, AffiliateLinkCreate, Blogger, BloggerCreate, TokenResponse, BloggerProductDetailed, Company, CompanyCreate, CompanyUpdate, CompanyAnswers, CompanyAnswersUpdate, PasswordUpdate, ToolGenerationResponse } from '../types';
+import {
+  Product,
+  ProductCreate,
+  ProductUpdate,
+  Order,
+  Analytics,
+  OrderStatus,
+  AffiliateLink,
+  AffiliateLinkCreate,
+  Blogger,
+  BloggerCreate,
+  TokenResponse,
+  BloggerProductDetailed,
+  Company,
+  CompanyCreate,
+  CompanyUpdate,
+  CompanyAnswers,
+  CompanyAnswersUpdate,
+  PasswordUpdate,
+  Iteration,
+  ToolOutput,
+  IterationContextSummary,
+  ToolType,
+} from '../types';
 
 // In development, use the proxy URL, in production use the actual URL
 const BASE_URL = '/v1';
@@ -345,42 +368,74 @@ const api = {
   },
 
   // Decision endpoints (hypothesis_generator, cusdev_target_planner, custdev_insights_analyzer, custdev_interview_designer)
-  generateHypothesisGenerator: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolGenerationResponse> => {
+  generateHypothesisGenerator: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolOutput> => {
     const response = await axiosInstance.post(`/companies/${companyId}/hypothesis-generator/generate`, body ?? {});
     return response.data;
   },
 
-  getHypothesisGeneratorHistory: async (companyId: number): Promise<ToolGenerationResponse[]> => {
+  getHypothesisGeneratorHistory: async (companyId: number): Promise<ToolOutput[]> => {
     const response = await axiosInstance.get(`/companies/${companyId}/hypothesis-generator/history`);
     return response.data;
   },
 
-  generateCustdevTargetPlanner: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolGenerationResponse> => {
+  generateCustdevTargetPlanner: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolOutput> => {
     const response = await axiosInstance.post(`/companies/${companyId}/cusdev-target-planner/generate`, body ?? {});
     return response.data;
   },
 
-  getCustdevTargetPlannerHistory: async (companyId: number): Promise<ToolGenerationResponse[]> => {
+  getCustdevTargetPlannerHistory: async (companyId: number): Promise<ToolOutput[]> => {
     const response = await axiosInstance.get(`/companies/${companyId}/cusdev-target-planner/history`);
     return response.data;
   },
 
-  generateCustdevInterviewDesigner: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolGenerationResponse> => {
+  generateCustdevInterviewDesigner: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolOutput> => {
     const response = await axiosInstance.post(`/companies/${companyId}/custdev-interview-designer/generate`, body ?? {});
     return response.data;
   },
 
-  getCustdevInterviewDesignerHistory: async (companyId: number): Promise<ToolGenerationResponse[]> => {
+  getCustdevInterviewDesignerHistory: async (companyId: number): Promise<ToolOutput[]> => {
     const response = await axiosInstance.get(`/companies/${companyId}/custdev-interview-designer/history`);
     return response.data;
   },
 
-  generateCustdevInsightsAnalyzer: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolGenerationResponse> => {
+  generateCustdevInsightsAnalyzer: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolOutput> => {
     const response = await axiosInstance.post(`/companies/${companyId}/custdev-insights-analyzer/generate`, body ?? {});
     return response.data;
   },
 
-  getCustdevInsightsAnalyzerHistory: async (companyId: number): Promise<ToolGenerationResponse[]> => {
+  // Iteration endpoints
+
+  getIterations: async (companyId: number): Promise<{iterations: Iteration[]}> => {
+    const response = await axiosInstance.get(`/api/iterations/${companyId}`);
+    return response.data;
+  },
+
+  startNewIteration: async (companyId: number): Promise<Iteration> => {
+    const response = await axiosInstance.post('/api/iterations/start-new', { company_id: companyId });
+    return response.data;
+  },
+
+  renameIteration: async (iterationId: number, name: string): Promise<Iteration> => {
+    const response = await axiosInstance.patch(`/api/iterations/${iterationId}/rename`, { name });
+    return response.data;
+  },
+
+  getIterationContext: async (companyId: number, toolType: ToolType): Promise<IterationContextSummary> => {
+    const response = await axiosInstance.get(`/api/iterations/${companyId}/current-context/${toolType}`);
+    return response.data;
+  },
+
+  getToolOutputs: async (iterationId: number, toolType: ToolType): Promise<ToolOutput[]> => {
+    const response = await axiosInstance.get(`/api/tool-outputs/${iterationId}/${toolType}`);
+    return response.data;
+  },
+
+  selectToolOutput: async (outputId: number): Promise<ToolOutput> => {
+    const response = await axiosInstance.patch(`/api/tool-outputs/${outputId}/select`);
+    return response.data;
+  },
+
+  getCustdevInsightsAnalyzerHistory: async (companyId: number): Promise<ToolOutput[]> => {
     const response = await axiosInstance.get(`/companies/${companyId}/custdev-insights-analyzer/history`);
     return response.data;
   },

@@ -629,7 +629,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ICPDiagnostician"
+                  "$ref": "#/components/schemas/ToolOutput"
                 }
               }
             }
@@ -705,7 +705,7 @@
           "companies"
         ],
         "summary": "Generate Cusdev Target Planner",
-        "description": "Generate CustDev target plan (n8n agent: cusdev_target_planner). Uses company answers or request.answers.",
+        "description": "Generate custdev target plan (n8n agent: cusdev_target_planner). Uses company answers or request.answers.",
         "operationId": "generate_cusdev_target_planner_companies__company_id__cusdev_target_planner_generate_post",
         "security": [
           {
@@ -739,7 +739,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Positioning"
+                  "$ref": "#/components/schemas/ToolOutput"
                 }
               }
             }
@@ -838,7 +838,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GTMGenerateRequest"
+                "$ref": "#/components/schemas/CustdevInsightsGenerateRequest"
               }
             }
           }
@@ -849,7 +849,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChannelRisk"
+                  "$ref": "#/components/schemas/ToolOutput"
                 }
               }
             }
@@ -959,7 +959,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Experiment"
+                  "$ref": "#/components/schemas/ToolOutput"
                 }
               }
             }
@@ -2491,6 +2491,319 @@
         ]
       }
     },
+    "/api/iterations/start-new": {
+      "post": {
+        "tags": [
+          "iterations"
+        ],
+        "summary": "Start New Iteration Endpoint",
+        "operationId": "start_new_iteration_endpoint_api_iterations_start_new_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartNewIterationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/iterations/{iteration_id}/rename": {
+      "patch": {
+        "tags": [
+          "iterations"
+        ],
+        "summary": "Rename Iteration",
+        "operationId": "rename_iteration_api_iterations__iteration_id__rename_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "iteration_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Iteration Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameIterationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Iteration"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/iterations/{company_id}": {
+      "get": {
+        "tags": [
+          "iterations"
+        ],
+        "summary": "List Iterations For Company",
+        "operationId": "list_iterations_for_company_api_iterations__company_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/iterations/{company_id}/current-context/{tool_type}": {
+      "get": {
+        "tags": [
+          "iterations"
+        ],
+        "summary": "Get Current Context",
+        "operationId": "get_current_context_api_iterations__company_id__current_context__tool_type__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          },
+          {
+            "name": "tool_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tool Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tool-outputs/{output_id}/select": {
+      "patch": {
+        "tags": [
+          "iterations"
+        ],
+        "summary": "Select Tool Output",
+        "operationId": "select_tool_output_api_tool_outputs__output_id__select_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "output_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Output Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tool-outputs/{iteration_id}/{tool_type}": {
+      "get": {
+        "tags": [
+          "iterations"
+        ],
+        "summary": "List Tool Outputs For Iteration",
+        "operationId": "list_tool_outputs_for_iteration_api_tool_outputs__iteration_id___tool_type__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "iteration_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Iteration Id"
+            }
+          },
+          {
+            "name": "tool_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tool Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ToolOutput"
+                  },
+                  "title": "Response List Tool Outputs For Iteration Api Tool Outputs  Iteration Id   Tool Type  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/telegram/webhook": {
       "post": {
         "tags": [
@@ -3438,6 +3751,47 @@
         "type": "object",
         "title": "CompanyUpdate"
       },
+      "CustdevInsightsGenerateRequest": {
+        "properties": {
+          "answers": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answers"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "interview_data": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interview Data"
+          }
+        },
+        "type": "object",
+        "title": "CustdevInsightsGenerateRequest",
+        "description": "Request for custdev_insights_analyzer, includes optional raw interview data."
+      },
       "Experiment": {
         "properties": {
           "content": {
@@ -3728,6 +4082,73 @@
           "created_at"
         ],
         "title": "ICPDiagnostician"
+      },
+      "Iteration": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "is_current": {
+            "type": "boolean",
+            "title": "Is Current"
+          },
+          "is_past": {
+            "type": "boolean",
+            "title": "Is Past"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "is_current",
+          "is_past",
+          "id",
+          "company_id",
+          "user_id",
+          "created_at"
+        ],
+        "title": "Iteration"
       },
       "Order": {
         "properties": {
@@ -4106,6 +4527,32 @@
         "type": "object",
         "title": "ProductUpdate"
       },
+      "RenameIterationRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "RenameIterationRequest"
+      },
+      "StartNewIterationRequest": {
+        "properties": {
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "company_id"
+        ],
+        "title": "StartNewIterationRequest"
+      },
       "TelegramLink": {
         "properties": {
           "telegram_chat_id": {
@@ -4184,6 +4631,84 @@
           "role"
         ],
         "title": "Token"
+      },
+      "ToolOutput": {
+        "properties": {
+          "tool_type": {
+            "type": "string",
+            "title": "Tool Type"
+          },
+          "output_json": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Json"
+          },
+          "output_raw": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Raw"
+          },
+          "generation_index": {
+            "type": "integer",
+            "title": "Generation Index"
+          },
+          "is_selected": {
+            "type": "boolean",
+            "title": "Is Selected"
+          },
+          "tokens_used": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tokens Used"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "iteration_id": {
+            "type": "integer",
+            "title": "Iteration Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tool_type",
+          "generation_index",
+          "is_selected",
+          "id",
+          "iteration_id",
+          "user_id",
+          "created_at"
+        ],
+        "title": "ToolOutput"
       },
       "Validation": {
         "properties": {

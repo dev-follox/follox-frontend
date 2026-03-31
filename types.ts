@@ -80,14 +80,59 @@ export interface CompanyAnswersUpdate {
   answers: CompanyAnswers['answers'];
 }
 
-/** Shared response shape for all tool generations (hypothesis_generator, custdev_target_planner, custdev_insights_analyzer, custdev_interview_designer) */
-export interface ToolGenerationResponse {
+// ─── Iterations & Tools ───────────────────────────────────────────────────────
+
+export type ToolType =
+  | 'hypothesis_generator'
+  | 'custdev_target_planner'
+  | 'custdev_interview_designer'
+  | 'custdev_insights_analyzer';
+
+export interface Iteration {
   id: number;
   company_id: number;
-  content?: string | null;
-  output_data?: Record<string, unknown> | null;
-  language?: string | null;
+  user_id: number;
+  name: string;
+  status: string;
+  is_current: boolean;
+  is_past: boolean;
   created_at: string;
+  updated_at: string | null;
+  // Optional nested tool outputs if backend includes them on list endpoint
+  tool_outputs?: ToolOutput[];
+}
+
+export interface ToolOutput {
+  id: number;
+  iteration_id: number;
+  user_id: number;
+  tool_type: ToolType;
+  output_json: Record<string, unknown> | null;
+  output_raw: string | null;
+  generation_index: number;
+  is_selected: boolean;
+  tokens_used: number | null;
+  created_at: string;
+}
+
+export interface IterationContextSummary {
+  type: ToolType;
+  answers: CompanyAnswers['answers'] | null;
+  current_iteration: {
+    id: number | null;
+    hypotheses: unknown | null;
+    custdev_target_plan: unknown | null;
+    custdev_interview_design: unknown | null;
+    custdev_insights_analysis: unknown | null;
+  };
+  past_iteration: {
+    id: number | null;
+    hypotheses: unknown | null;
+    custdev_target_plan: unknown | null;
+    custdev_interview_design: unknown | null;
+    custdev_insights_analysis: unknown | null;
+  };
+  language: string | null;
 }
 
 export type UserRole = 'COMPANY' | 'BLOGGER' | 'ADMIN';

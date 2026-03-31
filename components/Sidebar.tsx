@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
 import QnaProgressWidget from './QnaProgressWidget';
+import IterationSidebar from './IterationSidebar';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -170,6 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 								<span>{t('sidebar.custdevInsightsAnalyzer')}</span>
 							</Link>
 						</div>
+						<IterationSidebar />
 					</div>
 				)}
 
