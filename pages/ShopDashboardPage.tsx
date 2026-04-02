@@ -10,7 +10,7 @@ import Button from '../components/Button';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ProductForm from '../components/ProductForm';
 
-type TabType = 'products' | 'bloggers';
+type TabType = 'products' | 'designers';
 
 const ShopDashboardPage: React.FC = () => {
 	const { user } = useAuth();
@@ -22,8 +22,8 @@ const ShopDashboardPage: React.FC = () => {
 
 	// Sync activeTab with current route
 	useEffect(() => {
-		if (location.pathname === '/company/bloggers') {
-			setActiveTab('bloggers');
+		if (location.pathname === '/company/designers') {
+			setActiveTab('designers');
 		} else if (
 			location.pathname.startsWith('/company/dashboard') ||
 			location.pathname.startsWith('/company/products')

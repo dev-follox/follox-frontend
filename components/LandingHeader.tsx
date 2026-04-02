@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from '../hooks/useTranslation';
 import LanguageSwitcher from './LanguageSwitcher';
 import Button from './Button';
+import { Play } from 'lucide-react';
 
 interface LandingHeaderProps {
   onTryForFree: () => void;
@@ -19,7 +20,7 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ onTryForFree, transparent
       <div className="landing-header__inner">
         <Link to="/" className="landing-header__logo">
           <img src="/assets/logo.png" alt="Follox" className="landing-header__logo-img" />
-          Follox
+          Flipster
         </Link>
         <nav className="landing-header__nav">
           {!transparent && (
@@ -33,8 +34,14 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ onTryForFree, transparent
           <Link to="/login" className="landing-header__link">
             {t('landing.header.logIn')}
           </Link>
-          <Button type="button" variant="primary" onClick={onTryForFree} className="landing-header__cta">
-            {t('landing.header.tryForFree')}
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onTryForFree}
+            className="landing-header__cta"
+            icon={<Play className="h-4 w-4" />}
+          >
+            {t('landing.header.tryDemo')}
           </Button>
           </>)
           }

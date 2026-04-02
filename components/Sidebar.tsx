@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
 import QnaProgressWidget from './QnaProgressWidget';
-import IterationSidebar from './IterationSidebar';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -123,60 +122,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 					</div>
 				)}
 
-				{/* Decisions Module - Only for COMPANY */}
-				{isCompany && (
-					<div className="px-4 mb-4">
-						<div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">
-							{t('sidebar.tools')}
-						</div>
-						<div className="space-y-0.5 ml-2 border-l-2 border-gray-200 pl-2">
-							<Link
-								to="/tools/hypothesis-generator"
-								onClick={handleLinkClick}
-								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/tools/hypothesis-generator') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
-								}`}
-							>
-								<span className={`mr-2 ${isActive('/tools/hypothesis-generator') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
-								<span>{t('sidebar.hypothesisGenerator')}</span>
-							</Link>
-							<Link
-								to="/tools/custdev-target-planner"
-								onClick={handleLinkClick}
-								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/tools/custdev-target-planner') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
-								}`}
-							>
-								<span className={`mr-2 ${isActive('/tools/custdev-target-planner') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
-								<span>{t('sidebar.custdevTargetPlanner')}</span>
-							</Link>
-							<Link
-								to="/tools/custdev-interview-designer"
-								onClick={handleLinkClick}
-								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/tools/custdev-interview-designer') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
-								}`}
-							>
-								<span className={`mr-2 ${isActive('/tools/custdev-interview-designer') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
-								<span>{t('sidebar.custdevInterviewDesigner')}</span>
-							</Link>
-							<Link
-								to="/tools/custdev-insights-analyzer"
-								onClick={handleLinkClick}
-								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/tools/custdev-insights-analyzer') ? 'bg-primary text-primary-text' : 'text-gray-700 hover:bg-gray-100'
-								}`}
-							>
-								<span className={`mr-2 ${isActive('/tools/custdev-insights-analyzer') ? 'text-primary-text' : 'text-gray-400'}`}>└</span>
-								<span>{t('sidebar.custdevInsightsAnalyzer')}</span>
-							</Link>
-						</div>
-						<IterationSidebar />
-					</div>
-				)}
+				{/* AI generators are intentionally hidden from sidebar */}
 
 				{/* Affiliate Sales Module */}
-				{/* {(isCompany || isBlogger) && <div className="px-4 mb-4">
+				{(isCompany || isBlogger) && <div className="px-4 mb-4">
 					<div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-4">
 						{t('sidebar.affiliateSales')}
 					</div>
@@ -206,24 +155,56 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 
 						{isCompany && (
 							<Link
-								to="/company/bloggers"
+								to="/company/designers"
 								onClick={handleLinkClick}
 								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-									isActive('/company/bloggers')
+									isActive('/company/designers')
 										? 'bg-primary text-primary-text'
 										: 'text-gray-700 hover:bg-gray-100'
 								}`}
 							>
 								<span
-									className={`mr-2 ${isActive('/company/bloggers') ? 'text-primary-text' : 'text-gray-400'}`}
+									className={`mr-2 ${isActive('/company/designers') ? 'text-primary-text' : 'text-gray-400'}`}
 								>
 									└
 								</span>
-								<span>{t('sidebar.bloggers')}</span>
+								<span>{t('sidebar.designers')}</span>
+							</Link>
+						)}
+						{isCompany && (
+							<Link
+								to="/company/telegram"
+								onClick={handleLinkClick}
+								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
+									isActive('/company/telegram')
+										? 'bg-primary text-primary-text'
+										: 'text-gray-700 hover:bg-gray-100'
+								}`}
+							>
+								<span className={`mr-2 ${isActive('/company/telegram') ? 'text-primary-text' : 'text-gray-400'}`}>
+									└
+								</span>
+								<span>{t('header.linkTelegram')}</span>
+							</Link>
+						)}
+						{isBlogger && (
+							<Link
+								to="/blogger/telegram"
+								onClick={handleLinkClick}
+								className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
+									isActive('/blogger/telegram')
+										? 'bg-primary text-primary-text'
+										: 'text-gray-700 hover:bg-gray-100'
+								}`}
+							>
+								<span className={`mr-2 ${isActive('/blogger/telegram') ? 'text-primary-text' : 'text-gray-400'}`}>
+									└
+								</span>
+								<span>{t('header.linkTelegram')}</span>
 							</Link>
 						)}
 					</div>
-				</div>} */}
+				</div>}
 			</div>
 
 			{/* QnA progress widget - only for company */}

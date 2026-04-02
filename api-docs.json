@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "DeltaHub API",
-    "version": "0.1.0"
+    "title": "Kvadred API",
+    "version": "1.0.0"
   },
   "paths": {
     "/companies/": {
@@ -52,7 +52,6 @@
           "companies"
         ],
         "summary": "Get Me",
-        "description": "Get current company profile (authenticated by token).",
         "operationId": "get_me_companies_me_get",
         "responses": {
           "200": {
@@ -77,7 +76,6 @@
           "companies"
         ],
         "summary": "Update Me",
-        "description": "Update current company profile (authenticated by token).",
         "operationId": "update_me_companies_me_put",
         "requestBody": {
           "content": {
@@ -122,7 +120,6 @@
           "companies"
         ],
         "summary": "Delete Me",
-        "description": "Delete current company account and all related data (irreversible).",
         "operationId": "delete_me_companies_me_delete",
         "responses": {
           "204": {
@@ -142,7 +139,6 @@
           "companies"
         ],
         "summary": "Update My Password",
-        "description": "Update current company password. Requires current password.",
         "operationId": "update_my_password_companies_me_password_put",
         "requestBody": {
           "content": {
@@ -221,162 +217,6 @@
             }
           }
         }
-      },
-      "put": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Update Company",
-        "description": "Update company details",
-        "operationId": "update_company_companies__company_id__put",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CompanyUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Company"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/me/{company_id}": {
-      "get": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Read Company Me",
-        "description": "Get company details by ID.\nThe token should be passed in the Authorization header as: Bearer \u003Ctoken\u003E",
-        "operationId": "read_company_me_companies_me__company_id__get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Company"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/{company_id}/analytics": {
-      "get": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Get Company Analytics",
-        "description": "Get all analytics for a company",
-        "operationId": "get_company_analytics_companies__company_id__analytics_get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Analytics"
-                  },
-                  "title": "Response Get Company Analytics Companies  Company Id  Analytics Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/companies/{company_id}/telegram": {
@@ -385,7 +225,6 @@
           "companies"
         ],
         "summary": "Link Telegram",
-        "description": "Link a Telegram chat ID to a company",
         "operationId": "link_telegram_companies__company_id__telegram_post",
         "security": [
           {
@@ -442,9 +281,8 @@
         "tags": [
           "companies"
         ],
-        "summary": "Get Telegram Setup Instructions",
-        "description": "Get instructions for setting up Telegram notifications",
-        "operationId": "get_telegram_setup_instructions_companies__company_id__telegram_setup_get",
+        "summary": "Telegram Setup Info",
+        "operationId": "telegram_setup_info_companies__company_id__telegram_setup_get",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -485,176 +323,14 @@
         }
       }
     },
-    "/companies/{company_id}/answers": {
-      "put": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Update Company Answers",
-        "description": "Update or create company answers to questions",
-        "operationId": "update_company_answers_companies__company_id__answers_put",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CompanyAnswersUpdate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CompanyAnswers"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/companies/{company_id}/bloggers": {
       "get": {
         "tags": [
           "companies"
         ],
-        "summary": "Get Company Answers",
-        "description": "Get company answers to questions",
-        "operationId": "get_company_answers_companies__company_id__answers_get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CompanyAnswers"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/{company_id}/hypothesis-generator/generate": {
-      "post": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Generate Hypothesis Generator",
-        "description": "Generate hypothesis (n8n agent: hypothesis_generator). Uses company answers or request.answers.",
-        "operationId": "generate_hypothesis_generator_companies__company_id__hypothesis_generator_generate_post",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GTMGenerateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ToolOutput"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/{company_id}/hypothesis-generator/history": {
-      "get": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Get Hypothesis Generator History",
-        "description": "Get hypothesis_generator history for a company.",
-        "operationId": "get_hypothesis_generator_history_companies__company_id__hypothesis_generator_history_get",
+        "summary": "Get Company Bloggers",
+        "description": "List all bloggers associated with this company.",
+        "operationId": "get_company_bloggers_companies__company_id__bloggers_get",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -679,339 +355,9 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ICPDiagnostician"
+                    "$ref": "#/components/schemas/Blogger"
                   },
-                  "title": "Response Get Hypothesis Generator History Companies  Company Id  Hypothesis Generator History Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/{company_id}/cusdev-target-planner/generate": {
-      "post": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Generate Cusdev Target Planner",
-        "description": "Generate custdev target plan (n8n agent: cusdev_target_planner). Uses company answers or request.answers.",
-        "operationId": "generate_cusdev_target_planner_companies__company_id__cusdev_target_planner_generate_post",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GTMGenerateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ToolOutput"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/{company_id}/cusdev-target-planner/history": {
-      "get": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Get Cusdev Target Planner History",
-        "description": "Get cusdev_target_planner history for a company.",
-        "operationId": "get_cusdev_target_planner_history_companies__company_id__cusdev_target_planner_history_get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Positioning"
-                  },
-                  "title": "Response Get Cusdev Target Planner History Companies  Company Id  Cusdev Target Planner History Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/{company_id}/custdev-insights-analyzer/generate": {
-      "post": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Generate Custdev Insights Analyzer",
-        "description": "Generate custdev insights (n8n agent: custdev_insights_analyzer). Uses company answers or request.answers.",
-        "operationId": "generate_custdev_insights_analyzer_companies__company_id__custdev_insights_analyzer_generate_post",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CustdevInsightsGenerateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ToolOutput"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/{company_id}/custdev-insights-analyzer/history": {
-      "get": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Get Custdev Insights Analyzer History",
-        "description": "Get custdev_insights_analyzer history for a company.",
-        "operationId": "get_custdev_insights_analyzer_history_companies__company_id__custdev_insights_analyzer_history_get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ChannelRisk"
-                  },
-                  "title": "Response Get Custdev Insights Analyzer History Companies  Company Id  Custdev Insights Analyzer History Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/{company_id}/custdev-interview-designer/generate": {
-      "post": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Generate Custdev Interview Designer",
-        "description": "Generate custdev interview design (n8n agent: custdev_interview_designer). Uses company answers or request.answers.",
-        "operationId": "generate_custdev_interview_designer_companies__company_id__custdev_interview_designer_generate_post",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GTMGenerateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ToolOutput"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/companies/{company_id}/custdev-interview-designer/history": {
-      "get": {
-        "tags": [
-          "companies"
-        ],
-        "summary": "Get Custdev Interview Designer History",
-        "description": "Get custdev_interview_designer history for a company.",
-        "operationId": "get_custdev_interview_designer_history_companies__company_id__custdev_interview_designer_history_get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Experiment"
-                  },
-                  "title": "Response Get Custdev Interview Designer History Companies  Company Id  Custdev Interview Designer History Get"
+                  "title": "Response Get Company Bloggers Companies  Company Id  Bloggers Get"
                 }
               }
             }
@@ -1035,7 +381,6 @@
           "products"
         ],
         "summary": "Get Products",
-        "description": "Get all products for the current company",
         "operationId": "get_products_products__get",
         "security": [
           {
@@ -1096,7 +441,6 @@
           "products"
         ],
         "summary": "Create Product",
-        "description": "Create a new product",
         "operationId": "create_product_products__post",
         "security": [
           {
@@ -1143,7 +487,7 @@
           "products"
         ],
         "summary": "Get Products For Blogger",
-        "description": "Return products visible to the current blogger (via affiliate links).",
+        "description": "Products accessible to the current blogger via their affiliate links.",
         "operationId": "get_products_for_blogger_products_for_me_get",
         "responses": {
           "200": {
@@ -1174,7 +518,7 @@
           "products"
         ],
         "summary": "Get Products For Blogger Detailed",
-        "description": "Return products for blogger with affiliate code included.",
+        "description": "Products for blogger with affiliate code and commission rate included.",
         "operationId": "get_products_for_blogger_detailed_products_for_me_detailed_get",
         "responses": {
           "200": {
@@ -1195,13 +539,100 @@
         ]
       }
     },
+    "/products/images/{filename}": {
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Get Product Image",
+        "operationId": "get_product_image_products_images__filename__get",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filename"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/upload-image": {
+      "post": {
+        "tags": [
+          "products"
+        ],
+        "summary": "Upload Product Image",
+        "operationId": "upload_product_image_products_upload_image_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_product_image_products_upload_image_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/products/{product_id}": {
       "get": {
         "tags": [
           "products"
         ],
         "summary": "Get Product",
-        "description": "Get a single product by ID.\nIf blogger_id is provided, it will record the visit in analytics.",
         "operationId": "get_product_products__product_id__get",
         "parameters": [
           {
@@ -1258,7 +689,6 @@
           "products"
         ],
         "summary": "Update Product",
-        "description": "Update a product",
         "operationId": "update_product_products__product_id__put",
         "security": [
           {
@@ -1314,7 +744,6 @@
           "products"
         ],
         "summary": "Delete Product",
-        "description": "Delete a product",
         "operationId": "delete_product_products__product_id__delete",
         "security": [
           {
@@ -1349,14 +778,13 @@
         }
       }
     },
-    "/products/{product_id}/orders/": {
+    "/products/{product_id}/orders": {
       "get": {
         "tags": [
           "products"
         ],
         "summary": "Get Product Orders",
-        "description": "Get orders for a product, only if it belongs to the current company.",
-        "operationId": "get_product_orders_products__product_id__orders__get",
+        "operationId": "get_product_orders_products__product_id__orders_get",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1383,7 +811,7 @@
                   "items": {
                     "$ref": "#/components/schemas/Order"
                   },
-                  "title": "Response Get Product Orders Products  Product Id  Orders  Get"
+                  "title": "Response Get Product Orders Products  Product Id  Orders Get"
                 }
               }
             }
@@ -1407,7 +835,6 @@
           "products"
         ],
         "summary": "Get Product Analytics",
-        "description": "Get analytics for a product with blogger details",
         "operationId": "get_product_analytics_products__product_id__analytics_get",
         "security": [
           {
@@ -1453,103 +880,12 @@
         }
       }
     },
-    "/products/upload-image": {
-      "post": {
-        "tags": [
-          "products"
-        ],
-        "summary": "Upload Product Image",
-        "description": "Upload a product image",
-        "operationId": "upload_product_image_products_upload_image_post",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_upload_product_image_products_upload_image_post"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/products/images/{filename}": {
-      "get": {
-        "tags": [
-          "products"
-        ],
-        "summary": "Get Product Image",
-        "description": "Get a product image by filename",
-        "operationId": "get_product_image_products_images__filename__get",
-        "parameters": [
-          {
-            "name": "filename",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Filename"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/affiliate-links/": {
       "post": {
         "tags": [
           "affiliate-links"
         ],
         "summary": "Create Affiliate Link",
-        "description": "Create a new affiliate link",
         "operationId": "create_affiliate_link_affiliate_links__post",
         "requestBody": {
           "content": {
@@ -1590,13 +926,44 @@
         ]
       }
     },
+    "/affiliate-links/my-links": {
+      "get": {
+        "tags": [
+          "affiliate-links"
+        ],
+        "summary": "Get My Links",
+        "description": "Return all affiliate links for the authenticated blogger.",
+        "operationId": "get_my_links_affiliate_links_my_links_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AffiliateLinkDetail"
+                  },
+                  "type": "array",
+                  "title": "Response Get My Links Affiliate Links My Links Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
     "/affiliate-links/{code}": {
       "get": {
         "tags": [
           "affiliate-links"
         ],
         "summary": "Get Affiliate Link",
-        "description": "Get affiliate link details by code",
+        "description": "Resolve an affiliate code — also increments click counter.",
         "operationId": "get_affiliate_link_affiliate_links__code__get",
         "parameters": [
           {
@@ -1633,13 +1000,53 @@
         }
       }
     },
+    "/affiliate-links/{link_id}": {
+      "delete": {
+        "tags": [
+          "affiliate-links"
+        ],
+        "summary": "Delete Affiliate Link",
+        "operationId": "delete_affiliate_link_affiliate_links__link_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "link_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Link Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/bloggers/": {
       "post": {
         "tags": [
           "bloggers"
         ],
         "summary": "Create Blogger",
-        "description": "Create a new blogger",
+        "description": "Self-register a new blogger account.",
         "operationId": "create_blogger_bloggers__post",
         "requestBody": {
           "required": true,
@@ -1679,8 +1086,13 @@
           "bloggers"
         ],
         "summary": "Get Bloggers",
-        "description": "Get all bloggers",
+        "description": "List all bloggers associated with the current company.",
         "operationId": "get_bloggers_bloggers__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "skip",
@@ -1731,41 +1143,42 @@
         }
       }
     },
-    "/admin/migrate": {
-      "post": {
+    "/bloggers/me": {
+      "get": {
         "tags": [
-          "admin"
+          "bloggers"
         ],
-        "summary": "Run Migrations",
-        "description": "Run all pending database migrations to head",
-        "operationId": "run_migrations_admin_migrate_post",
+        "summary": "Get Me",
+        "operationId": "get_me_bloggers_me_get",
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-
+                  "$ref": "#/components/schemas/Blogger"
                 }
               }
             }
           }
-        }
-      }
-    },
-    "/admin/create": {
-      "post": {
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "put": {
         "tags": [
-          "admin"
+          "bloggers"
         ],
-        "summary": "Create Admin",
-        "description": "Create a new admin. Only existing admins can create new admins.",
-        "operationId": "create_admin_admin_create_post",
+        "summary": "Update Me",
+        "operationId": "update_me_bloggers_me_put",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AdminCreate"
+                "$ref": "#/components/schemas/BloggerUpdate"
               }
             }
           },
@@ -1777,7 +1190,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Admin"
+                  "$ref": "#/components/schemas/Blogger"
                 }
               }
             }
@@ -1800,14 +1213,361 @@
         ]
       }
     },
-    "/admin/companies": {
+    "/bloggers/me/password": {
+      "put": {
+        "tags": [
+          "bloggers"
+        ],
+        "summary": "Update My Password",
+        "operationId": "update_my_password_bloggers_me_password_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/bloggers/me/telegram": {
+      "post": {
+        "tags": [
+          "bloggers"
+        ],
+        "summary": "Link Telegram",
+        "description": "Link a Telegram chat to the blogger's account for notifications.",
+        "operationId": "link_telegram_bloggers_me_telegram_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramLink"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Blogger"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/bloggers/me/companies": {
       "get": {
         "tags": [
-          "admin"
+          "bloggers"
         ],
-        "summary": "Get All Companies",
-        "description": "Get all companies. Admin only.",
-        "operationId": "get_all_companies_admin_companies_get",
+        "summary": "Get My Companies",
+        "description": "Return all companies the current blogger is associated with.",
+        "operationId": "get_my_companies_bloggers_me_companies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Company"
+                  },
+                  "type": "array",
+                  "title": "Response Get My Companies Bloggers Me Companies Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/bloggers/invite": {
+      "post": {
+        "tags": [
+          "bloggers"
+        ],
+        "summary": "Invite Blogger",
+        "description": "Company sends an invite link to a blogger's email.",
+        "operationId": "invite_blogger_bloggers_invite_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloggerInviteCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloggerInvite"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/bloggers/invite/{token}": {
+      "get": {
+        "tags": [
+          "bloggers"
+        ],
+        "summary": "Get Invite Info",
+        "description": "Fetch invite details so the frontend can pre-fill the registration form.",
+        "operationId": "get_invite_info_bloggers_invite__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloggerInvite"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bloggers/invite/{token}/accept": {
+      "post": {
+        "tags": [
+          "bloggers"
+        ],
+        "summary": "Accept Invite",
+        "description": "Accept an invite: creates a blogger account (or links existing) and\nassociates them with the inviting company.",
+        "operationId": "accept_invite_bloggers_invite__token__accept_post",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BloggerInviteAccept"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bloggers/me/join-company/{company_id}": {
+      "post": {
+        "tags": [
+          "bloggers"
+        ],
+        "summary": "Join Company",
+        "description": "Manually associate an authenticated blogger with a company.",
+        "operationId": "join_company_bloggers_me_join_company__company_id__post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BloggerCompany"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/": {
+      "post": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Create Order",
+        "operationId": "create_order_orders__post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Get Orders",
+        "description": "All orders for the current company's products.",
+        "operationId": "get_orders_orders__get",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1843,9 +1603,9 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Company"
+                    "$ref": "#/components/schemas/Order"
                   },
-                  "title": "Response Get All Companies Admin Companies Get"
+                  "title": "Response Get Orders Orders  Get"
                 }
               }
             }
@@ -1863,274 +1623,147 @@
         }
       }
     },
-    "/admin/companies/{company_id}": {
+    "/orders/my-orders": {
       "get": {
-        "tags": [
-          "admin"
-        ],
-        "summary": "Get Company By Id",
-        "description": "Get a specific company by ID. Admin only.",
-        "operationId": "get_company_by_id_admin_companies__company_id__get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Company"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/companies/{company_id}/answers": {
-      "get": {
-        "tags": [
-          "admin"
-        ],
-        "summary": "Get Company Answers",
-        "description": "Get company answers by company ID. Admin only.",
-        "operationId": "get_company_answers_admin_companies__company_id__answers_get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CompanyAnswers"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/companies/{company_id}/gtm-strategies": {
-      "get": {
-        "tags": [
-          "admin"
-        ],
-        "summary": "Get Company Gtm Strategies",
-        "description": "Get GTM strategy history for a company. Admin only.",
-        "operationId": "get_company_gtm_strategies_admin_companies__company_id__gtm_strategies_get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GTMStrategy"
-                  },
-                  "title": "Response Get Company Gtm Strategies Admin Companies  Company Id  Gtm Strategies Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/companies/{company_id}/validations": {
-      "get": {
-        "tags": [
-          "admin"
-        ],
-        "summary": "Get Company Validations",
-        "description": "Get validation history for a company. Admin only.",
-        "operationId": "get_company_validations_admin_companies__company_id__validations_get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Validation"
-                  },
-                  "title": "Response Get Company Validations Admin Companies  Company Id  Validations Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/admin/companies/{company_id}/forecasts": {
-      "get": {
-        "tags": [
-          "admin"
-        ],
-        "summary": "Get Company Forecasts",
-        "description": "Get forecast history for a company. Admin only.",
-        "operationId": "get_company_forecasts_admin_companies__company_id__forecasts_get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Forecast"
-                  },
-                  "title": "Response Get Company Forecasts Admin Companies  Company Id  Forecasts Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/orders/": {
-      "post": {
         "tags": [
           "orders"
         ],
-        "summary": "Create Order",
-        "operationId": "create_order_orders__post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OrderCreate"
+        "summary": "Get Blogger Orders",
+        "description": "All orders attributed to the current blogger.",
+        "operationId": "get_blogger_orders_orders_my_orders_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderWithDetails"
+                  },
+                  "title": "Response Get Blogger Orders Orders My Orders Get"
+                }
               }
             }
           },
-          "required": true
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{order_id}": {
+      "get": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Get Order",
+        "operationId": "get_order_orders__order_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderWithDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "orders"
+        ],
+        "summary": "Update Order",
+        "description": "Update editable fields on an order (company-owned products only).",
+        "operationId": "update_order_orders__order_id__put",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderUpdate"
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -2179,7 +1812,7 @@
             }
           },
           {
-            "name": "status",
+            "name": "new_status",
             "in": "query",
             "required": true,
             "schema": {
@@ -2217,6 +1850,7 @@
           "analytics"
         ],
         "summary": "Record Visit",
+        "description": "Increment visit counter for a product/blogger pair.",
         "operationId": "record_visit_analytics_visit_post",
         "parameters": [
           {
@@ -2262,13 +1896,701 @@
         }
       }
     },
+    "/analytics/dashboard": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Dashboard",
+        "description": "Full analytics dashboard for the current company.",
+        "operationId": "get_dashboard_analytics_dashboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboard"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/leaderboard": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Leaderboard",
+        "description": "Blogger rankings sorted by revenue for the current company.",
+        "operationId": "get_leaderboard_analytics_leaderboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BloggerRanking"
+                  },
+                  "type": "array",
+                  "title": "Response Get Leaderboard Analytics Leaderboard Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/blogger/{blogger_id}": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Blogger Analytics",
+        "description": "Per-product analytics for a specific blogger (company-scoped).",
+        "operationId": "get_blogger_analytics_analytics_blogger__blogger_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "blogger_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Blogger Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Analytics"
+                  },
+                  "title": "Response Get Blogger Analytics Analytics Blogger  Blogger Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/my-stats": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get My Stats",
+        "description": "Blogger's own stats across all products.",
+        "operationId": "get_my_stats_analytics_my_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Analytics"
+                  },
+                  "type": "array",
+                  "title": "Response Get My Stats Analytics My Stats Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/admin/migrate": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Run Migrations",
+        "description": "Run all pending Alembic migrations to head.",
+        "operationId": "run_migrations_admin_migrate_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/create": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Admin",
+        "operationId": "create_admin_admin_create_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Admin"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/admin/companies": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "List Companies",
+        "operationId": "list_companies_admin_companies_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Company"
+                  },
+                  "title": "Response List Companies Admin Companies Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/companies/{company_id}": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Company",
+        "operationId": "get_company_admin_companies__company_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Company"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Company",
+        "operationId": "delete_company_admin_companies__company_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/bloggers": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "List Bloggers",
+        "operationId": "list_bloggers_admin_bloggers_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Blogger"
+                  },
+                  "title": "Response List Bloggers Admin Bloggers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/bloggers/{blogger_id}": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Blogger",
+        "operationId": "get_blogger_admin_bloggers__blogger_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "blogger_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Blogger Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Blogger"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete Blogger",
+        "operationId": "delete_blogger_admin_bloggers__blogger_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "blogger_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Blogger Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/orders": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "List Orders",
+        "operationId": "list_orders_admin_orders_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  },
+                  "title": "Response List Orders Admin Orders Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/products": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "List Products",
+        "operationId": "list_products_admin_products_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  },
+                  "title": "Response List Products Admin Products Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/analytics": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "List Analytics",
+        "operationId": "list_analytics_admin_analytics_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Analytics"
+                  },
+                  "title": "Response List Analytics Admin Analytics Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/google/login": {
       "get": {
         "tags": [
           "oauth"
         ],
         "summary": "Google Login",
-        "description": "Initiate Google OAuth login",
         "operationId": "google_login_auth_google_login_get",
         "parameters": [
           {
@@ -2312,7 +2634,6 @@
           "oauth"
         ],
         "summary": "Google Callback",
-        "description": "Handle Google OAuth callback",
         "operationId": "google_callback_auth_google_callback_get",
         "parameters": [
           {
@@ -2364,7 +2685,6 @@
           "oauth"
         ],
         "summary": "Get Google Authorize Url",
-        "description": "Get Google OAuth authorization URL for frontend flow.\nFrontend should redirect user to this URL.\n\nThis endpoint returns the Google OAuth URL with frontend redirect URI,\nso Google only sees the frontend domain, not the backend.",
         "operationId": "get_google_authorize_url_auth_google_authorize_url_get",
         "parameters": [
           {
@@ -2408,7 +2728,6 @@
           "oauth"
         ],
         "summary": "Exchange Google Code",
-        "description": "Exchange Google OAuth code for user session token.\n\nFrontend calls this after receiving the code from Google callback.\nBackend exchanges code → gets user info → creates/updates user → returns session token.\n\nThis keeps the backend URL hidden from Google.",
         "operationId": "exchange_google_code_auth_google_exchange_post",
         "requestBody": {
           "content": {
@@ -2444,373 +2763,12 @@
         }
       }
     },
-    "/agent/invoke": {
-      "post": {
-        "tags": [
-          "agent"
-        ],
-        "summary": "Invoke Agent",
-        "description": "Invoke the OpenAI Agent with structured input data in the format:\n{\n    \"type\": \"hypothesis_generator\" | \"cusdev_target_planner\" | \"custdev_insights_analyzer\" | \"custdev_interview_designer\",\n    \"answers\": {\n        \"product\": {...},\n        \"market\": {...},\n        \"customer\": {...},\n        \"problem\": {...}\n    }\n}\nRequires authentication (company must be logged in).",
-        "operationId": "invoke_agent_agent_invoke_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AgentStructuredInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AgentResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/api/iterations/start-new": {
-      "post": {
-        "tags": [
-          "iterations"
-        ],
-        "summary": "Start New Iteration Endpoint",
-        "operationId": "start_new_iteration_endpoint_api_iterations_start_new_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StartNewIterationRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/api/iterations/{iteration_id}/rename": {
-      "patch": {
-        "tags": [
-          "iterations"
-        ],
-        "summary": "Rename Iteration",
-        "operationId": "rename_iteration_api_iterations__iteration_id__rename_patch",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "iteration_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Iteration Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RenameIterationRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Iteration"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/iterations/{company_id}": {
-      "get": {
-        "tags": [
-          "iterations"
-        ],
-        "summary": "List Iterations For Company",
-        "operationId": "list_iterations_for_company_api_iterations__company_id__get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/iterations/{company_id}/current-context/{tool_type}": {
-      "get": {
-        "tags": [
-          "iterations"
-        ],
-        "summary": "Get Current Context",
-        "operationId": "get_current_context_api_iterations__company_id__current_context__tool_type__get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
-            }
-          },
-          {
-            "name": "tool_type",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Tool Type"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tool-outputs/{output_id}/select": {
-      "patch": {
-        "tags": [
-          "iterations"
-        ],
-        "summary": "Select Tool Output",
-        "operationId": "select_tool_output_api_tool_outputs__output_id__select_patch",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "output_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Output Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ToolOutput"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tool-outputs/{iteration_id}/{tool_type}": {
-      "get": {
-        "tags": [
-          "iterations"
-        ],
-        "summary": "List Tool Outputs For Iteration",
-        "operationId": "list_tool_outputs_for_iteration_api_tool_outputs__iteration_id___tool_type__get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "iteration_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Iteration Id"
-            }
-          },
-          {
-            "name": "tool_type",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Tool Type"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ToolOutput"
-                  },
-                  "title": "Response List Tool Outputs For Iteration Api Tool Outputs  Iteration Id   Tool Type  Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/telegram/webhook": {
       "post": {
         "tags": [
           "telegram"
         ],
         "summary": "Webhook",
-        "description": "Handle Telegram webhook updates",
         "operationId": "webhook_telegram_webhook_post",
         "responses": {
           "200": {
@@ -2941,8 +2899,7 @@
           "email",
           "name",
           "id",
-          "created_at",
-          "updated_at"
+          "created_at"
         ],
         "title": "Admin"
       },
@@ -2988,6 +2945,10 @@
             "type": "string",
             "title": "Code"
           },
+          "click_count": {
+            "type": "integer",
+            "title": "Click Count"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -3012,8 +2973,8 @@
           "blogger_id",
           "id",
           "code",
-          "created_at",
-          "updated_at"
+          "click_count",
+          "created_at"
         ],
         "title": "AffiliateLink"
       },
@@ -3053,6 +3014,10 @@
             "type": "string",
             "title": "Code"
           },
+          "click_count": {
+            "type": "integer",
+            "title": "Click Count"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -3083,69 +3048,12 @@
           "blogger_id",
           "id",
           "code",
+          "click_count",
           "created_at",
-          "updated_at",
           "product",
           "blogger"
         ],
         "title": "AffiliateLinkDetail"
-      },
-      "AgentResponse": {
-        "properties": {
-          "output_text": {
-            "type": "string",
-            "title": "Output Text"
-          },
-          "output": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output"
-          },
-          "category": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Category"
-          }
-        },
-        "type": "object",
-        "required": [
-          "output_text"
-        ],
-        "title": "AgentResponse",
-        "description": "Response from the OpenAI Agent"
-      },
-      "AgentStructuredInput": {
-        "properties": {
-          "type": {
-            "type": "string",
-            "title": "Type"
-          },
-          "answers": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Answers"
-          }
-        },
-        "type": "object",
-        "required": [
-          "type",
-          "answers"
-        ],
-        "title": "AgentStructuredInput",
-        "description": "Structured input for n8n agents. type is one of: hypothesis_generator, cusdev_target_planner, custdev_insights_analyzer, custdev_interview_designer (legacy names are mapped)."
       },
       "Analytics": {
         "properties": {
@@ -3172,9 +3080,14 @@
             "title": "Items Sold",
             "default": 0
           },
-          "money_earned": {
+          "revenue": {
             "type": "number",
-            "title": "Money Earned",
+            "title": "Revenue",
+            "default": 0
+          },
+          "commission_paid": {
+            "type": "number",
+            "title": "Commission Paid",
             "default": 0
           },
           "id": {
@@ -3207,6 +3120,16 @@
                 "type": "null"
               }
             ]
+          },
+          "product": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Product"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -3214,10 +3137,58 @@
           "product_id",
           "blogger_id",
           "id",
-          "created_at",
-          "updated_at"
+          "created_at"
         ],
         "title": "Analytics"
+      },
+      "AnalyticsDashboard": {
+        "properties": {
+          "total_visits": {
+            "type": "integer",
+            "title": "Total Visits"
+          },
+          "total_orders": {
+            "type": "integer",
+            "title": "Total Orders"
+          },
+          "total_items_sold": {
+            "type": "integer",
+            "title": "Total Items Sold"
+          },
+          "total_revenue": {
+            "type": "number",
+            "title": "Total Revenue"
+          },
+          "total_commission_paid": {
+            "type": "number",
+            "title": "Total Commission Paid"
+          },
+          "blogger_rankings": {
+            "items": {
+              "$ref": "#/components/schemas/BloggerRanking"
+            },
+            "type": "array",
+            "title": "Blogger Rankings"
+          },
+          "per_product": {
+            "items": {
+              "$ref": "#/components/schemas/Analytics"
+            },
+            "type": "array",
+            "title": "Per Product"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_visits",
+          "total_orders",
+          "total_items_sold",
+          "total_revenue",
+          "total_commission_paid",
+          "blogger_rankings",
+          "per_product"
+        ],
+        "title": "AnalyticsDashboard"
       },
       "Blogger": {
         "properties": {
@@ -3245,6 +3216,17 @@
             "type": "integer",
             "title": "Id"
           },
+          "telegram_chat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Chat Id"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -3268,10 +3250,38 @@
           "name",
           "email",
           "id",
-          "created_at",
-          "updated_at"
+          "created_at"
         ],
         "title": "Blogger"
+      },
+      "BloggerCompany": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "blogger_id": {
+            "type": "integer",
+            "title": "Blogger Id"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "blogger_id",
+          "company_id",
+          "created_at"
+        ],
+        "title": "BloggerCompany"
       },
       "BloggerCreate": {
         "properties": {
@@ -3307,6 +3317,157 @@
           "password"
         ],
         "title": "BloggerCreate"
+      },
+      "BloggerInvite": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "blogger_email": {
+            "type": "string",
+            "title": "Blogger Email"
+          },
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InviteStatus"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "company_id",
+          "blogger_email",
+          "token",
+          "status",
+          "expires_at",
+          "created_at"
+        ],
+        "title": "BloggerInvite"
+      },
+      "BloggerInviteAccept": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "name",
+          "password"
+        ],
+        "title": "BloggerInviteAccept"
+      },
+      "BloggerInviteCreate": {
+        "properties": {
+          "blogger_email": {
+            "type": "string",
+            "format": "email",
+            "title": "Blogger Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "blogger_email"
+        ],
+        "title": "BloggerInviteCreate"
+      },
+      "BloggerRanking": {
+        "properties": {
+          "blogger": {
+            "$ref": "#/components/schemas/Blogger"
+          },
+          "total_visits": {
+            "type": "integer",
+            "title": "Total Visits"
+          },
+          "total_orders": {
+            "type": "integer",
+            "title": "Total Orders"
+          },
+          "total_items_sold": {
+            "type": "integer",
+            "title": "Total Items Sold"
+          },
+          "total_revenue": {
+            "type": "number",
+            "title": "Total Revenue"
+          },
+          "total_commission": {
+            "type": "number",
+            "title": "Total Commission"
+          },
+          "conversion_rate": {
+            "type": "number",
+            "title": "Conversion Rate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "blogger",
+          "total_visits",
+          "total_orders",
+          "total_items_sold",
+          "total_revenue",
+          "total_commission",
+          "conversion_rate"
+        ],
+        "title": "BloggerRanking"
+      },
+      "BloggerUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "bio": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bio"
+          }
+        },
+        "type": "object",
+        "title": "BloggerUpdate"
       },
       "Body_login_for_access_token_token_post": {
         "properties": {
@@ -3371,7 +3532,7 @@
         "properties": {
           "image": {
             "type": "string",
-            "format": "binary",
+            "contentMediaType": "application/octet-stream",
             "title": "Image"
           }
         },
@@ -3380,64 +3541,6 @@
           "image"
         ],
         "title": "Body_upload_product_image_products_upload_image_post"
-      },
-      "ChannelRisk": {
-        "properties": {
-          "content": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Content"
-          },
-          "output_data": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output Data"
-          },
-          "language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Language"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "company_id",
-          "created_at"
-        ],
-        "title": "ChannelRisk"
       },
       "Company": {
         "properties": {
@@ -3461,30 +3564,9 @@
             ],
             "title": "Phone Number"
           },
-          "professional_profile_link": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Professional Profile Link"
-          },
           "company_name": {
             "type": "string",
             "title": "Company Name"
-          },
-          "stage": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/CompanyStage"
-              },
-              {
-                "type": "null"
-              }
-            ]
           },
           "description": {
             "anyOf": [
@@ -3536,67 +3618,9 @@
           "email",
           "company_name",
           "id",
-          "created_at",
-          "updated_at"
+          "created_at"
         ],
         "title": "Company"
-      },
-      "CompanyAnswers": {
-        "properties": {
-          "answers": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Answers"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          },
-          "updated_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Updated At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "answers",
-          "id",
-          "company_id",
-          "created_at",
-          "updated_at"
-        ],
-        "title": "CompanyAnswers"
-      },
-      "CompanyAnswersUpdate": {
-        "properties": {
-          "answers": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Answers"
-          }
-        },
-        "type": "object",
-        "required": [
-          "answers"
-        ],
-        "title": "CompanyAnswersUpdate"
       },
       "CompanyCreate": {
         "properties": {
@@ -3620,30 +3644,9 @@
             ],
             "title": "Phone Number"
           },
-          "professional_profile_link": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Professional Profile Link"
-          },
           "company_name": {
             "type": "string",
             "title": "Company Name"
-          },
-          "stage": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/CompanyStage"
-              },
-              {
-                "type": "null"
-              }
-            ]
           },
           "description": {
             "anyOf": [
@@ -3670,16 +3673,6 @@
         ],
         "title": "CompanyCreate"
       },
-      "CompanyStage": {
-        "type": "string",
-        "enum": [
-          "idea",
-          "pre-revenue",
-          "post-PMF",
-          "scaling"
-        ],
-        "title": "CompanyStage"
-      },
       "CompanyUpdate": {
         "properties": {
           "full_name": {
@@ -3704,17 +3697,6 @@
             ],
             "title": "Phone Number"
           },
-          "professional_profile_link": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Professional Profile Link"
-          },
           "company_name": {
             "anyOf": [
               {
@@ -3725,16 +3707,6 @@
               }
             ],
             "title": "Company Name"
-          },
-          "stage": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/CompanyStage"
-              },
-              {
-                "type": "null"
-              }
-            ]
           },
           "description": {
             "anyOf": [
@@ -3750,239 +3722,6 @@
         },
         "type": "object",
         "title": "CompanyUpdate"
-      },
-      "CustdevInsightsGenerateRequest": {
-        "properties": {
-          "answers": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Answers"
-          },
-          "language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Language"
-          },
-          "interview_data": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Interview Data"
-          }
-        },
-        "type": "object",
-        "title": "CustdevInsightsGenerateRequest",
-        "description": "Request for custdev_insights_analyzer, includes optional raw interview data."
-      },
-      "Experiment": {
-        "properties": {
-          "content": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Content"
-          },
-          "output_data": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output Data"
-          },
-          "language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Language"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "company_id",
-          "created_at"
-        ],
-        "title": "Experiment"
-      },
-      "Forecast": {
-        "properties": {
-          "content": {
-            "type": "string",
-            "title": "Content"
-          },
-          "output_data": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output Data"
-          },
-          "language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Language"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "content",
-          "id",
-          "company_id",
-          "created_at"
-        ],
-        "title": "Forecast"
-      },
-      "GTMGenerateRequest": {
-        "properties": {
-          "answers": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Answers"
-          },
-          "language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Language"
-          }
-        },
-        "type": "object",
-        "title": "GTMGenerateRequest",
-        "description": "Optional overrides. If answers omitted, company-stored answers are used."
-      },
-      "GTMStrategy": {
-        "properties": {
-          "content": {
-            "type": "string",
-            "title": "Content"
-          },
-          "output_data": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output Data"
-          },
-          "language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Language"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "content",
-          "id",
-          "company_id",
-          "created_at"
-        ],
-        "title": "GTMStrategy"
       },
       "GoogleExchangeRequest": {
         "properties": {
@@ -4025,130 +3764,14 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "ICPDiagnostician": {
-        "properties": {
-          "content": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Content"
-          },
-          "output_data": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output Data"
-          },
-          "language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Language"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "company_id",
-          "created_at"
+      "InviteStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "accepted",
+          "expired"
         ],
-        "title": "ICPDiagnostician"
-      },
-      "Iteration": {
-        "properties": {
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name"
-          },
-          "status": {
-            "type": "string",
-            "title": "Status"
-          },
-          "is_current": {
-            "type": "boolean",
-            "title": "Is Current"
-          },
-          "is_past": {
-            "type": "boolean",
-            "title": "Is Past"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "user_id": {
-            "type": "integer",
-            "title": "User Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          },
-          "updated_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Updated At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "status",
-          "is_current",
-          "is_past",
-          "id",
-          "company_id",
-          "user_id",
-          "created_at"
-        ],
-        "title": "Iteration"
+        "title": "InviteStatus"
       },
       "Order": {
         "properties": {
@@ -4172,9 +3795,50 @@
             "type": "string",
             "title": "Client Phone"
           },
+          "client_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Name"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
           "id": {
             "type": "integer",
             "title": "Id"
+          },
+          "affiliate_link_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affiliate Link Id"
+          },
+          "commission_amount": {
+            "type": "number",
+            "title": "Commission Amount"
+          },
+          "is_manual": {
+            "type": "boolean",
+            "title": "Is Manual"
           },
           "status": {
             "$ref": "#/components/schemas/OrderStatus"
@@ -4205,9 +3869,10 @@
           "price_per_item",
           "client_phone",
           "id",
+          "commission_amount",
+          "is_manual",
           "status",
-          "created_at",
-          "updated_at"
+          "created_at"
         ],
         "title": "Order"
       },
@@ -4232,6 +3897,44 @@
           "client_phone": {
             "type": "string",
             "title": "Client Phone"
+          },
+          "client_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Name"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "affiliate_link_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affiliate Link Id"
+          },
+          "is_manual": {
+            "type": "boolean",
+            "title": "Is Manual",
+            "default": false
           }
         },
         "type": "object",
@@ -4253,6 +3956,179 @@
         ],
         "title": "OrderStatus"
       },
+      "OrderUpdate": {
+        "properties": {
+          "client_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Phone"
+          },
+          "client_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Name"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantity"
+          }
+        },
+        "type": "object",
+        "title": "OrderUpdate"
+      },
+      "OrderWithDetails": {
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "blogger_id": {
+            "type": "integer",
+            "title": "Blogger Id"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "price_per_item": {
+            "type": "number",
+            "title": "Price Per Item"
+          },
+          "client_phone": {
+            "type": "string",
+            "title": "Client Phone"
+          },
+          "client_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Name"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "affiliate_link_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affiliate Link Id"
+          },
+          "commission_amount": {
+            "type": "number",
+            "title": "Commission Amount"
+          },
+          "is_manual": {
+            "type": "boolean",
+            "title": "Is Manual"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "product": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Product"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "blogger": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Blogger"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "blogger_id",
+          "quantity",
+          "price_per_item",
+          "client_phone",
+          "id",
+          "commission_amount",
+          "is_manual",
+          "status",
+          "created_at"
+        ],
+        "title": "OrderWithDetails"
+      },
       "PasswordUpdate": {
         "properties": {
           "current_password": {
@@ -4269,66 +4145,7 @@
           "current_password",
           "new_password"
         ],
-        "title": "PasswordUpdate",
-        "description": "Schema for changing password (current + new)."
-      },
-      "Positioning": {
-        "properties": {
-          "content": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Content"
-          },
-          "output_data": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output Data"
-          },
-          "language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Language"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "company_id",
-          "created_at"
-        ],
-        "title": "Positioning"
+        "title": "PasswordUpdate"
       },
       "Product": {
         "properties": {
@@ -4350,6 +4167,11 @@
           "price": {
             "type": "number",
             "title": "Price"
+          },
+          "commission_rate": {
+            "type": "number",
+            "title": "Commission Rate",
+            "default": 0
           },
           "image_url": {
             "anyOf": [
@@ -4405,8 +4227,7 @@
           "price",
           "id",
           "company_id",
-          "created_at",
-          "updated_at"
+          "created_at"
         ],
         "title": "Product"
       },
@@ -4430,6 +4251,11 @@
           "price": {
             "type": "number",
             "title": "Price"
+          },
+          "commission_rate": {
+            "type": "number",
+            "title": "Commission Rate",
+            "default": 0
           },
           "image_url": {
             "anyOf": [
@@ -4501,6 +4327,17 @@
             ],
             "title": "Price"
           },
+          "commission_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commission Rate"
+          },
           "image_url": {
             "anyOf": [
               {
@@ -4526,32 +4363,6 @@
         },
         "type": "object",
         "title": "ProductUpdate"
-      },
-      "RenameIterationRequest": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          }
-        },
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "title": "RenameIterationRequest"
-      },
-      "StartNewIterationRequest": {
-        "properties": {
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "company_id"
-        ],
-        "title": "StartNewIterationRequest"
       },
       "TelegramLink": {
         "properties": {
@@ -4632,136 +4443,6 @@
         ],
         "title": "Token"
       },
-      "ToolOutput": {
-        "properties": {
-          "tool_type": {
-            "type": "string",
-            "title": "Tool Type"
-          },
-          "output_json": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output Json"
-          },
-          "output_raw": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output Raw"
-          },
-          "generation_index": {
-            "type": "integer",
-            "title": "Generation Index"
-          },
-          "is_selected": {
-            "type": "boolean",
-            "title": "Is Selected"
-          },
-          "tokens_used": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Tokens Used"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "iteration_id": {
-            "type": "integer",
-            "title": "Iteration Id"
-          },
-          "user_id": {
-            "type": "integer",
-            "title": "User Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "tool_type",
-          "generation_index",
-          "is_selected",
-          "id",
-          "iteration_id",
-          "user_id",
-          "created_at"
-        ],
-        "title": "ToolOutput"
-      },
-      "Validation": {
-        "properties": {
-          "content": {
-            "type": "string",
-            "title": "Content"
-          },
-          "output_data": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Output Data"
-          },
-          "language": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Language"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "content",
-          "id",
-          "company_id",
-          "created_at"
-        ],
-        "title": "Validation"
-      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -4785,6 +4466,13 @@
           "type": {
             "type": "string",
             "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
           }
         },
         "type": "object",

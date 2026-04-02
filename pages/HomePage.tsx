@@ -1,125 +1,173 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import LandingHeader from '../components/LandingHeader';
-import AuthModal from '../components/AuthModal';
-import ToolsOverviewBlock from '../components/ToolsOverviewBlock';
-import Button from '../components/Button';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  ArrowRight,
+  Calculator,
+  CheckCircle2,
+  Link2,
+  Play,
+  Shield,
+  Store,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
+import DemoPreview from '../components/landing/DemoPreview';
+import LandingHeader from '@/components/LandingHeader';
 import { useTranslation } from '../hooks/useTranslation';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.15, duration: 0.6 },
+  }),
+};
 
 const HomePage: React.FC = () => {
   const { t } = useTranslation();
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const navigate = useNavigate();
-
-  const openAuthModal = () => {
-    localStorage.setItem('selectedModule', 'tools');
-    setAuthModalOpen(true);
-  };
-
-  const goToAuth = () => {
-    navigate('/login');
-  }
+  const [demoOpen, setDemoOpen] = useState(false);
 
   return (
-    <div className="landing-page">
-      <LandingHeader onTryForFree={openAuthModal} />
+    <div className="min-h-screen bg-background">
+      <DemoPreview open={demoOpen} onClose={() => setDemoOpen(false)} />
 
-      <main className="landing-main">
-        {/* Block 1. Hero */}
-        {/* <div class="landing-block1"> */}
-        <section className="landing-hero">
-          <div className="container container--lg">
-            <h1 className="landing-hero__title">
-              {t('landing.hero.title1')}
-              <span className="landing-hero__highlight">{t('landing.hero.titleHighlight')}</span>
-              {t('landing.hero.title2')}
-            </h1>
-            <p className="landing-hero__subtitle">{t('landing.hero.subtitle')}</p>
-            <div className="landing-hero__cta">
-              <Button onClick={goToAuth} className="landing-hero__btn">
-                {t('landing.hero.cta')}
-              </Button>
-              </div>
-            </div>
-          </section>
-        
+      <LandingHeader onTryForFree={() => setDemoOpen(true)} />
 
-        {/* Space for screencast */}
-        <section className="landing-screencast">
-          <div className="container container--lg">
-            <img 
-              src="/assets/screencast.gif" 
-              alt="Follox platform demonstration"
-              className="landing-screencast__placeholder"
-            />
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+        <img src="/assets/hero-bg.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-[#1E2022]/40" />
+
+        <div className="container relative z-10 mx-auto px-4 pt-16 text-center">
+          <motion.h1
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            custom={0}
+            className="mx-auto max-w-4xl text-4xl font-bold uppercase tracking-wide text-foreground md:text-5xl lg:text-6xl"
+          >
+            {t('landingV2.hero.title')}
+          </motion.h1>
+
+          <motion.p
+            variants={fadeUp}
+            custom={1}
+            initial="hidden"
+            animate="visible"
+            className="mx-auto mt-6 max-w-2xl text-lg text-secondary-alpha md:text-xl"
+          >
+            {t('landingV2.hero.subtitle')}
+          </motion.p>
+
+          <motion.div
+            variants={fadeUp}
+            custom={2}
+            initial="hidden"
+            animate="visible"
+            className="mt-10 flex flex-wrap justify-center gap-4"
+          >
+            <Link to="/company/register">
+              <button className="inline-flex items-center gap-2 bg-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-primary/90">
+                {t('landingV2.hero.ctaStart')} <ArrowRight className="h-4 w-4" />
+              </button>
+            </Link>
+            <button
+              onClick={() => setDemoOpen(true)}
+              className="inline-flex items-center gap-2 border border-border px-6 py-3 font-semibold text-foreground transition-colors hover:border-primary/50"
+            >
+              <Play className="h-4 w-4" /> {t('landingV2.hero.ctaDemo')}
+            </button>
+          </motion.div>
+
+          <motion.div
+            variants={fadeUp}
+            custom={3}
+            initial="hidden"
+            animate="visible"
+            className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-secondary-alpha"
+          >
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-primary" /> {t('landingV2.hero.badges.freeForDesigners')}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-primary" /> {t('landingV2.hero.badges.automaticCalculation')}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-primary" /> {t('landingV2.hero.badges.qrAffiliateLinks')}
+            </span>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="bg-card py-24">
+        <div className="container mx-auto px-4">
+          <h2 className="mb-4 text-center text-3xl font-bold uppercase tracking-wide text-foreground md:text-4xl">{t('landingV2.howItWorks.title')}</h2>
+          <p className="mx-auto mb-16 max-w-xl text-center text-secondary-alpha">
+            {t('landingV2.howItWorks.subtitle')}
+          </p>
+          <div className="grid gap-0 md:grid-cols-3">
+            {[
+              { icon: Users, title: t('landingV2.howItWorks.steps.invite.title'), desc: t('landingV2.howItWorks.steps.invite.desc'), step: '01' },
+              { icon: Store, title: t('landingV2.howItWorks.steps.bring.title'), desc: t('landingV2.howItWorks.steps.bring.desc'), step: '02' },
+              { icon: Calculator, title: t('landingV2.howItWorks.steps.calculate.title'), desc: t('landingV2.howItWorks.steps.calculate.desc'), step: '03' },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+                className={`relative p-10 text-center ${i < 2 ? 'border-border md:border-r' : ''}`}
+              >
+                <span className="absolute right-6 top-4 text-5xl font-bold text-foreground/5">{item.step}</span>
+                <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center">
+                  <item.icon className="h-7 w-7 text-stone" strokeWidth={1.5} />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold uppercase tracking-wide text-foreground">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-secondary-alpha">{item.desc}</p>
+              </motion.div>
+            ))}
           </div>
-        </section>
-        {/* </div> */}
+        </div>
+      </section>
 
-        {/* Block 2. Built for the moments */}
-        <section className="landing-block2">
-          <div className="container container--lg">
-            <h2 className="landing-block2__title">{t('landing.block2.title')}</h2>
-            <p className="landing-block2__text">{t('landing.block2.text')}</p>
+      <section className="py-24">
+        <div className="container mx-auto px-4">
+          <h2 className="mb-16 text-center text-3xl font-bold uppercase tracking-wide text-foreground md:text-4xl">{t('landingV2.why.title')}</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { icon: Shield, title: t('landingV2.why.cards.payouts.title'), desc: t('landingV2.why.cards.payouts.desc') },
+              { icon: TrendingUp, title: t('landingV2.why.cards.analytics.title'), desc: t('landingV2.why.cards.analytics.desc') },
+              { icon: Link2, title: t('landingV2.why.cards.qr.title'), desc: t('landingV2.why.cards.qr.desc') },
+              { icon: Calculator, title: t('landingV2.why.cards.auto.title'), desc: t('landingV2.why.cards.auto.desc') },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="border border-border bg-card p-6 transition-colors duration-300 hover:border-primary/30"
+              >
+                <item.icon className="mb-4 h-5 w-5 text-stone" strokeWidth={1.5} />
+                <h3 className="mb-1.5 text-sm font-semibold uppercase tracking-wide text-foreground">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-secondary-alpha">{item.desc}</p>
+              </motion.div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Block 3. Tools overview */}
-        <section className="landing-block3" id="tools">
-          <div className="container container--lg">
-            <div className="landing-tools-wrap">
-              <ToolsOverviewBlock />
-            </div>
-            <div className="landing-tools-cta">
-              <Button onClick={goToAuth} variant="primary" className="landing-hero__btn">
-                {t('landing.toolsCta')}
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* Block 5. Footer */}
-        <footer className="landing-footer">
-          <div className="container container--lg">
-            <div className="landing-footer__grid">
-              <div className="landing-footer__brand">
-                <div className="landing-footer__logo">{t('landing.footer.brand')}</div>
-                <p className="landing-footer__tagline">{t('landing.footer.tagline')}</p>
-                <p className="landing-footer__rights">{t('landing.footer.rights')}</p>
-              </div>
-              <div className="landing-footer__support">
-                <h4 className="landing-footer__heading">{t('landing.footer.support')}</h4>
-                <a href="/documents/privacy-policy.docx" download className="landing-footer__link">
-                  {t('landing.footer.privacyPolicy')}
-                </a>
-                <a href="/documents/terms-of-service.docx" download className="landing-footer__link">
-                  {t('landing.footer.termsOfService')}
-                </a>
-                <a href={`mailto:${t('landing.footer.email')}`} className="landing-footer__link">
-                  {t('landing.footer.email')}
-                </a>
-              </div>
-              <div className="landing-footer__tools">
-                <h4 className="landing-footer__heading">{t('landing.footer.tools')}</h4>
-                <Link to="/tools/hypothesis-generator" className="landing-footer__link">
-                  {t('sidebar.hypothesisGenerator')}
-                </Link>
-                <Link to="/tools/custdev-target-planner" className="landing-footer__link">
-                  {t('sidebar.custdevTargetPlanner')}
-                </Link>
-                <Link to="/tools/custdev-interview-designer" className="landing-footer__link">
-                  {t('sidebar.custdevInterviewDesigner')}
-                </Link>
-                <Link to="/tools/custdev-insights-analyzer" className="landing-footer__link">
-                  {t('sidebar.custdevInsightsAnalyzer')}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </footer>
-      </main>
-
-      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+      <footer className="border-t border-border bg-footer py-10">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 md:flex-row">
+          <span className="font-semibold uppercase tracking-wider text-foreground">{t('landingV2.footer.brand')}</span>
+          <p className="text-sm text-secondary-alpha">{t('landingV2.footer.email')}</p>
+          <p className="text-sm text-secondary-alpha">
+            © {new Date().getFullYear()} {t('landingV2.footer.brand')}. {t('landingV2.footer.rights')}
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

@@ -212,8 +212,14 @@ export interface AffiliateLink {
   product_id: number;
   blogger_id: number;
   code: string;
+  click_count?: number;
   created_at: string;
   updated_at: string | null;
+}
+
+export interface AffiliateLinkDetail extends AffiliateLink {
+  product: Product;
+  blogger: Blogger;
 }
 
 export interface AffiliateLinkCreate {

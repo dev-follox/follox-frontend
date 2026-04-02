@@ -7,6 +7,7 @@ import {
   Analytics,
   OrderStatus,
   AffiliateLink,
+  AffiliateLinkDetail,
   AffiliateLinkCreate,
   Blogger,
   BloggerCreate,
@@ -236,8 +237,13 @@ const api = {
     return response.data;
   },
 
-  getAffiliateLink: async (code: string): Promise<AffiliateLink> => {
+  getAffiliateLink: async (code: string): Promise<AffiliateLinkDetail> => {
     const response = await axiosInstance.get(`/affiliate-links/${code}`);
+    return response.data;
+  },
+
+  getMyAffiliateLinks: async (): Promise<AffiliateLinkDetail[]> => {
+    const response = await axiosInstance.get('/affiliate-links/my-links');
     return response.data;
   },
 
@@ -261,6 +267,13 @@ const api = {
   // Company endpoints (for Telegram linking - part of affiliate module)
   linkTelegram: async (companyId: number, telegramChatId: string): Promise<Company> => {
     const response = await axiosInstance.post(`/companies/${companyId}/telegram`, {
+      telegram_chat_id: telegramChatId,
+    });
+    return response.data;
+  },
+
+  linkBloggerTelegram: async (telegramChatId: string): Promise<Blogger> => {
+    const response = await axiosInstance.post('/bloggers/me/telegram', {
       telegram_chat_id: telegramChatId,
     });
     return response.data;

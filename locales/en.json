@@ -32,7 +32,7 @@
       "home": "Home",
       "freeTools": "Free tools",
       "logIn": "Log in",
-      "tryForFree": "Try for free"
+      "tryDemo": "Try demo"
     },
     "hero": {
       "title1": "Test your startup idea  ",
@@ -96,6 +96,100 @@
       "tools": "Tools"
     }
   },
+  "landingV2": {
+    "hero": {
+      "title": "Grow sales through your designer network",
+      "subtitle": "Transparent commissions, automatic tracking and designer motivation - all in one platform for affiliate sales",
+      "ctaStart": "Start for free",
+      "ctaDemo": "Try Demo",
+      "badges": {
+        "freeForDesigners": "Free for designers",
+        "automaticCalculation": "Automatic calculation",
+        "qrAffiliateLinks": "QR affiliate links"
+      }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "subtitle": "Three simple steps to transparent affiliate partnership",
+      "steps": {
+        "invite": {
+          "title": "Invite designers",
+          "desc": "Add designers and set individual commission rates for each one"
+        },
+        "bring": {
+          "title": "They bring customers",
+          "desc": "Designers share affiliate links and QR codes - every click is tracked automatically"
+        },
+        "calculate": {
+          "title": "System calculates",
+          "desc": "Automatic commission calculation, order confirmation and full payout history"
+        }
+      }
+    },
+    "why": {
+      "title": "Why Flipster",
+      "cards": {
+        "payouts": {
+          "title": "Transparent payouts",
+          "desc": "Full history of all orders, commissions and payouts in one place"
+        },
+        "analytics": {
+          "title": "Real-time analytics",
+          "desc": "Live dashboards per designer - clicks, conversions and revenue"
+        },
+        "qr": {
+          "title": "QR affiliate links",
+          "desc": "Every link gets a downloadable QR code for offline promotion"
+        },
+        "auto": {
+          "title": "Auto commissions",
+          "desc": "Rates set per product, calculated automatically on every order"
+        }
+      }
+    },
+    "footer": {
+      "brand": "Flipster",
+      "email": "info@flipster.kz",
+      "rights": "All rights reserved."
+    },
+    "demo": {
+      "title": "Platform Demo",
+      "tabs": {
+        "forCompanies": "For Companies",
+        "forDesigners": "For Designers"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "payable": "To Pay",
+        "paid": "Paid"
+      },
+      "company": {
+        "stats": {
+          "activeDesigners": "Active designers",
+          "revenueThisMonth": "Revenue this month",
+          "pendingPayouts": "Pending payouts",
+          "platformCommission": "Platform commission"
+        },
+        "topDesigners": "Top Designers",
+        "recentOrders": "Recent Orders",
+        "table": {
+          "designer": "Designer",
+          "revenue": "Revenue",
+          "commission": "Commission"
+        }
+      },
+      "designer": {
+        "stats": {
+          "earnedThisMonth": "Earned this month",
+          "awaitingConfirmation": "Awaiting confirmation",
+          "readyToWithdraw": "Ready to withdraw"
+        },
+        "myAffiliateLinks": "My Affiliate Links",
+        "orderHistory": "Order History"
+      }
+    }
+  },
   "home": {
     "title": "Welcome to Follox",
     "subtitle": "Choose a module to work with",
@@ -146,7 +240,7 @@
   "header": {
     "affiliateSales": "Affiliate Sales",
     "gtmStrategy": "GTM Strategy",
-    "bloggers": "Bloggers",
+    "bloggers": "Designers",
     "linkTelegram": "Link Telegram",
     "products": "Products"
   },
@@ -354,17 +448,17 @@
     "signupError": "Failed to register. Check your data and try again."
   },
   "bloggers": {
-    "title": "Bloggers",
-    "addBlogger": "Add Blogger",
+    "title": "Designers",
+    "addBlogger": "Add Designer",
     "createAffiliateLink": "Create Affiliate Link",
-    "addNewBlogger": "Add New Blogger",
-    "selectBlogger": "Select Blogger",
+    "addNewBlogger": "Add New Designer",
+    "selectBlogger": "Select Designer",
     "selectProduct": "Select Product",
     "generate": "Generate",
     "linkCreated": "Affiliate link created!",
     "copyLink": "Copy Link",
     "linkCopied": "Link Copied",
-    "noBloggers": "You haven't added any bloggers yet.",
+    "noBloggers": "You haven't added any designers yet.",
     "table": {
       "name": "Name",
       "email": "Email",
@@ -372,7 +466,7 @@
       "created": "Created"
     },
     "loadError": "Failed to load data",
-    "createError": "Failed to create blogger",
+    "createError": "Failed to create designer",
     "linkError": "Failed to create affiliate link"
   },
   "productForm": {
@@ -494,7 +588,8 @@
     "dashboard": "Dashboard",
     "affiliateSales": "Affiliate Sales Module",
     "products": "Products",
-    "bloggers": "Bloggers",
+    "bloggers": "Designers",
+    "designers": "Designers",
     "tools": "Tools",
     "answers": "Answers",
     "qnaProgress": "Q&A filled",

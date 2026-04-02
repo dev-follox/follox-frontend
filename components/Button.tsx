@@ -8,6 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'success';
   isLoading?: boolean;
   size?: 'sm' | 'md';
+  icon?: React.ReactNode;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -16,16 +17,19 @@ const Button: React.FC<ButtonProps> = ({
   isLoading = false,
   className = '',
   size = 'md',
+  icon,
   ...props
 }) => {
   // FIX: Remove size-specific styles from baseStyles to be handled by the size prop.
-  const baseStyles = 'inline-flex items-center justify-center border border-transparent font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles =
+    'inline-flex items-center justify-center gap-2 border font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variantStyles = {
-    primary: 'text-danger bg-primary hover:bg-primary-600 focus:ring-primary',
-    secondary: 'text-danger bg-secondary hover:bg-secondary-600 focus:ring-secondary',
-    danger: 'text-white bg-danger hover:bg-danger-600 focus:ring-danger',
-    success: 'text-white bg-green-600 hover:bg-green-700 focus:ring-green-500',
+    // Landing/Home styles
+    primary: 'border-transparent bg-primary text-white hover:bg-primary/90',
+    secondary: 'border border-border font-semibold text-foreground hover:border-primary/50',
+    danger: 'border-transparent text-white bg-danger hover:bg-danger-600',
+    success: 'border-transparent text-white bg-green-600 hover:bg-green-700',
   };
 
   // FIX: Define styles for different button sizes.
@@ -40,7 +44,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={isLoading || props.disabled}
       {...props}
     >
-      {isLoading ? <Spinner size="small" /> : children}
+      {isLoading ? <Spinner size="small" /> : icon ? <>{icon}{children}</> : children}
     </button>
   );
 };

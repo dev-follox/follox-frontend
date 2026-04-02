@@ -27,6 +27,8 @@ import AdminCompaniesPage from './pages/AdminCompaniesPage';
 import AdminCompanyDetailsPage from './pages/AdminCompanyDetailsPage';
 import { useTranslation } from './hooks/useTranslation';
 import { UserProfilePage } from './pages/UserProfilePage';
+import CompanyTelegramPage from './pages/CompanyTelegramPage';
+import BloggerTelegramPage from './pages/BloggerTelegramPage';
 
 const ProtectedRoute: React.FC = () => {
   const { isLoggedIn, loading } = useAuth();
@@ -63,7 +65,9 @@ const AppContent: React.FC = () => {
             {/* Company - Affiliate Sales Module */}
             <Route path="/company/dashboard" element={<ShopDashboardPage />} />
             <Route path="/company/products/:productId" element={<ShopProductDetailsPage />} />
-            <Route path="/company/bloggers" element={<BloggersPage />} />
+            <Route path="/company/designers" element={<BloggersPage />} />
+            <Route path="/company/bloggers" element={<Navigate to="/company/designers" replace />} />
+            <Route path="/company/telegram" element={<CompanyTelegramPage />} />
             
             {/* Tools Module - Company only */}
             <Route path="/tools/qa" element={<CompanyQAPage />} />
@@ -75,6 +79,7 @@ const AppContent: React.FC = () => {
             {/* Blogger routes */}
             <Route path="/blogger/products" element={<BloggerProductsDetailedPage />} />
             <Route path="/blogger/products/:productId" element={<BloggerProductDetailsPage />} />
+            <Route path="/blogger/telegram" element={<BloggerTelegramPage />} />
             
             {/* Admin routes */}
             <Route path="/admin/companies" element={<AdminCompaniesPage />} />
