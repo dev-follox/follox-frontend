@@ -189,6 +189,37 @@
         "orderHistory": "Order History"
       }
     }
+    ,
+    "pricing": {
+      "title": "Pricing",
+      "company": {
+        "badge": "Popular",
+        "title": "For shops",
+        "price": "45 000 ₸",
+        "per": "/mo",
+        "note": "+ 2% commission from each sale",
+        "cta": "Get started",
+        "features": {
+          "fullAccess": "Full access to all features",
+          "unlimitedDesigners": "Unlimited designers",
+          "catalog": "Product catalog and 3D models",
+          "gamification": "Gamification and automatic calculation",
+          "analytics": "Analytics & reports"
+        }
+      },
+      "designer": {
+        "title": "For designers",
+        "price": "Free",
+        "note": "Forever",
+        "cta": "Sign up",
+        "features": {
+          "access": "Access to all shops on the platform",
+          "catalog": "Browse catalogs and 3D models",
+          "tracking": "Track bonuses and payouts",
+          "apply": "Submit sales applications"
+        }
+      }
+    }
   },
   "home": {
     "title": "Welcome to Follox",

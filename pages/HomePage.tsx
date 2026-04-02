@@ -159,6 +159,89 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      <section className="bg-card py-24">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="mb-16 text-3xl font-bold uppercase tracking-wide text-foreground md:text-4xl">
+            {t('landingV2.pricing.title')}
+          </h2>
+
+          <div className="mx-auto grid max-w-3xl gap-8 md:grid-cols-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="relative border-2 border-primary bg-background p-8"
+            >
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary px-3 py-1 text-xs font-semibold text-white">
+                {t('landingV2.pricing.company.badge')}
+              </span>
+              <Store className="mx-auto mb-4 h-7 w-7 text-primary" strokeWidth={1.5} />
+              <h3 className="mb-2 text-lg font-bold uppercase text-foreground">{t('landingV2.pricing.company.title')}</h3>
+
+              <div className="mb-1 font-mono text-4xl font-bold text-primary">
+                {t('landingV2.pricing.company.price')}
+                <span className="text-base font-normal text-secondary-alpha">{t('landingV2.pricing.company.per')}</span>
+              </div>
+              <p className="mb-6 text-sm text-secondary-alpha">{t('landingV2.pricing.company.note')}</p>
+
+              <ul className="mb-8 space-y-3 text-left text-sm">
+                {[
+                  'landingV2.pricing.company.features.fullAccess',
+                  'landingV2.pricing.company.features.unlimitedDesigners',
+                  'landingV2.pricing.company.features.catalog',
+                  'landingV2.pricing.company.features.gamification',
+                  'landingV2.pricing.company.features.analytics',
+                ].map((k) => (
+                  <li key={k} className="flex items-center gap-2 text-foreground">
+                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-primary" />
+                    {t(k)}
+                  </li>
+                ))}
+              </ul>
+
+              <Link to="/company/register">
+                <button className="w-full bg-primary px-6 py-2 font-semibold text-white transition-colors hover:bg-primary/90">
+                  {t('landingV2.pricing.company.cta')}
+                </button>
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="border border-border bg-background p-8"
+            >
+              <Users className="mx-auto mb-4 h-7 w-7 text-stone" strokeWidth={1.5} />
+              <h3 className="mb-2 text-lg font-bold uppercase text-foreground">{t('landingV2.pricing.designer.title')}</h3>
+              <div className="mb-1 font-mono text-4xl font-bold text-foreground">{t('landingV2.pricing.designer.price')}</div>
+              <p className="mb-6 text-sm text-secondary-alpha">{t('landingV2.pricing.designer.note')}</p>
+
+              <ul className="mb-8 space-y-3 text-left text-sm">
+                {[
+                  'landingV2.pricing.designer.features.access',
+                  'landingV2.pricing.designer.features.catalog',
+                  'landingV2.pricing.designer.features.tracking',
+                  'landingV2.pricing.designer.features.apply',
+                ].map((k) => (
+                  <li key={k} className="flex items-center gap-2 text-foreground">
+                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-stone" />
+                    {t(k)}
+                  </li>
+                ))}
+              </ul>
+
+              <Link to="/blogger/register">
+                <button className="w-full border border-foreground/20 bg-transparent px-6 py-2 font-semibold text-foreground transition-colors hover:bg-foreground/5">
+                  {t('landingV2.pricing.designer.cta')}
+                </button>
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       <footer className="border-t border-border bg-footer py-10">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 md:flex-row">
           <span className="font-semibold uppercase tracking-wider text-foreground">{t('landingV2.footer.brand')}</span>
