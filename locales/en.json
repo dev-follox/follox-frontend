@@ -24,7 +24,7 @@
     "required": "required",
     "error": "Error",
     "success": "Success",
-    "company": "Company",
+    "company": "Shop",
     "blogger": "Blogger"
   },
   "landing": {
@@ -247,7 +247,7 @@
     "fullName": "Full Name",
     "phoneNumber": "Phone Number",
     "linkedinLink": "LinkedIn Profile Link",
-    "companyName": "Company Name",
+    "companyName": "Shop Name",
     "stage": "Company Stage",
     "selectStage": "Select Stage",
     "stageOptions": {

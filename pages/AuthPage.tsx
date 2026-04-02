@@ -26,9 +26,7 @@ const AuthPage: React.FC = () => {
     email: '',
     password: '',
     phone_number: '',
-    professional_profile_link: '',
     company_name: '',
-    stage: '' as 'idea' | 'pre-revenue' | 'post-PMF' | 'scaling' | '',
     description: ''
   });
   
@@ -154,9 +152,7 @@ const AuthPage: React.FC = () => {
           email: companyFormData.email,
           password: companyFormData.password,
           phone_number: companyFormData.phone_number || null,
-          professional_profile_link: companyFormData.professional_profile_link || null,
           company_name: companyFormData.company_name,
-          stage: companyFormData.stage || null,
           description: companyFormData.description || null,
         });
       } else {
@@ -381,38 +377,6 @@ const AuthPage: React.FC = () => {
                       value={companyFormData.phone_number}
                       onChange={handleCompanyFormChange}
                     />
-                  </div>
-
-                  <div>
-                    <label htmlFor="company-profile-link" className={labelCls}>
-                      {t('auth.linkedinLink')} ({t('common.optional')})
-                    </label>
-                    <input
-                      id="company-profile-link"
-                      name="professional_profile_link"
-                      className={inputCls}
-                      value={companyFormData.professional_profile_link}
-                      onChange={handleCompanyFormChange}
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="company-stage" className={labelCls}>
-                      {t('auth.stage')} ({t('common.optional')})
-                    </label>
-                    <select
-                      id="company-stage"
-                      name="stage"
-                      value={companyFormData.stage}
-                      onChange={handleCompanyFormChange}
-                      className={inputCls}
-                    >
-                      <option value="">{t('auth.selectStage')}</option>
-                      <option value="idea">{t('auth.stageOptions.idea')}</option>
-                      <option value="pre-revenue">{t('auth.stageOptions.preRevenue')}</option>
-                      <option value="post-PMF">{t('auth.stageOptions.postPMF')}</option>
-                      <option value="scaling">{t('auth.stageOptions.scaling')}</option>
-                    </select>
                   </div>
 
                   <div>

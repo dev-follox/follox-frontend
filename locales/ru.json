@@ -24,7 +24,7 @@
     "required": "обязательно",
     "error": "Ошибка",
     "success": "Успешно",
-    "company": "Компания",
+    "company": "Магазин",
     "blogger": "Блогер"
   },
   "landing": {
@@ -247,7 +247,7 @@
     "fullName": "Полное имя",
     "phoneNumber": "Номер телефона",
     "linkedinLink": "Ссылка на LinkedIn",
-    "companyName": "Название компании",
+    "companyName": "Название магазина",
     "stage": "Стадия компании",
     "selectStage": "Выберите стадию",
     "stageOptions": {
