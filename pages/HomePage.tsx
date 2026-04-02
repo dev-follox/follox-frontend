@@ -67,7 +67,7 @@ const HomePage: React.FC = () => {
             animate="visible"
             className="mt-10 flex flex-wrap justify-center gap-4"
           >
-            <Link to="/company/register">
+            <Link to="/login">
               <button className="inline-flex items-center gap-2 bg-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-primary/90">
                 {t('landingV2.hero.ctaStart')} <ArrowRight className="h-4 w-4" />
               </button>
@@ -199,7 +199,7 @@ const HomePage: React.FC = () => {
                 ))}
               </ul>
 
-              <Link to="/company/register">
+              <Link to="/login">
                 <button className="w-full bg-primary px-6 py-2 font-semibold text-white transition-colors hover:bg-primary/90">
                   {t('landingV2.pricing.company.cta')}
                 </button>

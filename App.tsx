@@ -53,9 +53,6 @@ const AppContent: React.FC = () => {
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/products/:code" element={<PublicLayout><ProductLandingPage /></PublicLayout>} />
         
-        <Route path="/company/register" element={<ShopRegistrationPage />} />
-        <Route path="/blogger/register" element={<BloggerRegistrationPage />} />
-
         {/* Protected Routes with Sidebar Layout */}
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>

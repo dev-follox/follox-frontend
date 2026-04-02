@@ -1,15 +1,10 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useMemo, useState, FormEvent } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
-import { useNavigate } from 'react-router-dom';
-import Card from '../components/Card';
-import Input from '../components/Input';
-import Button from '../components/Button';
-import Toggle from '../components/Toggle';
-import LanguageSwitcher from '../components/LanguageSwitcher';
-import LandingHeader from '../components/LandingHeader';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { validatePassword, getPasswordErrorFrom422 } from '../utils/passwordValidation';
+import { ArrowLeft, Eye, EyeOff, Palette, Store } from 'lucide-react';
 
 type AuthMode = 'signup' | 'login';
 type UserType = 'company' | 'blogger';
@@ -17,6 +12,9 @@ type UserType = 'company' | 'blogger';
 const AuthPage: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
   const [userType, setUserType] = useState<UserType>('company');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -49,6 +47,11 @@ const AuthPage: React.FC = () => {
   const { login, isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const inputCls =
+    'mt-1 flex h-10 w-full border border-border bg-card px-3 py-2 text-base text-foreground placeholder:text-secondary-alpha disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary';
+  const labelCls = 'text-sm font-medium leading-none text-foreground/90';
+  const secondaryLinkCls = 'text-sm text-secondary-alpha hover:text-foreground transition-colors';
   
   if (isLoggedIn) {
     if (user?.role === 'COMPANY') {
@@ -130,7 +133,13 @@ const AuthPage: React.FC = () => {
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
     setSignupError('');
+
     const password = userType === 'company' ? companyFormData.password : bloggerFormData.password;
+    if (confirmPassword && password !== confirmPassword) {
+      setSignupError(t('profile.security.passwordMismatch'));
+      return;
+    }
+
     const passwordValidation = validatePassword(password, t);
     if (!passwordValidation.valid) {
       setSignupError(passwordValidation.message ?? t('auth.signupError'));
@@ -183,289 +192,409 @@ const AuthPage: React.FC = () => {
     }));
   };
 
-  const openAuthModal = () => {
-    // This is a placeholder since we're already on the auth page
-    // Could navigate to home and open modal there if needed
-  };
+  const currentPasswordValue = useMemo(
+    () => (mode === 'login' ? loginPassword : userType === 'company' ? companyFormData.password : bloggerFormData.password),
+    [mode, loginPassword, userType, companyFormData.password, bloggerFormData.password]
+  );
 
   return (
-    <div className="auth-landing">
-      <LandingHeader onTryForFree={openAuthModal} transparent={true} />
-    <div className={mode === 'signup' ? "auth-landing-container auth-landing-container--start" : "auth-landing-container"}>
-      <div className="max-w-2xl w-full">
-        
-        <Card className="p-8 w-full">
-            <div className="mb-8 text-left">
-              <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">{t('auth.welcome')}</h1>
-              <p className="text-center text-gray-600">{t('auth.chooseHowToContinue')}</p>
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        <Link to="/" className={`inline-flex items-center gap-2 mb-8 transition-colors ${secondaryLinkCls}`}>
+          <ArrowLeft className="h-4 w-4" />
+          {t('authV2.backHome')}
+        </Link>
+
+        <div className="bg-card border border-border p-8">
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <img src="/assets/logo.png" alt={t('landingV2.footer.brand')} className="h-9 w-9 object-contain" />
+            <span className="text-2xl font-bold text-foreground">{t('landingV2.footer.brand')}</span>
+          </div>
+
+          <div className="flex border-b border-border mb-6">
+            <button
+              type="button"
+              onClick={() => setMode('login')}
+              className={`flex-1 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                mode === 'login' ? 'border-primary text-foreground' : 'border-transparent text-secondary-alpha hover:text-foreground'
+              }`}
+            >
+              {t('authV2.tabs.login')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('signup')}
+              className={`flex-1 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+                mode === 'signup' ? 'border-primary text-foreground' : 'border-transparent text-secondary-alpha hover:text-foreground'
+              }`}
+            >
+              {t('authV2.tabs.signup')}
+            </button>
+          </div>
+
+          {mode === 'signup' && (
+            <div className="mb-6">
+              <label className={`${labelCls} mb-2 block`}>{t('authV2.rolePrompt')}</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setUserType('company')}
+                  className={`flex flex-col items-center gap-2 border-2 p-4 transition-all ${
+                    userType === 'company' ? 'border-primary bg-primary/5' : 'border-border hover:border-foreground/20'
+                  }`}
+                >
+                  <Store className={`h-6 w-6 ${userType === 'company' ? 'text-primary' : 'text-stone'}`} strokeWidth={1.5} />
+                  <span className="text-sm font-medium text-foreground">{t('authV2.roles.shop')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUserType('blogger')}
+                  className={`flex flex-col items-center gap-2 border-2 p-4 transition-all ${
+                    userType === 'blogger' ? 'border-primary bg-primary/5' : 'border-border hover:border-foreground/20'
+                  }`}
+                >
+                  <Palette className={`h-6 w-6 ${userType === 'blogger' ? 'text-primary' : 'text-stone'}`} strokeWidth={1.5} />
+                  <span className="text-sm font-medium text-foreground">{t('authV2.roles.designer')}</span>
+                </button>
+              </div>
             </div>
-          {mode === 'signup' ? (
-            <>
-              {/* <Toggle
-                options={[
-                  { value: 'company', label: t('common.company') },
-                  { value: 'blogger', label: t('common.blogger') }
-                ]}
-                selected={userType}
-                onChange={(value) => setUserType(value as UserType)}
-              /> */}
-              
-              <form className="mt-6 space-y-6" onSubmit={handleSignup}>
-                {signupError && <p className="text-center text-sm text-red-600">{signupError}</p>}
-                
-                {userType === 'company' ? (
-                  <>
-                    <Input
-                      id="company-full-name"
-                      name="full_name"
-                      label={t('auth.fullName')}
-                      type="text"
-                      required
-                      value={companyFormData.full_name}
-                      onChange={handleCompanyFormChange}
-                    />
-                    <Input
-                      id="company-email"
-                      name="email"
-                      label={t('auth.email')}
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={companyFormData.email}
-                      onChange={handleCompanyFormChange}
-                    />
-                    <Input
-                      id="company-phone"
-                      name="phone_number"
-                      label={`${t('auth.phoneNumber')} (${t('common.optional')})`}
-                      type="tel"
-                      value={companyFormData.phone_number}
-                      onChange={handleCompanyFormChange}
-                    />
-                    <Input
-                      id="company-profile-link"
-                      name="professional_profile_link"
-                      label={`${t('auth.linkedinLink')} (${t('common.optional')})`}
-                      type="url"
-                      value={companyFormData.professional_profile_link}
-                      onChange={handleCompanyFormChange}
-                    />
-                    <Input
-                      id="company-name"
-                      name="company_name"
-                      label={t('auth.companyName')}
-                      type="text"
-                      required
-                      value={companyFormData.company_name}
-                      onChange={handleCompanyFormChange}
-                    />
-                    <div>
-                      <label htmlFor="company-stage" className="block text-sm font-medium text-gray-700 mb-1">
-                        {t('auth.stage')} ({t('common.optional')})
-                      </label>
-                      <select
-                        id="company-stage"
-                        name="stage"
-                        value={companyFormData.stage}
-                        onChange={handleCompanyFormChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
-                      >
-                        <option value="">{t('auth.selectStage')}</option>
-                        <option value="idea">{t('auth.stageOptions.idea')}</option>
-                        <option value="pre-revenue">{t('auth.stageOptions.preRevenue')}</option>
-                        <option value="post-PMF">{t('auth.stageOptions.postPMF')}</option>
-                        <option value="scaling">{t('auth.stageOptions.scaling')}</option>
-                      </select>
-                    </div>
-                    <Input
-                      id="company-description"
-                      name="description"
-                      label={`${t('common.description')} (${t('common.optional')})`}
-                      multiline
-                      rows={3}
-                      value={companyFormData.description}
-                      onChange={handleCompanyFormChange}
-                    />
-                    <Input
-                      id="company-password"
-                      name="password"
-                      label={t('common.password')}
-                      type="password"
-                      autoComplete="new-password"
-                      required
-                      value={companyFormData.password}
-                      onChange={handleCompanyFormChange}
-                      onBlur={() => setCompanyPasswordTouched(true)}
-                      error={
-                        companyPasswordTouched
-                          ? (() => {
-                              const v = validatePassword(companyFormData.password, t);
-                              return v.valid ? undefined : v.message;
-                            })()
-                          : undefined
-                      }
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Input
-                      id="blogger-name"
-                      name="name"
-                      label={t('common.name')}
-                      type="text"
-                      required
-                      value={bloggerFormData.name}
-                      onChange={handleBloggerFormChange}
-                    />
-                    <Input
-                      id="blogger-email"
-                      name="email"
-                      label={t('auth.email')}
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={bloggerFormData.email}
-                      onChange={handleBloggerFormChange}
-                    />
-                    <Input
-                      id="blogger-password"
-                      name="password"
-                      label={t('common.password')}
-                      type="password"
-                      autoComplete="new-password"
-                      required
-                      value={bloggerFormData.password}
-                      onChange={handleBloggerFormChange}
-                      onBlur={() => setBloggerPasswordTouched(true)}
-                      error={
-                        bloggerPasswordTouched
-                          ? (() => {
-                              const v = validatePassword(bloggerFormData.password, t);
-                              return v.valid ? undefined : v.message;
-                            })()
-                          : undefined
-                      }
-                    />
-                    <Input
-                      id="blogger-bio"
-                      name="bio"
-                      label={`${t('auth.bio')} (${t('common.optional')})`}
-                      multiline
-                      rows={3}
-                      value={bloggerFormData.bio}
-                      onChange={handleBloggerFormChange}
-                    />
-                  </>
-                )}
-                
-                <Button type="submit" isLoading={isSignupLoading} className="w-full">
-                  {t('auth.createAccount')}
-                </Button>
-              </form>
-              
-              <div className="mt-6">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">или</span>
-                  </div>
-                </div>
-                
-                <button
-                  type="button"
-                  onClick={() => handleGoogleSignIn(userType)}
-                  className="mt-4 w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                  </svg>
-                  {t('auth.loginWithGoogle')}
-                </button>
-              </div>
-              
-              <div className="text-center mt-6">
-                <button
-                  type="button"
-                  onClick={() => setMode('login')}
-                  className="font-medium text-primary-text hover:text-primary-text-600"
-                >
-                  {t('auth.alreadyHaveAccount')}
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <form className="space-y-6" onSubmit={handleLogin}>
-                {loginError && <p className="text-center text-sm text-red-600">{loginError}</p>}
-                
-                <Input
-                  id="login-email"
-                  label={t('auth.email')}
+          )}
+
+          {mode === 'login' ? (
+            <form className="space-y-4" onSubmit={handleLogin}>
+              {loginError && <p className="text-center text-sm text-red-600">{loginError}</p>}
+
+              <div>
+                <label htmlFor="email" className={labelCls}>
+                  {t('auth.email')}
+                </label>
+                <input
+                  id="email"
                   type="email"
-                  autoComplete="email"
+                  className={inputCls}
+                  placeholder="you@example.com"
                   required
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                 />
-                <Input
-                  id="login-password"
-                  label={t('common.password')}
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                />
-                
-                <Button type="submit" isLoading={isLoginLoading} className="w-full">
-                  {t('common.login')}
-                </Button>
-              </form>
-              
-              <div className="mt-6">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-gray-500">или</span>
-                  </div>
+              </div>
+
+              <div>
+                <label htmlFor="password" className={labelCls}>
+                  {t('common.password')}
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    className={`${inputCls} pr-10`}
+                    placeholder={t('authV2.placeholders.password')}
+                    required
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone hover:text-foreground"
+                    aria-label={t('authV2.togglePassword')}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
-                
-                <button
-                  type="button"
-                  onClick={() => handleGoogleSignIn(userType)}
-                  className="mt-4 w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                  </svg>
-                  {t('auth.loginWithGoogle')}
-                </button>
               </div>
-              
-              <div className="text-center mt-6">
-                <button
-                  type="button"
-                  onClick={() => setMode('signup')}
-                  className="font-medium text-primary-text hover:text-primary-text-600"
-                >
-                  {t('auth.noAccount')}
+
+              {/* <div className="text-right">
+                <button type="button" className="text-sm text-primary hover:underline">
+                  {t('authV2.forgotPassword')}
                 </button>
+              </div> */}
+
+              <button
+                className="h-11 w-full bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
+                type="submit"
+                disabled={isLoginLoading}
+              >
+                {isLoginLoading ? t('common.loading') : t('common.login')}
+              </button>
+            </form>
+          ) : (
+            <form className="space-y-4" onSubmit={handleSignup}>
+              {signupError && <p className="text-center text-sm text-red-600">{signupError}</p>}
+
+              {userType === 'company' ? (
+                <>
+                  <div>
+                    <label htmlFor="company-full-name" className={labelCls}>
+                      {t('auth.fullName')}
+                    </label>
+                    <input
+                      id="company-full-name"
+                      name="full_name"
+                      className={inputCls}
+                      placeholder={t('authV2.placeholders.fullName')}
+                      required
+                      value={companyFormData.full_name}
+                      onChange={handleCompanyFormChange}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="company-email" className={labelCls}>
+                      {t('auth.email')}
+                    </label>
+                    <input
+                      id="company-email"
+                      name="email"
+                      type="email"
+                      className={inputCls}
+                      placeholder="you@example.com"
+                      required
+                      value={companyFormData.email}
+                      onChange={handleCompanyFormChange}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="company-name" className={labelCls}>
+                      {t('auth.companyName')}
+                    </label>
+                    <input
+                      id="company-name"
+                      name="company_name"
+                      className={inputCls}
+                      placeholder={t('authV2.placeholders.companyName')}
+                      required
+                      value={companyFormData.company_name}
+                      onChange={handleCompanyFormChange}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="company-phone" className={labelCls}>
+                      {t('auth.phoneNumber')} ({t('common.optional')})
+                    </label>
+                    <input
+                      id="company-phone"
+                      name="phone_number"
+                      className={inputCls}
+                      value={companyFormData.phone_number}
+                      onChange={handleCompanyFormChange}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="company-profile-link" className={labelCls}>
+                      {t('auth.linkedinLink')} ({t('common.optional')})
+                    </label>
+                    <input
+                      id="company-profile-link"
+                      name="professional_profile_link"
+                      className={inputCls}
+                      value={companyFormData.professional_profile_link}
+                      onChange={handleCompanyFormChange}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="company-stage" className={labelCls}>
+                      {t('auth.stage')} ({t('common.optional')})
+                    </label>
+                    <select
+                      id="company-stage"
+                      name="stage"
+                      value={companyFormData.stage}
+                      onChange={handleCompanyFormChange}
+                      className={inputCls}
+                    >
+                      <option value="">{t('auth.selectStage')}</option>
+                      <option value="idea">{t('auth.stageOptions.idea')}</option>
+                      <option value="pre-revenue">{t('auth.stageOptions.preRevenue')}</option>
+                      <option value="post-PMF">{t('auth.stageOptions.postPMF')}</option>
+                      <option value="scaling">{t('auth.stageOptions.scaling')}</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="company-description" className={labelCls}>
+                      {t('common.description')} ({t('common.optional')})
+                    </label>
+                    <textarea
+                      id="company-description"
+                      name="description"
+                      rows={3}
+                      className={`${inputCls} h-auto`}
+                      value={companyFormData.description}
+                      onChange={handleCompanyFormChange}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="company-password" className={labelCls}>
+                      {t('common.password')}
+                    </label>
+                    <div className="relative mt-1">
+                      <input
+                        id="company-password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        className={`${inputCls} pr-10`}
+                        placeholder={t('authV2.placeholders.passwordMin')}
+                        required
+                        value={companyFormData.password}
+                        onChange={handleCompanyFormChange}
+                        onBlur={() => setCompanyPasswordTouched(true)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-stone hover:text-foreground"
+                        aria-label={t('authV2.togglePassword')}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {companyPasswordTouched && (() => {
+                      const v = validatePassword(companyFormData.password, t);
+                      return v.valid ? null : <p className="mt-1 text-sm text-red-600">{v.message}</p>;
+                    })()}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label htmlFor="designer-name" className={labelCls}>
+                      {t('common.name')}
+                    </label>
+                    <input
+                      id="designer-name"
+                      name="name"
+                      className={inputCls}
+                      placeholder={t('authV2.placeholders.name')}
+                      required
+                      value={bloggerFormData.name}
+                      onChange={handleBloggerFormChange}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="designer-email" className={labelCls}>
+                      {t('auth.email')}
+                    </label>
+                    <input
+                      id="designer-email"
+                      name="email"
+                      type="email"
+                      className={inputCls}
+                      placeholder="you@example.com"
+                      required
+                      value={bloggerFormData.email}
+                      onChange={handleBloggerFormChange}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="designer-password" className={labelCls}>
+                      {t('common.password')}
+                    </label>
+                    <div className="relative mt-1">
+                      <input
+                        id="designer-password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'}
+                        className={`${inputCls} pr-10`}
+                        placeholder={t('authV2.placeholders.passwordMin')}
+                        required
+                        value={bloggerFormData.password}
+                        onChange={handleBloggerFormChange}
+                        onBlur={() => setBloggerPasswordTouched(true)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-stone hover:text-foreground"
+                        aria-label={t('authV2.togglePassword')}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {bloggerPasswordTouched && (() => {
+                      const v = validatePassword(bloggerFormData.password, t);
+                      return v.valid ? null : <p className="mt-1 text-sm text-red-600">{v.message}</p>;
+                    })()}
+                  </div>
+
+                  <div>
+                    <label htmlFor="designer-bio" className={labelCls}>
+                      {t('auth.bio')} ({t('common.optional')})
+                    </label>
+                    <textarea
+                      id="designer-bio"
+                      name="bio"
+                      rows={3}
+                      className={`${inputCls} h-auto`}
+                      value={bloggerFormData.bio}
+                      onChange={handleBloggerFormChange}
+                    />
+                  </div>
+                </>
+              )}
+
+              <div>
+                <label htmlFor="confirm-password" className={labelCls}>
+                  {t('authV2.confirmPassword')}
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    id="confirm-password"
+                    type={showPassword2 ? 'text' : 'password'}
+                    className={`${inputCls} pr-10`}
+                    placeholder={t('authV2.placeholders.confirmPassword')}
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword2((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone hover:text-foreground"
+                    aria-label={t('authV2.togglePassword')}
+                  >
+                    {showPassword2 ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
-            </>
+
+              <button
+                className="h-11 w-full bg-primary px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
+                type="submit"
+                disabled={isSignupLoading || (currentPasswordValue.length > 0 && confirmPassword.length > 0 && currentPasswordValue !== confirmPassword)}
+              >
+                {isSignupLoading ? t('common.loading') : t('auth.createAccount')}
+              </button>
+            </form>
           )}
-        </Card>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-card px-2 text-secondary-alpha">{t('authV2.or')}</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => handleGoogleSignIn(userType)}
+              className="mt-4 w-full rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-foreground/5"
+            >
+              {t('auth.loginWithGoogle')}
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

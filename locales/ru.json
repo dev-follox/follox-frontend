@@ -268,6 +268,30 @@
     "passwordReqSpecial": "хотя бы один спецсимвол",
     "googleAuthError": "Не удалось инициировать вход через Google. Попробуйте снова."
   },
+  "authV2": {
+    "backHome": "На главную",
+    "tabs": {
+      "login": "Вход",
+      "signup": "Регистрация"
+    },
+    "rolePrompt": "Я регистрируюсь как",
+    "roles": {
+      "shop": "Магазин",
+      "designer": "Дизайнер"
+    },
+    "forgotPassword": "Забыли пароль?",
+    "togglePassword": "Показать/скрыть пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "or": "или",
+    "placeholders": {
+      "password": "Ваш пароль",
+      "passwordMin": "Минимум 8 символов",
+      "confirmPassword": "Повторите пароль",
+      "fullName": "Ваше имя",
+      "companyName": "Название компании",
+      "name": "Ваше имя"
+    }
+  },
   "header": {
     "affiliateSales": "Affiliate Sales",
     "gtmStrategy": "GTM Strategy",
