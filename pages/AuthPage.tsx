@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { validatePassword, getPasswordErrorFrom422 } from '../utils/passwordValidation';
 import { ArrowLeft, Eye, EyeOff, Palette, Store } from 'lucide-react';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 type AuthMode = 'signup' | 'login';
 type UserType = 'company' | 'blogger';
@@ -196,10 +197,13 @@ const AuthPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <Link to="/" className={`inline-flex items-center gap-2 mb-8 transition-colors ${secondaryLinkCls}`}>
-          <ArrowLeft className="h-4 w-4" />
-          {t('authV2.backHome')}
-        </Link>
+        <div className="mb-8 flex items-center justify-between">
+          <Link to="/" className={`inline-flex items-center gap-2 transition-colors ${secondaryLinkCls}`}>
+            <ArrowLeft className="h-4 w-4" />
+            {t('authV2.backHome')}
+          </Link>
+          <LanguageSwitcher />
+        </div>
 
         <div className="bg-card border border-border p-8">
           <div className="flex items-center justify-center gap-2 mb-8">
