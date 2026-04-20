@@ -7,7 +7,6 @@ import Spinner from '../components/Spinner';
 import StatCard from '../components/dashboard/StatCard';
 import DashboardOrderStatusBadge from '../components/dashboard/DashboardOrderStatusBadge';
 import { useTranslation } from '../hooks/useTranslation';
-import { normalizeOrderStatus } from '../utils/orderStatus';
 
 const DesignerProductsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -49,13 +48,6 @@ const DesignerProductsPage: React.FC = () => {
     };
     void fetchData();
   }, [t]);
-
-  const orderStatusLabel = (status: string) => {
-    const n = normalizeOrderStatus(status);
-    if (n === 'processed') return t('productDetails.orders.statusProcessed');
-    if (n === 'cancelled') return t('productDetails.orders.statusCancelled');
-    return t('productDetails.orders.statusWaiting');
-  };
 
   if (loading) {
     return (
@@ -165,7 +157,7 @@ const DesignerProductsPage: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="font-mono text-sm font-semibold text-foreground">{money(o.price_per_item * o.quantity)}</span>
-                  <DashboardOrderStatusBadge status={o.status} label={orderStatusLabel(o.status)} />
+                  <DashboardOrderStatusBadge status={o.status} />
                 </div>
               </div>
             ))}

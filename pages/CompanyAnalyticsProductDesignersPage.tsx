@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
-import type { CompanyProductDesignerBreakdownRow, CompanyAnalyticsSort } from '../types';
+import type { CompanyProductDesignerBreakdownRow, CompanyAnalyticsSort, Product } from '../types';
 import Spinner from '../components/Spinner';
 import { useTranslation } from '../hooks/useTranslation';
 import { companyAnalyticsQueryString, readAnalyticsQuery } from '../utils/companyAnalyticsQuery';
@@ -25,6 +25,7 @@ const CompanyAnalyticsProductDesignersPage: React.FC = () => {
   const q = readAnalyticsQuery(searchParams.toString());
 
   const [rows, setRows] = useState<CompanyProductDesignerBreakdownRow[]>([]);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,12 +41,16 @@ const CompanyAnalyticsProductDesignersPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await api.getCompanyProductDesignerBreakdown(productId, {
-        sort: q.sort,
-        from: q.from ?? null,
-        to: q.to ?? null,
-      });
+      const [data, prod] = await Promise.all([
+        api.getCompanyProductDesignerBreakdown(productId, {
+          sort: q.sort,
+          from: q.from ?? null,
+          to: q.to ?? null,
+        }),
+        api.getProduct(productId).catch(() => null),
+      ]);
       setRows(data);
+      if (prod) setProduct(prod);
     } catch {
       setError(t('companyAnalytics.loadError'));
     } finally {
@@ -69,10 +74,9 @@ const CompanyAnalyticsProductDesignersPage: React.FC = () => {
         {t('companyAnalytics.backProducts')}
       </Link>
 
-      <h1 className="text-2xl font-bold text-foreground">{t('companyAnalytics.productDesignersTitle')}</h1>
-      <p className="text-sm text-secondary-alpha">
-        {t('companyAnalytics.filteredHint')} {q.from || '—'} → {q.to || '—'} · {q.sort}
-      </p>
+      <h1 className="text-2xl font-bold text-foreground">
+        {product?.name ?? t('companyAnalytics.productDesignersTitle')}
+      </h1>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

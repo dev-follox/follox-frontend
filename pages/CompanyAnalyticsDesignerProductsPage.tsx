@@ -25,6 +25,7 @@ const CompanyAnalyticsDesignerProductsPage: React.FC = () => {
   const q = readAnalyticsQuery(searchParams.toString());
 
   const [rows, setRows] = useState<CompanyDesignerProductBreakdownRow[]>([]);
+  const [designerName, setDesignerName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,12 +41,17 @@ const CompanyAnalyticsDesignerProductsPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await api.getCompanyDesignerProductBreakdown(designerId, {
-        sort: q.sort,
-        from: q.from ?? null,
-        to: q.to ?? null,
-      });
+      const [data, designers] = await Promise.all([
+        api.getCompanyDesignerProductBreakdown(designerId, {
+          sort: q.sort,
+          from: q.from ?? null,
+          to: q.to ?? null,
+        }),
+        api.getCompanyDesigners().catch(() => []),
+      ]);
       setRows(data);
+      const match = designers.find((d) => d.designer_id === designerId);
+      if (match) setDesignerName(match.designer.name);
     } catch {
       setError(t('companyAnalytics.loadError'));
     } finally {
@@ -69,10 +75,9 @@ const CompanyAnalyticsDesignerProductsPage: React.FC = () => {
         {t('companyAnalytics.backDesigners')}
       </Link>
 
-      <h1 className="text-2xl font-bold text-foreground">{t('companyAnalytics.designerProductsTitle')}</h1>
-      <p className="text-sm text-secondary-alpha">
-        {t('companyAnalytics.filteredHint')} {q.from || '—'} → {q.to || '—'} · {q.sort}
-      </p>
+      <h1 className="text-2xl font-bold text-foreground">
+        {designerName ?? t('companyAnalytics.designerProductsTitle')}
+      </h1>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

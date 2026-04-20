@@ -13,7 +13,7 @@ interface LandingHeaderProps {
 const LandingHeader: React.FC<LandingHeaderProps> = ({ transparent = false, onTryDemo }) => {
   const { t } = useTranslation();
   const location = useLocation();
-  const isHomePage = location.pathname === '/' || location.pathname === '/home';
+  const isHomePage = location.pathname === '/';
 
   return (
     <header className={`landing-header ${transparent ? 'landing-header--transparent' : ''}`}>

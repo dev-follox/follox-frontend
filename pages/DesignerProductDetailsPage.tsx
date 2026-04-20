@@ -44,7 +44,6 @@ const DesignerProductDetailsPage: React.FC = () => {
         description: productBase.description,
         price: productBase.price,
         image_url: productBase.image_url,
-        designer_task_description: productBase.designer_task_description,
         affiliate_code: link?.code ?? '',
       });
     } catch {
@@ -101,12 +100,6 @@ const DesignerProductDetailsPage: React.FC = () => {
             <div className="mb-6">
               <h2 className="mb-2 text-xl font-semibold text-foreground">{t('designerProductDetails.description')}</h2>
               <p className="leading-relaxed text-secondary-alpha">{product.description}</p>
-            </div>
-          )}
-          {product.designer_task_description && (
-            <div className="mb-6 rounded-lg border border-primary/30 bg-primary/5 p-4">
-              <h2 className="mb-2 text-xl font-semibold text-foreground">{t('designerProductDetails.taskFromShop')}</h2>
-              <p className="leading-relaxed text-secondary-alpha">{product.designer_task_description}</p>
             </div>
           )}
         </div>

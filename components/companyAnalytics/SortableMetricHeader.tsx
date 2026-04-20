@@ -1,5 +1,5 @@
 import React from 'react';
-import { Anchor } from 'lucide-react';
+import { Anchor, ArrowDown } from 'lucide-react';
 import type { CompanyAnalyticsSort } from '../../types';
 import { dataTh } from '../dataTableStyles';
 
@@ -22,7 +22,7 @@ export const SortableMetricHeader: React.FC<Props> = ({ label, column, currentSo
         }`}
       >
         <span>{label}</span>
-        <Anchor className={`h-3.5 w-3.5 shrink-0 ${active ? 'text-primary' : 'opacity-60'}`} strokeWidth={2} aria-hidden />
+        <ArrowDown className={`h-3.5 w-3.5 shrink-0 ${active ? 'text-primary' : 'opacity-60'}`} strokeWidth={2} aria-hidden />
       </button>
     </th>
   );

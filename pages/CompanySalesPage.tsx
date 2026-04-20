@@ -8,6 +8,8 @@ import { Check, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { isCompanySubscriptionActive } from '../utils/companySubscription';
 import { normalizeOrderStatus } from '../utils/orderStatus';
+import DashboardOrderStatusBadge from '../components/dashboard/DashboardOrderStatusBadge';
+import { formatDateTime } from '../utils/formatDateTime';
 import {
   dataTableWrap,
   dataTable,
@@ -59,16 +61,8 @@ const CompanySalesPage: React.FC = () => {
     void load();
   }, [t]);
 
-  const getVisualStatus = (row: CompanyOrderRow) => {
-    const raw = localStatus[row.id] ?? normalizeOrderStatus(row.status);
-    if (raw === 'cancelled') {
-      return { key: 'rejected', label: t('productDetails.orders.statusCancelled'), badge: 'bg-destructive text-destructive-foreground border-transparent', action: 'none' as const };
-    }
-    if (raw === 'processed') {
-      return { key: 'payable', label: t('productDetails.orders.statusProcessed'), badge: 'bg-primary text-primary-foreground border-transparent', action: 'payable' as const };
-    }
-    return { key: 'pending', label: t('productDetails.orders.statusWaiting'), badge: 'text-foreground', action: 'pending' as const };
-  };
+  /** Optimistic status after confirm/reject until the list is reloaded. */
+  const displayStatus = (row: CompanyOrderRow) => localStatus[row.id] ?? row.status;
 
   const handleConfirm = async (row: CompanyOrderRow) => {
     try {
@@ -88,9 +82,8 @@ const CompanySalesPage: React.FC = () => {
     }
   };
 
-  const handleMarkPaid = (row: CompanyOrderRow) => {
-    setLocalStatus((prev) => ({ ...prev, [row.id]: 'paid-local' }));
-  };
+  const showConfirmReject = (row: CompanyOrderRow) =>
+    normalizeOrderStatus(displayStatus(row)) === 'waiting_to_process' && canWrite;
 
   if (loading) {
     return (
@@ -136,9 +129,7 @@ const CompanySalesPage: React.FC = () => {
             ) : (
               orders.map((row) => (
                 <tr key={row.id} className={dataTbodyRow}>
-                  <td className={`${dataTd} whitespace-nowrap`}>
-                    {new Date(row.created_at).toLocaleDateString('sv-SE')}
-                  </td>
+                  <td className={`${dataTd} whitespace-nowrap`}>{formatDateTime(row.created_at)}</td>
                   <td className={dataTd}>{row.designer?.name ?? `ID ${row.designer_id}`}</td>
                   <td className={dataTd}>{row.product?.name ?? `#${row.product_id}`}</td>
                   <td className={`${dataTdMono} whitespace-nowrap`}>
@@ -151,41 +142,20 @@ const CompanySalesPage: React.FC = () => {
                     {new Intl.NumberFormat().format(row.platform_fee_amount)} ₸
                   </td>
                   <td className={dataTd}>
-                        {(() => {
-                          const st = getVisualStatus(row);
-                          if ((localStatus[row.id] ?? '') === 'paid-local') {
-                            return (
-                              <div className="inline-flex items-center border border-transparent bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground">
-                                Paid
-                              </div>
-                            );
-                          }
-                          return (
-                            <div className={`inline-flex items-center border px-2.5 py-0.5 text-xs font-semibold ${st.badge}`}>
-                              {st.label}
-                            </div>
-                          );
-                        })()}
-                      </td>
+                    <DashboardOrderStatusBadge status={displayStatus(row)} />
+                  </td>
                   <td className={dataTd}>
                     <div className="flex gap-1">
-                          {getVisualStatus(row).action === 'pending' && canWrite && (
-                            <>
-                              <Button size="sm" variant="secondary" title="Confirm" onClick={() => void handleConfirm(row)}>
-                                <Check className="h-4 w-4 text-green-600" />
-                              </Button>
-                              <Button size="sm" variant="secondary" title="Reject" onClick={() => void handleReject(row)}>
-                                <X className="h-4 w-4 text-danger" />
-                              </Button>
-                            </>
-                          )}
-                          {getVisualStatus(row).action === 'payable' &&
-                            (localStatus[row.id] ?? '') !== 'paid-local' &&
-                            canWrite && (
-                              <Button size="sm" variant="secondary" title="Mark paid" onClick={() => handleMarkPaid(row)}>
-                                <span className="text-xs">Paid</span>
-                              </Button>
-                            )}
+                      {showConfirmReject(row) && (
+                        <>
+                          <Button size="sm" variant="secondary" title="Confirm" onClick={() => void handleConfirm(row)}>
+                            <Check className="h-4 w-4 text-green-600" />
+                          </Button>
+                          <Button size="sm" variant="secondary" title="Reject" onClick={() => void handleReject(row)}>
+                            <X className="h-4 w-4 text-danger" />
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

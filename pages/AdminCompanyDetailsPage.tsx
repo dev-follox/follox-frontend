@@ -8,10 +8,11 @@ import Card from '../components/Card';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Spinner from '../components/Spinner';
+import { formatDateTime } from '../utils/formatDateTime';
 
 const AdminCompanyDetailsPage: React.FC = () => {
   const { companyId } = useParams<{ companyId: string }>();
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -117,16 +118,6 @@ const AdminCompanyDetailsPage: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleString(language, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
   if (loading) {
     return (
       <div className="admin-company-details-page">
@@ -212,12 +203,12 @@ const AdminCompanyDetailsPage: React.FC = () => {
               <div className="mb-4">
                 <p className="text-sm text-gray-500 mb-2">
                   <strong>{t('admin.companyDetails.answers.createdAt')}:</strong>{' '}
-                  {formatDate(answers.created_at)}
+                  {formatDateTime(answers.created_at)}
                 </p>
                 {answers.updated_at && (
                   <p className="text-sm text-gray-500">
                     <strong>{t('admin.companyDetails.answers.updatedAt')}:</strong>{' '}
-                    {formatDate(answers.updated_at)}
+                    {formatDateTime(answers.updated_at)}
                   </p>
                 )}
               </div>

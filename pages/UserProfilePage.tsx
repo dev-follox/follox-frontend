@@ -4,7 +4,6 @@ import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
 import { useToast } from '../contexts/ToastContext';
 import api from '../services/api';
-import QnaProgressWidget from '../components/QnaProgressWidget';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import DeleteAccountConfirmDialog from '../components/DeleteAccountConfirmDialog';
@@ -13,14 +12,6 @@ import { validatePassword, getPasswordErrorFrom422 } from '../utils/passwordVali
 import type { Company, CompanyUpdate, CompanyStage } from '../types';
 
 type TabId = 'general' | 'security';
-
-const STAGE_OPTIONS: { value: CompanyStage | ''; labelKey: string }[] = [
-  { value: '', labelKey: 'auth.selectStage' },
-  { value: 'idea', labelKey: 'auth.stageOptions.idea' },
-  { value: 'pre-revenue', labelKey: 'auth.stageOptions.preRevenue' },
-  { value: 'post-PMF', labelKey: 'auth.stageOptions.postPMF' },
-  { value: 'scaling', labelKey: 'auth.stageOptions.scaling' },
-];
 
 const UserProfilePage: React.FC = () => {
   const { user, logout, setCompanyData } = useAuth();
@@ -192,11 +183,6 @@ const UserProfilePage: React.FC = () => {
       <div className="profile-page__header mb-6 border-b border-border pb-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-foreground">{t('profile.title')}</h1>
-          {isCompany && (
-            <div className="w-full sm:w-auto sm:min-w-[200px]">
-              <QnaProgressWidget />
-            </div>
-          )}
         </div>
       </div>
 
@@ -284,34 +270,11 @@ const UserProfilePage: React.FC = () => {
                   onChange={(e) => handleEditChange('phone_number', e.target.value)}
                 />
                 <Input
-                  id="profile-professional_profile_link"
-                  label={t('auth.linkedinLink')}
-                  value={editForm.professional_profile_link ?? ''}
-                  onChange={(e) => handleEditChange('professional_profile_link', e.target.value)}
-                />
-                <Input
                   id="profile-company_name"
                   label={t('auth.companyName')}
                   value={editForm.company_name ?? ''}
                   onChange={(e) => handleEditChange('company_name', e.target.value)}
                 />
-                <div>
-                  <label htmlFor="profile-stage" className="mb-1 block text-sm font-medium text-foreground">
-                    {t('auth.stage')}
-                  </label>
-                  <select
-                    id="profile-stage"
-                    value={editForm.stage ?? ''}
-                    onChange={(e) => handleEditChange('stage', e.target.value || null)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                  >
-                    {STAGE_OPTIONS.map((opt) => (
-                      <option key={opt.value || 'empty'} value={opt.value}>
-                        {t(opt.labelKey)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
                 <Input
                   id="profile-description"
                   label={t('common.description')}
@@ -336,20 +299,8 @@ const UserProfilePage: React.FC = () => {
                   <p className="break-words text-right text-sm text-foreground">{profile.phone_number || '—'}</p>
                 </div>
                 <div className="flex items-center justify-between gap-4 py-3">
-                  <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('auth.linkedinLink')}</span>
-                  <p className="break-words text-right text-sm text-foreground">{profile.professional_profile_link || '—'}</p>
-                </div>
-                <div className="flex items-center justify-between gap-4 py-3">
                   <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('auth.companyName')}</span>
                   <p className="break-words text-right text-sm text-foreground">{profile.company_name || '—'}</p>
-                </div>
-                <div className="flex items-center justify-between gap-4 py-3">
-                  <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('auth.stage')}</span>
-                  <p className="text-right text-sm text-foreground">
-                    {profile.stage
-                      ? t(profile.stage === 'pre-revenue' ? 'auth.stageOptions.preRevenue' : profile.stage === 'post-PMF' ? 'auth.stageOptions.postPMF' : `auth.stageOptions.${profile.stage}`)
-                      : '—'}
-                  </p>
                 </div>
                 <div className="flex items-start justify-between gap-4 py-3 last:pb-0">
                   <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('common.description')}</span>

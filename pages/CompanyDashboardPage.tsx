@@ -21,7 +21,6 @@ import type {
 } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
 import { companyAnalyticsQueryString } from '../utils/companyAnalyticsQuery';
-import { normalizeOrderStatus } from '../utils/orderStatus';
 import { SortableMetricHeader } from '../components/companyAnalytics/SortableMetricHeader';
 import {
   analyticsTable,
@@ -97,13 +96,6 @@ const CompanyDashboardPage: React.FC = () => {
   const productDetailHref = (productId: number) =>
     `/company/analytics/products/${productId}${companyAnalyticsQueryString({ sort: productSort })}`;
 
-  const orderStatusLabel = (status: string) => {
-    const n = normalizeOrderStatus(status);
-    if (n === 'processed') return t('productDetails.orders.statusProcessed');
-    if (n === 'cancelled') return t('productDetails.orders.statusCancelled');
-    return t('productDetails.orders.statusWaiting');
-  };
-
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -141,10 +133,9 @@ const CompanyDashboardPage: React.FC = () => {
               <TrendingUp className="h-4 w-4 text-primary" strokeWidth={1.5} />
               {t('landingV2.demo.company.topDesigners')}
             </h2>
-            <p className="mt-1 text-xs text-secondary-alpha">{t('dashboardV2.designersPreviewHint')}</p>
           </div>
           <Link to="/company/analytics/designers" className="text-sm font-medium text-primary hover:underline">
-            {t('dashboardV2.viewAllAnalytics')}
+            {t('dashboardV2.more')}
           </Link>
         </div>
         {designersPreview.length === 0 ? (
@@ -205,12 +196,9 @@ const CompanyDashboardPage: React.FC = () => {
               <Package className="h-4 w-4 text-primary" strokeWidth={1.5} />
               {t('dashboardV2.salesByProducts')}
             </h2>
-            <p className="mt-1 text-xs text-secondary-alpha">
-              {t('dashboardV2.activeDesigners')}: {activeDesigners}
-            </p>
           </div>
           <Link to="/company/analytics/products" className="text-sm font-medium text-primary hover:underline">
-            {t('dashboardV2.viewAllAnalytics')}
+            {t('dashboardV2.more')}
           </Link>
         </div>
         {productsPreview.length === 0 ? (
@@ -269,7 +257,7 @@ const CompanyDashboardPage: React.FC = () => {
             {t('dashboardV2.recentOrders')}
           </h2>
           <Link to="/company/sales" className="text-sm font-medium text-primary hover:underline">
-            {t('sidebar.sales')}
+            {t('dashboardV2.more')}
           </Link>
         </div>
         {recentOrders.length === 0 ? (
@@ -287,7 +275,7 @@ const CompanyDashboardPage: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="font-mono text-sm font-semibold text-foreground">{money(o.line_revenue)}</span>
-                  <DashboardOrderStatusBadge status={o.status} label={orderStatusLabel(o.status)} />
+                  <DashboardOrderStatusBadge status={o.status} />
                 </div>
               </div>
             ))}

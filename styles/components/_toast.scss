@@ -1,4 +1,4 @@
-// Toast Component Styles
+// Toast — layout only; colors come from Toast.tsx (dark theme)
 .toast-container {
   position: fixed;
   top: 1rem;
@@ -17,12 +17,10 @@
   align-items: flex-start;
   justify-content: space-between;
   padding: 1rem;
-  border: 1px solid rgba(228, 228, 231, 1);
   border-radius: 0.5rem;
-  background: white;
   pointer-events: auto;
-  animation: slideIn 0.3s ease-out;
-  
+  animation: toast-slide-in 0.3s ease-out;
+
   &__content {
     display: flex;
     flex-direction: column;
@@ -30,34 +28,27 @@
     flex: 1;
     min-width: 0;
   }
-  
+
   &__message {
-    font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.5;
   }
-  
+
   &__action {
     display: flex;
     align-items: center;
   }
-  
+
   &__close {
     margin-left: 0.75rem;
     padding: 0.25rem;
     background: transparent;
     border: none;
     cursor: pointer;
-    color: currentColor;
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
+    transition: color 0.2s ease;
     flex-shrink: 0;
-    
-    &:hover {
-      opacity: 1;
-    }
-    
-    &:focus {
+
+    &:focus-visible {
       outline: 2px solid currentColor;
       outline-offset: 2px;
       border-radius: 0.25rem;
@@ -65,7 +56,7 @@
   }
 }
 
-@keyframes slideIn {
+@keyframes toast-slide-in {
   from {
     transform: translateX(100%);
     opacity: 0;

@@ -13,6 +13,7 @@ import Dialog from '../components/Dialog';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../hooks/useAuth';
 import { isCompanySubscriptionActive } from '../utils/companySubscription';
+import { formatDateTime } from '../utils/formatDateTime';
 import { MailPlus } from 'lucide-react';
 import {
   dataTableWrap,
@@ -169,25 +170,43 @@ const CompanyDesignersPage: React.FC = () => {
 
       <Dialog
         isOpen={inviteOpen}
-        onClose={() => !inviteBusy && setInviteOpen(false)}
+        onClose={() => {
+          if (inviteBusy) return;
+          setInviteOpen(false);
+          setLastInvite(null);
+        }}
         title={t('designers.inviteSection')}
         onSubmit={handleInvite}
-        actions={[
-          {
-            label: t('designers.sendInvite'),
-            variant: 'primary',
-            type: 'submit',
-            disabled: !canWrite,
-            isLoading: inviteBusy,
-          },
-          {
-            label: t('common.cancel'),
-            variant: 'secondary',
-            type: 'button',
-            disabled: inviteBusy,
-            onClick: () => setInviteOpen(false),
-          },
-        ]}
+        actions={
+          lastInvite
+            ? [
+                {
+                  label: t('common.close'),
+                  variant: 'primary',
+                  type: 'button',
+                  onClick: () => {
+                    setInviteOpen(false);
+                    setLastInvite(null);
+                  },
+                },
+              ]
+            : [
+                {
+                  label: t('designers.sendInvite'),
+                  variant: 'primary',
+                  type: 'submit',
+                  disabled: !canWrite,
+                  isLoading: inviteBusy,
+                },
+                {
+                  label: t('common.cancel'),
+                  variant: 'secondary',
+                  type: 'button',
+                  disabled: inviteBusy,
+                  onClick: () => setInviteOpen(false),
+                },
+              ]
+        }
       >
         <p className="text-sm text-secondary-alpha">{t('designers.inviteModalHint')}</p>
         <Input
@@ -204,7 +223,7 @@ const CompanyDesignersPage: React.FC = () => {
           <div className="space-y-3 rounded-lg border border-border bg-background/50 p-4">
             <p className="text-sm font-medium text-foreground">{t('designers.inviteCreated')}</p>
             <p className="text-xs text-secondary-alpha">
-              {t('designers.inviteExpires')}: {new Date(lastInvite.expires_at).toLocaleString()}
+              {t('designers.inviteExpires')}: {formatDateTime(lastInvite.expires_at)}
             </p>
             <div className="flex flex-wrap items-center gap-2 break-all font-mono text-xs text-secondary-alpha">
               <span className="flex-1">{magicUrl(lastInvite.token)}</span>
@@ -224,9 +243,6 @@ const CompanyDesignersPage: React.FC = () => {
                 {copied ? t('designers.copied') : t('designers.copyMagicLink')}
               </Button>
             </div>
-            <p className="text-xs text-secondary-alpha">
-              {t('designers.tokenLabel')}: <span className="font-mono">{lastInvite.token}</span>
-            </p>
           </div>
         )}
       </Dialog>
@@ -237,8 +253,8 @@ const CompanyDesignersPage: React.FC = () => {
             <tr className={dataTheadRow}>
               <th className={dataTh}>{t('common.name')}</th>
               <th className={dataTh}>{t('common.email')}</th>
-              <th className={dataTh}>{t('designers.effectiveBonus')}</th>
-              <th className={dataTh}>{t('designers.overrideBonus')}</th>
+              <th className={dataTh}>{t('designers.bonus')}</th>
+              <th className={dataTh}>{t('designers.override')}</th>
               <th className={dataTh} />
             </tr>
           </thead>
@@ -286,38 +302,6 @@ const CompanyDesignersPage: React.FC = () => {
             )}
           </tbody>
         </table>
-      </div>
-
-      <div className="rounded-lg border border-border bg-card p-6">
-        <h2 className="mb-4 text-lg font-semibold text-foreground">{t('designers.moderateLinks')}</h2>
-        {perLink.length === 0 ? (
-          <p className="text-secondary-alpha">{t('dashboardV2.noData')}</p>
-        ) : (
-          <div className="space-y-2">
-            {perLink.map((row) => (
-              <div
-                key={row.id}
-                className="flex flex-col gap-2 rounded-lg border border-border/70 bg-background/40 px-4 py-3 md:flex-row md:items-center md:justify-between"
-              >
-                <div className="text-sm text-foreground">
-                  <span className="font-medium">{row.product?.name ?? `#${row.product_id}`}</span>
-                  <span className="text-secondary-alpha"> — </span>
-                  <span>{row.designer?.name ?? `ID ${row.designer_id}`}</span>
-                </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  className="rounded-lg"
-                  disabled={!canWrite}
-                  onClick={() => void handleDeleteLink(row.affiliate_link_id)}
-                >
-                  {t('designers.removeLink')}
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

@@ -14,9 +14,10 @@ import {
   dataTbodyRow,
   dataTd,
 } from '../components/dataTableStyles';
+import { formatDateTime } from '../utils/formatDateTime';
 
 const AdminCompaniesPage: React.FC = () => {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -45,15 +46,6 @@ const AdminCompaniesPage: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleString(language, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   if (loading) {
     return (
@@ -103,7 +95,7 @@ const AdminCompaniesPage: React.FC = () => {
                   <td className={`${dataTd} text-foreground`}>{company.company_name}</td>
                   <td className={dataTd}>{company.email}</td>
                   <td className={dataTd}>{company.full_name}</td>
-                  <td className={`${dataTd} text-secondary-alpha`}>{formatDate(company.created_at)}</td>
+                  <td className={`${dataTd} text-secondary-alpha`}>{formatDateTime(company.created_at)}</td>
                   <td className={dataTd}>
                     <button
                       type="button"

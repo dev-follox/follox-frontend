@@ -6,7 +6,8 @@ import Spinner from '../components/Spinner';
 import Button from '../components/Button';
 import { useTranslation } from '../hooks/useTranslation';
 import { ArrowLeft, MousePointerClick, Package, Banknote } from 'lucide-react';
-import { normalizeOrderStatus } from '../utils/orderStatus';
+import DashboardOrderStatusBadge from '../components/dashboard/DashboardOrderStatusBadge';
+import { formatDateTime } from '../utils/formatDateTime';
 import {
   dataTableWrap,
   dataTable,
@@ -171,11 +172,13 @@ const DesignerAffiliateLinkDetailPage: React.FC = () => {
               <tbody>
                 {orders.map((o) => (
                   <tr key={o.id} className={dataTbodyRow}>
-                    <td className={`${dataTd} whitespace-nowrap`}>{new Date(o.created_at).toLocaleString()}</td>
+                    <td className={`${dataTd} whitespace-nowrap`}>{formatDateTime(o.created_at)}</td>
                     <td className={dataTd}>{o.quantity}</td>
                     <td className={dataTdMono}>{money(o.line_revenue)}</td>
                     <td className={dataTdMono}>{money(o.designer_bonus_amount)}</td>
-                    <td className={`${dataTd} text-secondary-alpha`}>{normalizeOrderStatus(o.status)}</td>
+                    <td className={dataTd}>
+                      <DashboardOrderStatusBadge status={o.status} />
+                    </td>
                   </tr>
                 ))}
               </tbody>

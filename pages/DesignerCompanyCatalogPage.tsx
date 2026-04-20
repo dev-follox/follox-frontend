@@ -203,9 +203,6 @@ const DesignerCompanyCatalogPage: React.FC = () => {
                     >
                       {p.name}
                     </Link>
-                    {p.designer_task_description && (
-                      <p className="mt-1 line-clamp-2 text-xs text-secondary-alpha">{p.designer_task_description}</p>
-                    )}
                     {linksByProductId[p.id] && (
                       <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
                         <a

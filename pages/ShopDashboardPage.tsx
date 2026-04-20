@@ -79,7 +79,6 @@ const ShopDashboardPage: React.FC = () => {
 	const handleCreateProduct = async (data: {
 		name: string;
 		description?: string;
-		designer_task_description?: string;
 		price: number;
 		image_url?: string;
 	}) => {
@@ -88,8 +87,11 @@ const ShopDashboardPage: React.FC = () => {
 		setIsCreating(true);
 		try {
 			const createdProduct = await api.createProduct({
-				...data,
-				company_id: company.id
+				name: data.name,
+				description: data.description,
+				price: data.price,
+				image_url: data.image_url,
+				company_id: company.id,
 			});
 			setProducts(prev => [createdProduct, ...prev]);
 			setIsDialogOpen(false);
@@ -113,7 +115,6 @@ const ShopDashboardPage: React.FC = () => {
 	const handleUpdateProduct = async (data: {
 		name: string;
 		description?: string;
-		designer_task_description?: string;
 		price: number;
 		image_url?: string;
 	}) => {
@@ -124,9 +125,8 @@ const ShopDashboardPage: React.FC = () => {
 			const updatedProduct = await api.updateProduct(editingProduct.id, {
 				name: data.name,
 				description: data.description || null,
-				designer_task_description: data.designer_task_description || null,
 				price: data.price,
-				image_url: data.image_url || null
+				image_url: data.image_url || null,
 			});
 			setProducts(prev => prev.map(p => (p.id === editingProduct.id ? updatedProduct : p)));
 			setIsEditDialogOpen(false);

@@ -8,7 +8,6 @@ import { useTranslation } from '../hooks/useTranslation';
 interface ProductFormData {
   name: string;
   description: string;
-  designerTaskDescription: string;
   price: string;
   image: File | null;
   imagePreview: string;
@@ -21,7 +20,6 @@ interface ProductFormProps {
   onSubmit: (data: {
     name: string;
     description?: string;
-    designer_task_description?: string;
     price: number;
     image_url?: string;
   }) => void;
@@ -39,7 +37,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     description: '',
-    designerTaskDescription: '',
     price: '',
     image: null,
     imagePreview: '',
@@ -50,7 +47,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
       setFormData({
         name: product.name,
         description: product.description || '',
-        designerTaskDescription: product.designer_task_description || '',
         price: product.price.toString(),
         image: null,
         imagePreview: product.image_url ? api.getImageUrl(product.image_url) : '',
@@ -59,7 +55,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
       setFormData({
         name: '',
         description: '',
-        designerTaskDescription: '',
         price: '',
         image: null,
         imagePreview: '',
@@ -97,7 +92,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
     onSubmit({
       name: formData.name,
       description: formData.description || undefined,
-      designer_task_description: formData.designerTaskDescription || undefined,
       price: parseFloat(formData.price),
       image_url: imageUrl,
     });
@@ -111,7 +105,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
     setFormData({
       name: '',
       description: '',
-      designerTaskDescription: '',
       price: '',
       image: null,
       imagePreview: '',
@@ -144,14 +137,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                />
-                <Input
-                  id={product ? 'edit-designer_task_description' : 'designer_task_description'}
-                  label={t('productForm.designerTask')}
-                  multiline
-                  rows={3}
-                  value={formData.designerTaskDescription}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, designerTaskDescription: e.target.value }))}
                 />
                 <Input
                   id={product ? 'edit-price' : 'price'}

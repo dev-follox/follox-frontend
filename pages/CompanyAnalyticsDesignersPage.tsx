@@ -114,25 +114,20 @@ const CompanyAnalyticsDesignersPage: React.FC = () => {
       {filterOpen && (
         <div className="rounded-lg border border-border bg-card p-4">
           <p className="mb-3 text-sm font-medium text-foreground">{t('companyAnalytics.filterTitle')}</p>
-          <div className="flex flex-wrap items-end gap-3">
-            <div>
-              <label className="mb-1 block text-xs font-medium text-secondary-alpha">{t('companyAnalytics.from')}</label>
-              <input
-                type="datetime-local"
-                className="rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground"
-                value={fromInput}
-                onChange={(e) => setFromInput(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-secondary-alpha">{t('companyAnalytics.to')}</label>
-              <input
-                type="datetime-local"
-                className="rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground"
-                value={toInput}
-                onChange={(e) => setToInput(e.target.value)}
-              />
-            </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <input
+              type="datetime-local"
+              className="rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+              value={fromInput}
+              onChange={(e) => setFromInput(e.target.value)}
+            />
+            <span className="text-sm text-secondary-alpha">-</span>
+            <input
+              type="datetime-local"
+              className="rounded-lg border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+              value={toInput}
+              onChange={(e) => setToInput(e.target.value)}
+            />
             <Button type="button" className="rounded-lg" onClick={() => void applyDateFilters()}>
               {t('companyAnalytics.apply')}
             </Button>
