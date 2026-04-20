@@ -9,6 +9,8 @@ interface DialogAction {
   color?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   type?: 'button' | 'submit';
+  disabled?: boolean;
+  isLoading?: boolean;
 }
 
 interface DialogProps {
@@ -32,13 +34,13 @@ const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children, onSub
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         {/* Background overlay */}
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
         {/* Dialog panel */}
-        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden border border-[rgba(228,228,231,1)] transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+        <div className="inline-block align-bottom bg-card px-4 pt-5 pb-4 text-left overflow-hidden border border-border transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
           <div className="sm:flex sm:items-start">
             <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-              <h3 className="text-lg font-bold leading-6 text-gray-900 mb-4">
+              <h3 className="text-lg font-bold leading-6 text-foreground mb-4">
                 {title}
               </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -52,6 +54,8 @@ const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children, onSub
                         variant={action.variant}
                         onClick={action.onClick}
                         className={action.color ? action.color : ''}
+                        disabled={action.disabled}
+                        isLoading={action.isLoading}
                       >
                         {action.label}
                       </Button>

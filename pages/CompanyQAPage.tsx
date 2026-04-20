@@ -90,6 +90,7 @@ const CompanyQAPage: React.FC = () => {
     value_proposition: t('qa.sections.solution.coreValue'),
     competitive_advantage: t('qa.sections.solution.differentiator'),
     business_model: t('qa.sections.pricing.model'),
+    interview_data: t('decisions.custdevInsightsAnalyzer.interviewDataLabel'),
   };
 
   return (
@@ -160,6 +161,15 @@ const CompanyQAPage: React.FC = () => {
               rows={2}
               value={answers.business_model || ''}
               onChange={(e) => handleChange('business_model', e.target.value)}
+            />
+            <Input
+              id="answer-interview-data"
+              label={fieldLabels.interview_data}
+              multiline
+              rows={4}
+              value={answers.interview_data || ''}
+              onChange={(e) => handleChange('interview_data', e.target.value)}
+              placeholder={t('decisions.custdevInsightsAnalyzer.interviewDataPlaceholder')}
             />
           </div>
         </Card>

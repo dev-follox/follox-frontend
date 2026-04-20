@@ -1,0 +1,26 @@
+// Flat UI: force square corners for Tailwind rounded-* classes (Tailwind loaded via CDN).
+// Keeps `.rounded-none` explicit; all other rounded utilities become 0.
+.rounded-sm,
+.rounded,
+.rounded-md,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl,
+.rounded-full,
+.rounded-t-lg,
+.rounded-t-md,
+.rounded-b-lg,
+.rounded-b-md,
+.rounded-l-lg,
+.rounded-r-lg,
+.rounded-s-lg,
+.rounded-e-lg,
+.rounded-r,
+.rounded-l,
+.rounded-t,
+.rounded-b,
+.rounded-r-lg,
+.rounded-l-lg {
+  border-radius: 0 !important;
+}

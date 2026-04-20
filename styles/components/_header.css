@@ -1,9 +1,0 @@
-/* Header component custom styles */
-/* Add header-specific styles here */
-
-.header-sticky {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-

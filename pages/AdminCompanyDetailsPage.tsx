@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from '../hooks/useTranslation';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
-import { Company, CompanyAnswers } from '../types';
+import { Company, CompanyAnswers, CompanySubscriptionAdminUpdate } from '../types';
 import Card from '../components/Card';
 import Input from '../components/Input';
+import Button from '../components/Button';
 import Spinner from '../components/Spinner';
 
 const AdminCompanyDetailsPage: React.FC = () => {
@@ -18,6 +19,12 @@ const AdminCompanyDetailsPage: React.FC = () => {
   
   const [company, setCompany] = useState<Company | null>(null);
   const [answers, setAnswers] = useState<CompanyAnswers | null>(null);
+
+  const [subscriptionExpiresAt, setSubscriptionExpiresAt] = useState('');
+  const [defaultBonusPercent, setDefaultBonusPercent] = useState('');
+  const [subscriptionSaving, setSubscriptionSaving] = useState(false);
+  const [subscriptionMessage, setSubscriptionMessage] = useState<string | null>(null);
+  const [subscriptionFormError, setSubscriptionFormError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.role !== 'ADMIN') {
@@ -38,6 +45,10 @@ const AdminCompanyDetailsPage: React.FC = () => {
     try {
       const companyData = await api.getCompanyById(Number(companyId));
       setCompany(companyData);
+      setSubscriptionExpiresAt(companyData.subscription_expires_at ?? '');
+      setDefaultBonusPercent(String(companyData.default_designer_bonus_percent ?? ''));
+      setSubscriptionMessage(null);
+      setSubscriptionFormError(null);
       
       try {
         const answersData = await api.getCompanyAnswersAdmin(Number(companyId));
@@ -52,6 +63,57 @@ const AdminCompanyDetailsPage: React.FC = () => {
       console.error('Failed to load company data:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveSubscription = async () => {
+    if (!companyId) return;
+    setSubscriptionFormError(null);
+    setSubscriptionMessage(null);
+
+    const trimmedExpires = subscriptionExpiresAt.trim();
+    let subscription_expires_at: string | null;
+    if (!trimmedExpires) {
+      subscription_expires_at = null;
+    } else {
+      const d = new Date(trimmedExpires);
+      if (Number.isNaN(d.getTime())) {
+        setSubscriptionFormError(t('admin.companyDetails.subscriptionDateInvalid'));
+        return;
+      }
+      subscription_expires_at = d.toISOString();
+    }
+
+    const bonusTrim = defaultBonusPercent.trim();
+    let default_designer_bonus_percent: number | null | undefined;
+    if (bonusTrim === '') {
+      default_designer_bonus_percent = undefined;
+    } else {
+      const n = Number(bonusTrim);
+      if (Number.isNaN(n) || n < 0 || n > 100) {
+        setSubscriptionFormError(t('registration.invalidDefaultBonus'));
+        return;
+      }
+      default_designer_bonus_percent = n;
+    }
+
+    const body: CompanySubscriptionAdminUpdate = { subscription_expires_at };
+    if (default_designer_bonus_percent !== undefined) {
+      body.default_designer_bonus_percent = default_designer_bonus_percent;
+    }
+
+    setSubscriptionSaving(true);
+    try {
+      const updated = await api.patchAdminCompany(Number(companyId), body);
+      setCompany(updated);
+      setSubscriptionExpiresAt(updated.subscription_expires_at ?? '');
+      setDefaultBonusPercent(String(updated.default_designer_bonus_percent ?? ''));
+      setSubscriptionMessage(t('admin.companyDetails.subscriptionSaved'));
+    } catch (err) {
+      console.error(err);
+      setSubscriptionFormError(t('admin.companyDetails.subscriptionError'));
+    } finally {
+      setSubscriptionSaving(false);
     }
   };
 
@@ -104,6 +166,44 @@ const AdminCompanyDetailsPage: React.FC = () => {
           {error}
         </div>
       )}
+
+      <Card className="p-6 mb-6 max-w-2xl">
+        <h2 className="text-lg font-semibold text-foreground mb-4">{t('admin.companyDetails.subscriptionTitle')}</h2>
+        {subscriptionFormError && <p className="text-sm text-red-600 mb-3">{subscriptionFormError}</p>}
+        {subscriptionMessage && <p className="text-sm text-green-700 mb-3">{subscriptionMessage}</p>}
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="admin-sub-expires" className="block text-sm font-medium text-foreground mb-1">
+              {t('admin.companyDetails.subscriptionExpires')}
+            </label>
+            <Input
+              id="admin-sub-expires"
+              value={subscriptionExpiresAt}
+              onChange={(e) => setSubscriptionExpiresAt(e.target.value)}
+              placeholder="2027-12-31T23:59:59.000Z"
+            />
+            <p className="text-xs text-secondary-alpha mt-1">{t('admin.companyDetails.subscriptionHint')}</p>
+          </div>
+          <div>
+            <label htmlFor="admin-default-bonus" className="block text-sm font-medium text-foreground mb-1">
+              {t('admin.companyDetails.defaultBonusPercent')}
+            </label>
+            <Input
+              id="admin-default-bonus"
+              type="number"
+              min={0}
+              max={100}
+              step={1}
+              value={defaultBonusPercent}
+              onChange={(e) => setDefaultBonusPercent(e.target.value)}
+            />
+            <p className="text-xs text-secondary-alpha mt-1">{t('admin.companyDetails.defaultBonusHint')}</p>
+          </div>
+          <Button type="button" onClick={handleSaveSubscription} isLoading={subscriptionSaving}>
+            {t('admin.companyDetails.saveSubscription')}
+          </Button>
+        </div>
+      </Card>
 
       {/* Content */}
       <div className="qa-page">

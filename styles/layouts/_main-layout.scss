@@ -1,26 +1,19 @@
 // Main Layout Styles
 .main-layout {
+  min-height: 100vh;
   display: flex;
-  height: 100vh;
-  overflow: hidden;
+  flex-direction: column;
   
   &__content {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    margin-left: 16rem;
-    transition: margin-left 0.3s ease;
-    
-    @media (max-width: 767px) {
-      margin-left: 0;
-      padding-top: 4rem;
-    }
   }
   
   &__main {
     flex: 1;
     overflow-y: auto;
-    background: #f9fafb;
+    background: #1e2022;
   }
 }

@@ -1,5 +1,13 @@
 import React from 'react';
 import Card from './Card';
+import {
+  dataTableWrap,
+  dataTable,
+  dataTheadRow,
+  dataTh,
+  dataTbodyRow,
+  dataTd,
+} from './dataTableStyles';
 
 export type DecisionVariant =
   | 'hypothesis_generator'
@@ -354,7 +362,12 @@ function renderInline(text: string): React.ReactNode[] {
     if (match.index > last) parts.push(<span key={key++}>{text.slice(last, match.index)}</span>);
     if (match[1] != null) parts.push(<strong key={key++}>{match[1]}</strong>);
     else if (match[2] != null) parts.push(<em key={key++}>{match[2]}</em>);
-    else if (match[3] != null) parts.push(<code key={key++} className="bg-gray-100 text-gray-800 px-1 rounded text-sm font-mono">{match[3]}</code>);
+    else if (match[3] != null)
+      parts.push(
+        <code key={key++} className="bg-foreground/5 px-1 font-mono text-sm text-foreground">
+          {match[3]}
+        </code>
+      );
     last = regex.lastIndex;
   }
   if (last < text.length) parts.push(<span key={key++}>{text.slice(last)}</span>);
@@ -370,12 +383,12 @@ function renderMarkdownTable(lines: string[]): React.ReactNode {
   const [header, ...body] = rows;
 
   return (
-    <div className="overflow-x-auto my-4">
-      <table className="w-full text-sm border-collapse">
+    <div className={`${dataTableWrap} my-4`}>
+      <table className={`${dataTable} border-collapse`}>
         <thead>
-          <tr className="bg-gray-100">
+          <tr className={dataTheadRow}>
             {header.map((cell, i) => (
-              <th key={i} className="border border-gray-200 px-3 py-2 text-left font-semibold text-gray-700">
+              <th key={i} className={`${dataTh} font-semibold text-foreground`}>
                 {renderInline(cell)}
               </th>
             ))}
@@ -383,9 +396,9 @@ function renderMarkdownTable(lines: string[]): React.ReactNode {
         </thead>
         <tbody>
           {body.map((row, i) => (
-            <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+            <tr key={i} className={`${dataTbodyRow} ${i % 2 === 1 ? 'bg-foreground/[0.02]' : ''}`}>
               {row.map((cell, j) => (
-                <td key={j} className="border border-gray-200 px-3 py-2 text-gray-700">
+                <td key={j} className={`${dataTd} border border-border text-foreground`}>
                   {renderInline(cell)}
                 </td>
               ))}

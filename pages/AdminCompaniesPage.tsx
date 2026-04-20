@@ -6,6 +6,14 @@ import api from '../services/api';
 import { Company } from '../types';
 import Card from '../components/Card';
 import Spinner from '../components/Spinner';
+import {
+  dataTableWrap,
+  dataTable,
+  dataTheadRow,
+  dataTh,
+  dataTbodyRow,
+  dataTd,
+} from '../components/dataTableStyles';
 
 const AdminCompaniesPage: React.FC = () => {
   const { t, language } = useTranslation();
@@ -70,49 +78,40 @@ const AdminCompaniesPage: React.FC = () => {
       )}
 
       {companies.length === 0 ? (
-        <Card className="p-8 text-center text-gray-500">
+        <Card className="p-8 text-center text-secondary-alpha">
           <p>{t('admin.companies.noCompanies')}</p>
         </Card>
       ) : (
-        <div className="admin-companies-table">
-          <table className="w-full">
+        <div className={dataTableWrap}>
+          <table className={dataTable}>
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">
-                  {t('admin.companies.table.companyName')}
-                </th>
-                <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">
-                  {t('admin.companies.table.email')}
-                </th>
-                <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">
-                  {t('admin.companies.table.fullName')}
-                </th>
-                <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">
-                  {t('admin.companies.table.created')}
-                </th>
-                <th className="text-left py-3 px-4 font-semibold text-sm text-gray-700">
-                  {t('admin.companies.table.actions')}
-                </th>
+              <tr className={dataTheadRow}>
+                <th className={dataTh}>{t('admin.companies.table.companyName')}</th>
+                <th className={dataTh}>{t('admin.companies.table.email')}</th>
+                <th className={dataTh}>{t('admin.companies.table.fullName')}</th>
+                <th className={dataTh}>{t('admin.companies.table.created')}</th>
+                <th className={dataTh}>{t('admin.companies.table.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {companies.map((company) => (
                 <tr
                   key={company.id}
-                  className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                  className={`${dataTbodyRow} cursor-pointer`}
                   onClick={() => navigate(`/admin/companies/${company.id}`)}
                 >
-                  <td className="py-3 px-4 text-sm text-gray-900">{company.company_name}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{company.email}</td>
-                  <td className="py-3 px-4 text-sm text-gray-700">{company.full_name}</td>
-                  <td className="py-3 px-4 text-sm text-gray-500">{formatDate(company.created_at)}</td>
-                  <td className="py-3 px-4">
+                  <td className={`${dataTd} text-foreground`}>{company.company_name}</td>
+                  <td className={dataTd}>{company.email}</td>
+                  <td className={dataTd}>{company.full_name}</td>
+                  <td className={`${dataTd} text-secondary-alpha`}>{formatDate(company.created_at)}</td>
+                  <td className={dataTd}>
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/admin/companies/${company.id}`);
                       }}
-                      className="text-primary-text text-sm font-medium"
+                      className="text-sm font-medium text-primary hover:underline"
                     >
                       {t('admin.companies.table.view')}
                     </button>

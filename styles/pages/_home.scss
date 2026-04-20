@@ -26,6 +26,17 @@
     border-bottom: none;
     box-shadow: none;
   }
+
+  &--main {
+    background: #1e2022;
+    border-bottom: none;
+
+    & .landing-header__inner {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+    }
+  }
 }
 
 .landing-header__inner {

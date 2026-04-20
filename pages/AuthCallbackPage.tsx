@@ -65,7 +65,7 @@ const AuthCallbackPage: React.FC = () => {
         // Validate state
         const storedState = sessionStorage.getItem('oauth_state');
         const storedRedirectUri = sessionStorage.getItem('oauth_redirect_uri');
-        const storedUserType = sessionStorage.getItem('oauth_user_type') as 'company' | 'blogger' | null;
+        const storedUserType = sessionStorage.getItem('oauth_user_type') as 'company' | 'designer' | null;
         
         // Log state values for debugging
         console.log('State validation:', {
@@ -76,7 +76,7 @@ const AuthCallbackPage: React.FC = () => {
           storedLength: storedState?.length,
         });
         
-        // Check if returned state starts with stored state (might have :shop or :blogger suffix)
+        // Check if returned state starts with stored state (might have :shop or :designer suffix)
         // Or if stored state is the base of returned state
         const stateMatches = returnedState === storedState || 
                             returnedState?.startsWith(storedState + ':') ||
@@ -97,7 +97,7 @@ const AuthCallbackPage: React.FC = () => {
         }
         
         // Extract the base state (without suffix) for exchange
-        // The backend stores and expects the base state, not the full state with :shop/:blogger suffix
+        // The backend stores and expects the base state, not the full state with :shop/:designer suffix
         // Google returns the state with suffix, but backend validation uses the base state
         const stateToUse = returnedState?.split(':')[0] || returnedState;
         
@@ -147,7 +147,7 @@ const AuthCallbackPage: React.FC = () => {
           access_token: tokenData.access_token,
           token_type: tokenData.token_type || 'bearer',
           company_id: tokenData.company_id || null,
-          blogger_id: tokenData.blogger_id || null,
+          designer_id: tokenData.designer_id || null,
           email: tokenData.email,
           name: tokenData.name,
           role: tokenData.role,
@@ -157,7 +157,7 @@ const AuthCallbackPage: React.FC = () => {
         console.log('Calling loginWithGoogle with:', {
           role: googleResponse.role,
           company_id: googleResponse.company_id,
-          blogger_id: googleResponse.blogger_id,
+          designer_id: googleResponse.designer_id,
           email: googleResponse.email,
         });
         

@@ -25,7 +25,7 @@
     "error": "Error",
     "success": "Success",
     "company": "Shop",
-    "blogger": "Blogger"
+    "designer": "Designer"
   },
   "landing": {
     "header": {
@@ -221,12 +221,31 @@
       }
     }
   },
+  "dashboardV2": {
+    "paidCommissions": "Paid commissions",
+    "designerBonusTotal": "Designer bonus (total)",
+    "designerBonusColumn": "Designer bonus",
+    "platformFeeTotal": "Platform fee (total)",
+    "totalRevenue": "Total revenue",
+    "activeDesigners": "Active designers",
+    "salesByProducts": "Sales by products",
+    "visits": "Visits",
+    "orders": "Orders",
+    "status": "Status",
+    "date": "Date",
+    "open": "Open",
+    "noData": "No data yet",
+    "designersPreviewHint": "Top designers by current sort (same metrics as analytics). Click a name for details.",
+    "viewAllAnalytics": "View all in analytics",
+    "recentOrders": "Recent orders",
+    "dashboardSubtitle": "Overview of affiliate performance — same layout as the product tour."
+  },
   "home": {
     "title": "Welcome to Follox",
     "subtitle": "Choose a module to work with",
     "affiliateSales": {
       "title": "Affiliate Sales & Analytics",
-      "description": "Manage sales through affiliate program. Add products, track analytics, manage orders, work with bloggers and create affiliate links."
+      "description": "Manage sales through affiliate program. Add products, track analytics, manage orders, work with designers and create affiliate links."
     },
     "tools": {
       "title": "Tools",
@@ -295,9 +314,39 @@
   "header": {
     "affiliateSales": "Affiliate Sales",
     "gtmStrategy": "GTM Strategy",
-    "bloggers": "Designers",
+    "designers": "Designers",
     "linkTelegram": "Link Telegram",
     "products": "Products"
+  },
+  "companySales": {
+    "date": "Date",
+    "designer": "Designer",
+    "email": "Email",
+    "product": "Product",
+    "amount": "Amount",
+    "designerBonus": "Designer bonus",
+    "platformFee": "Platform fee",
+    "status": "Status"
+  },
+  "companyAnalytics": {
+    "productsTitle": "Sales by product",
+    "designersTitle": "Sales by designer",
+    "productDesignersTitle": "Designers for this product",
+    "designerProductsTitle": "Products for this designer",
+    "from": "From (local)",
+    "to": "To (local)",
+    "sort": "Sort by",
+    "sortRevenue": "Revenue",
+    "sortDesignerBonus": "Designer bonus",
+    "sortPlatformFee": "Platform fee",
+    "apply": "Apply",
+    "filter": "Filter",
+    "filterTitle": "Date range",
+    "product": "Product",
+    "loadError": "Failed to load analytics.",
+    "backProducts": "Back to product analytics",
+    "backDesigners": "Back to designer analytics",
+    "filteredHint": "Range (UTC sent to API):"
   },
   "company": {
     "yourProducts": "Your Products",
@@ -307,7 +356,7 @@
     "productName": "Product Name",
     "price": "Price",
     "image": "Image",
-    "bloggerTaskDescription": "Blogger Task Description",
+    "designerTaskDescription": "Designer task description",
     "deleteProduct": "Delete Product",
     "deleteConfirm": "Are you sure you want to delete this product? This action cannot be undone.",
     "createError": "Failed to create product.",
@@ -499,58 +548,122 @@
   },
   "registration": {
     "companyTitle": "Create Company Account",
-    "bloggerTitle": "Create Blogger Account",
-    "signupError": "Failed to register. Check your data and try again."
+    "designerTitle": "Create Designer Account",
+    "signupError": "Failed to register. Check your data and try again.",
+    "defaultBonusHint": "Default designer bonus (%) for all linked designers",
+    "defaultBonusLabel": "Default designer bonus %",
+    "invalidDefaultBonus": "Enter a default designer bonus between 0 and 100."
   },
-  "bloggers": {
+  "subscription": {
+    "readOnlyNotice": "Your company subscription is inactive. You can view products and analytics, but editing, invites, and orders are disabled until an administrator sets your subscription end date."
+  },
+  "designers": {
     "title": "Designers",
-    "addBlogger": "Add Designer",
-    "createAffiliateLink": "Create Affiliate Link",
-    "addNewBlogger": "Add New Designer",
-    "selectBlogger": "Select Designer",
-    "selectProduct": "Select Product",
-    "generate": "Generate",
-    "linkCreated": "Affiliate link created!",
-    "copyLink": "Copy Link",
-    "linkCopied": "Link Copied",
-    "noBloggers": "You haven't added any designers yet.",
-    "table": {
-      "name": "Name",
-      "email": "Email",
-      "bio": "About",
-      "created": "Created"
-    },
-    "loadError": "Failed to load data",
-    "createError": "Failed to create designer",
-    "linkError": "Failed to create affiliate link"
+    "loadError": "Failed to load designers",
+    "inviteDesignerCta": "Invite designer",
+    "inviteModalHint": "We do not send email automatically—copy the invite link and share it with the designer.",
+    "inviteSection": "Invite designer",
+    "inviteEmail": "Designer email",
+    "sendInvite": "Create invite",
+    "inviteCreated": "Invite created. Share the link below with the designer (email is not sent automatically).",
+    "inviteExpires": "Expires",
+    "copyMagicLink": "Copy link",
+    "copied": "Copied",
+    "tokenLabel": "Token",
+    "inviteError": "Could not create invite",
+    "effectiveBonus": "Effective bonus %",
+    "overrideBonus": "Override %",
+    "overridePlaceholder": "empty = default",
+    "noDesigners": "No linked designers yet.",
+    "moderateLinks": "Affiliate links (moderation)",
+    "removeLink": "Remove link",
+    "confirmDeleteLink": "Remove this affiliate link for your company?",
+    "deleteLinkError": "Could not remove link",
+    "bonusInvalid": "Enter a number from 0 to 100, or leave empty to clear override",
+    "bonusSaveError": "Could not save bonus override"
+  },
+  "designerCatalog": {
+    "title": "Company catalog",
+    "subtitle": "Companies you can work with (active subscription). Open a catalog to create affiliate links or register manual orders.",
+    "empty": "No companies available right now.",
+    "loadError": "Could not load companies.",
+    "join": "Join company",
+    "joinError": "Could not join this company.",
+    "openCatalog": "Open catalog"
+  },
+  "designerCompanyCatalog": {
+    "title": "Catalog",
+    "subtitle": "Create an affiliate link for a product or register a manual sale.",
+    "back": "All companies",
+    "product": "Product",
+    "price": "Price",
+    "actions": "Actions",
+    "createLink": "Create / open link",
+    "manualOrder": "Manual order",
+    "loadError": "Could not load catalog.",
+    "linkError": "Could not create affiliate link."
+  },
+  "designerManualOrder": {
+    "title": "Manual order",
+    "pricePerItem": "Price per item",
+    "attachmentUrl": "Attachment URL (receipt, optional)",
+    "submit": "Submit order",
+    "validation": "Check quantity, price, and client phone.",
+    "submitError": "Could not submit manual order."
+  },
+  "designerLinkDetail": {
+    "back": "Back to my links",
+    "loadError": "Could not load link.",
+    "notFound": "Affiliate link not found.",
+    "publicLink": "Public selling link",
+    "company": "Company",
+    "ordersTitle": "Orders for this link",
+    "noOrders": "No orders yet for this link."
+  },
+  "designerInvite": {
+    "title": "Accept company invite",
+    "forEmail": "Invite for",
+    "accept": "Accept and sign in",
+    "invalid": "Missing invite token",
+    "loadError": "Invite not found or no longer valid",
+    "notPending": "This invite is no longer active",
+    "acceptError": "Could not accept invite"
+  },
+  "designerProducts": {
+    "title": "Your affiliate links",
+    "dashboardSubtitle": "Track earnings and orders — same layout as the product tour.",
+    "loadError": "Failed to load data.",
+    "effectiveBonus": "Bonus",
+    "linksHint": "Open analytics for visits, rollups, and orders tied to each link.",
+    "analytics": "Analytics",
+    "linkAndProduct": "Product page"
+  },
+  "designerProductDetails": {
+    "backToList": "Back to list",
+    "description": "Description",
+    "taskFromShop": "Task from company",
+    "affiliateLink": "Affiliate link",
+    "copy": "Copy",
+    "linkCopied": "Link copied to clipboard!",
+    "notFound": "Product not found.",
+    "loadError": "Failed to load product data.",
+    "noAffiliateYet": "You have not created an affiliate link for this product yet.",
+    "openCatalogToCreate": "Open catalog to create a link"
+  },
+  "designerTelegram": {
+    "linked": "Telegram linked",
+    "error": "Failed to link Telegram"
   },
   "productForm": {
     "addProduct": "Add New Product",
     "editProduct": "Edit Product",
     "productName": "Product Name",
     "description": "Description",
-    "bloggerTask": "Task for Blogger",
+    "designerTask": "Task for designer",
     "price": "Price",
     "productImage": "Product Image",
     "imagePreview": "Product Preview",
     "uploadError": "Failed to upload image."
-  },
-  "bloggerProducts": {
-    "title": "Your Products",
-    "noProducts": "No products with affiliate links yet.",
-    "taskFromShop": "Task from Shop",
-    "affiliateLink": "Affiliate Link:",
-    "loadError": "Failed to load products."
-  },
-  "bloggerProductDetails": {
-    "backToList": "? Back to List",
-    "description": "Description",
-    "taskFromShop": "Task from Shop",
-    "affiliateLink": "Affiliate Link",
-    "copy": "Copy",
-    "linkCopied": "Link copied to clipboard!",
-    "notFound": "Product not found.",
-    "loadError": "Failed to load product data."
   },
   "productDetails": {
     "edit": "Edit",
@@ -571,10 +684,13 @@
       "actions": "Actions",
       "process": "Process",
       "cancel": "Cancel",
-      "noOrders": "No orders yet"
+      "noOrders": "No orders yet",
+      "statusWaiting": "Awaiting processing",
+      "statusProcessed": "Processed",
+      "statusCancelled": "Cancelled"
     },
     "analytics": {
-      "blogger": "Blogger",
+      "designer": "Designer",
       "visits": "Visits",
       "orders": "Orders",
       "sold": "Sold",
@@ -642,8 +758,13 @@
   "sidebar": {
     "dashboard": "Dashboard",
     "affiliateSales": "Affiliate Sales Module",
+    "catalog": "Catalog",
     "products": "Products",
-    "bloggers": "Designers",
+    "sales": "Sales",
+    "analyticsProducts": "Analytics · Products",
+    "analyticsDesigners": "Analytics · Designers",
+    "designerCatalog": "Browse companies",
+    "designerMyLinks": "My links & orders",
     "designers": "Designers",
     "tools": "Tools",
     "answers": "Answers",
@@ -778,7 +899,16 @@
         "updatedAt": "Updated At",
         "noAnswers": "No answers found for this company."
       },
-      "loadError": "Failed to load company data."
+      "loadError": "Failed to load company data.",
+      "subscriptionTitle": "Subscription & default bonus",
+      "subscriptionExpires": "Subscription expires at (UTC)",
+      "subscriptionHint": "Leave empty to deactivate (null). Use ISO date-time, e.g. 2027-12-31T23:59:59Z",
+      "defaultBonusPercent": "Default designer bonus %",
+      "saveSubscription": "Save",
+      "subscriptionSaved": "Company updated",
+      "subscriptionError": "Could not update company",
+      "subscriptionDateInvalid": "Enter a valid date-time (ISO) or leave empty for no expiry.",
+      "defaultBonusHint": "Leave blank to keep the current default bonus unchanged."
     }
   }
 }

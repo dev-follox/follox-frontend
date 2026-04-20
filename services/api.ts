@@ -5,45 +5,59 @@ import {
   ProductUpdate,
   Order,
   Analytics,
-  OrderStatus,
+  AnalyticsDashboard,
+  CompanyAnalyticsSort,
+  CompanyProductAnalyticsRow,
+  CompanyProductDesignerBreakdownRow,
+  CompanyDesignerAnalyticsRow,
+  CompanyDesignerProductBreakdownRow,
+  DesignerRanking,
+  OrderStatusValue,
   AffiliateLink,
   AffiliateLinkDetail,
   AffiliateLinkCreate,
-  Blogger,
-  BloggerCreate,
+  AffiliateLinkWithRollup,
+  Designer,
+  DesignerCreate,
+  DesignerUpdate,
   TokenResponse,
-  BloggerProductDetailed,
+  DesignerProductDetailed,
   Company,
   CompanyCreate,
   CompanyUpdate,
+  CompanySubscriptionAdminUpdate,
   CompanyAnswers,
   CompanyAnswersUpdate,
   PasswordUpdate,
+  CompanyTelegramSetup,
   Iteration,
   ToolOutput,
   IterationContextSummary,
   ToolType,
+  OrderWithDetails,
+  OrderCreate,
+  DesignerCompanyWithDesigner,
+  DesignerInvite,
+  DesignerInviteCreate,
+  DesignerInviteAccept,
+  DesignerBonusUpdate,
+  DesignerManualOrderCreate,
+  DesignerCompany,
 } from '../types';
 
-// In development, use the proxy URL, in production use the actual URL
 const BASE_URL = '/v1';
 
 export const getImageUrl = (imageUrl: string) => {
-  // If it's already a full URL, check if it's the backend URL and rewrite it
   if (imageUrl.startsWith('http')) {
-    // Rewrite backend URLs to use proxy
     if (imageUrl.includes('https://api.follox.co')) {
       return imageUrl.replace(/https?:\/\/api\.follox\.kz/g, BASE_URL);
     }
-    // External URLs (like CDN) can stay as-is
     return imageUrl;
   }
-  // Relative URL - extract filename and use proxy
   const filename = imageUrl.split('/').pop();
   return `${BASE_URL}/products/images/${filename}`;
 };
 
-// Create axios instance with base configuration
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -51,25 +65,26 @@ const axiosInstance = axios.create({
   },
 });
 
-// Public endpoints that don't need authentication
-const PUBLIC_ENDPOINTS = [
-  '/products/',  // GET /{id} only
-  '/orders/',    // POST only
-  '/analytics/visit',
-];
-
-// Add token to requests if it exists and endpoint requires auth
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
+  const url = config.url || '';
 
-  // Only GET /products/{id} is public
-  const isProductsPublicGet = config.method === 'get' && /^\/products\/\d+(?:\?.*)?$/.test(config.url || '');
+  const isProductsPublicGet = config.method === 'get' && /^\/products\/\d+(?:\?.*)?$/.test(url);
 
-  const isPublicEndpoint = (
+  const isDesignerInvitePreview =
+    config.method === 'get' && /^\/designers\/invites\/[^/]+$/.test(url);
+
+  const isDesignerInviteAccept =
+    config.method === 'post' && /^\/designers\/invites\/[^/]+\/accept$/.test(url);
+
+  const isOrdersPublicCreate = config.method === 'post' && (url === '/orders/' || url === '/orders');
+
+  const isPublicEndpoint =
     isProductsPublicGet ||
-    (config.url?.startsWith('/orders/') && config.method === 'post') ||
-    (config.url?.startsWith('/analytics/visit'))
-  );
+    isOrdersPublicCreate ||
+    (url.startsWith('/analytics/visit') && config.method === 'post') ||
+    isDesignerInvitePreview ||
+    isDesignerInviteAccept;
 
   if (token && !isPublicEndpoint) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -88,12 +103,9 @@ axiosInstance.interceptors.response.use(
       });
 
       if (error.response.status === 401) {
-        // Clear authentication data
         localStorage.removeItem('auth_user');
         localStorage.removeItem('access_token');
         localStorage.removeItem('auth_token_payload');
-        
-        // Redirect to auth landing page
         window.location.href = '/';
       }
     }
@@ -103,67 +115,61 @@ axiosInstance.interceptors.response.use(
 
 const api = {
   getImageUrl,
-  // Auth endpoints
-  login: async (email: string, password: string): Promise<{ token: TokenResponse; company?: Company; blogger?: Blogger }> => {
+
+  login: async (
+    email: string,
+    password: string
+  ): Promise<{ token: TokenResponse; company?: Company; designer?: Designer }> => {
     const formData = new URLSearchParams();
     formData.append('username', email);
     formData.append('password', password);
 
-    console.log('Login request payload:', { username: email, password: '***' });
-    // Override axios instance for this specific request
     const response = await axios.post<TokenResponse>(`${BASE_URL}/token`, formData, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
-    console.log('Login response:', response.data);
-    
-    // Store the token
-    const token = response.data.access_token;
 
-    // Store token in localStorage so the interceptor can use it
+    const token = response.data.access_token;
     localStorage.setItem('access_token', token);
     localStorage.setItem('auth_token_payload', JSON.stringify(response.data));
 
-    // For companies, fetch full company data
     if (response.data.role === 'COMPANY' && response.data.company_id != null) {
       try {
-        const companyResponse = await axiosInstance.get(`/companies/me/${response.data.company_id}`);
+        const companyResponse = await axiosInstance.get(`/companies/me`);
         return { token: response.data, company: companyResponse.data };
       } catch (err) {
         console.error('Failed to fetch company data:', err);
-        // Return token without company data if fetch fails
         return { token: response.data };
       }
     }
 
-    // For bloggers, token already includes name/email; we may not have a dedicated profile endpoint
-    if (response.data.role === 'BLOGGER') {
-      const blogger: Blogger = {
-        id: response.data.blogger_id || 0,
-        name: response.data.name,
-        email: response.data.email,
-        created_at: new Date().toISOString(),
-        updated_at: null,
-      };
-      return { token: response.data, blogger };
+    if (response.data.role === 'DESIGNER') {
+      try {
+        const designerResponse = await axiosInstance.get('/designers/me');
+        return { token: response.data, designer: designerResponse.data };
+      } catch {
+        const designer: Designer = {
+          id: response.data.designer_id || 0,
+          name: response.data.name,
+          email: response.data.email,
+          created_at: new Date().toISOString(),
+          updated_at: null,
+        };
+        return { token: response.data, designer };
+      }
     }
 
-    // For admin, just return the token (no additional data needed)
     if (response.data.role === 'ADMIN') {
       return { token: response.data };
     }
 
-    // Unknown role - still return token but log warning
     console.warn('Unknown role in login response:', response.data.role);
     return { token: response.data };
   },
 
-  // Products endpoints
-  getProduct: async (productId: number, bloggerId?: number): Promise<Product> => {
-    const response = await axiosInstance.get(`/products/${productId}`, {
-      params: bloggerId ? { blogger_id: bloggerId } : undefined
-    });
+  getProduct: async (productId: number): Promise<Product> => {
+    const response = await axiosInstance.get(`/products/${productId}`);
     return response.data;
   },
 
@@ -177,7 +183,7 @@ const api = {
     return response.data;
   },
 
-  getProductsForMeDetailed: async (): Promise<BloggerProductDetailed[]> => {
+  getProductsForMeDetailed: async (): Promise<DesignerProductDetailed[]> => {
     const response = await axiosInstance.get('/products/for-me/detailed');
     return response.data;
   },
@@ -185,7 +191,6 @@ const api = {
   uploadProductImage: async (file: File): Promise<{ image_url: string }> => {
     const formData = new FormData();
     formData.append('image', file);
-
     const response = await axiosInstance.post('/products/upload-image', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -208,63 +213,226 @@ const api = {
     await axiosInstance.delete(`/products/${productId}`);
   },
 
-  // Orders endpoints
-  createOrder: async (orderData: {
-    product_id: number;
-    blogger_id: number;
-    quantity: number;
-    price_per_item: number;
-    client_phone: string;
-  }): Promise<Order> => {
+  createOrder: async (orderData: OrderCreate): Promise<Order> => {
     const response = await axiosInstance.post('/orders/', orderData);
     return response.data;
   },
 
   getProductOrders: async (productId: number): Promise<Order[]> => {
-    const response = await axiosInstance.get(`/products/${productId}/orders/`);
+    const response = await axiosInstance.get(`/products/${productId}/orders`);
     return response.data;
   },
 
-  updateOrderStatus: async (orderId: number, status: keyof typeof OrderStatus): Promise<void> => {
+  getOrders: async (skip = 0, limit = 100): Promise<Order[]> => {
+    const response = await axiosInstance.get('/orders/', { params: { skip, limit } });
+    return response.data;
+  },
+
+  getOrderById: async (orderId: number): Promise<OrderWithDetails> => {
+    const response = await axiosInstance.get(`/orders/${orderId}`);
+    return response.data;
+  },
+
+  updateOrderStatus: async (orderId: number, status: OrderStatusValue): Promise<void> => {
     await axiosInstance.put(`/orders/${orderId}/status`, null, {
-      params: { status },
+      params: { new_status: status },
     });
   },
 
-  // Affiliate link endpoints
   createAffiliateLink: async (data: AffiliateLinkCreate): Promise<AffiliateLink> => {
     const response = await axiosInstance.post('/affiliate-links/', data);
     return response.data;
   },
 
   getAffiliateLink: async (code: string): Promise<AffiliateLinkDetail> => {
-    const response = await axiosInstance.get(`/affiliate-links/${code}`);
+    const response = await axiosInstance.get(`/affiliate-links/${encodeURIComponent(code)}`);
     return response.data;
   },
 
-  getMyAffiliateLinks: async (): Promise<AffiliateLinkDetail[]> => {
+  getMyAffiliateLinks: async (): Promise<AffiliateLinkWithRollup[]> => {
     const response = await axiosInstance.get('/affiliate-links/my-links');
     return response.data;
   },
 
-  // Blogger endpoints
-  getBloggers: async (): Promise<Blogger[]> => {
-    const response = await axiosInstance.get('/bloggers/');
+  deleteMyAffiliateLink: async (linkId: number): Promise<void> => {
+    await axiosInstance.delete(`/affiliate-links/${linkId}`);
+  },
+
+  deleteCompanyAffiliateLink: async (linkId: number): Promise<void> => {
+    await axiosInstance.delete(`/companies/me/affiliate-links/${linkId}`);
+  },
+
+  createDesigner: async (data: DesignerCreate): Promise<Designer> => {
+    const response = await axiosInstance.post('/designers/', data);
     return response.data;
   },
 
-  createBlogger: async (data: BloggerCreate): Promise<Blogger> => {
-    const response = await axiosInstance.post('/bloggers/', data);
+  getDesignerMe: async (): Promise<Designer> => {
+    const response = await axiosInstance.get('/designers/me');
     return response.data;
   },
 
-  // Analytics endpoints
+  updateDesignerMe: async (data: DesignerUpdate): Promise<Designer> => {
+    const response = await axiosInstance.put('/designers/me', data);
+    return response.data;
+  },
+
+  updateDesignerPassword: async (data: PasswordUpdate): Promise<void> => {
+    await axiosInstance.put('/designers/me/password', data);
+  },
+
+  linkDesignerTelegram: async (telegramChatId: string): Promise<Designer> => {
+    const response = await axiosInstance.post('/designers/me/telegram', {
+      telegram_chat_id: telegramChatId,
+    });
+    return response.data;
+  },
+
+  getDesignerCatalogCompanies: async (): Promise<Company[]> => {
+    const response = await axiosInstance.get('/designers/catalog/companies');
+    return response.data;
+  },
+
+  getDesignerCatalogProducts: async (companyId: number): Promise<Product[]> => {
+    const response = await axiosInstance.get(`/designers/catalog/companies/${companyId}/products`);
+    return response.data;
+  },
+
+  getMyDesignerCompanies: async (): Promise<Company[]> => {
+    const response = await axiosInstance.get('/designers/me/companies');
+    return response.data;
+  },
+
+  joinDesignerCompany: async (companyId: number): Promise<DesignerCompany> => {
+    const response = await axiosInstance.post(`/designers/me/join-company/${companyId}`);
+    return response.data;
+  },
+
+  createDesignerManualOrder: async (body: DesignerManualOrderCreate): Promise<Order> => {
+    const response = await axiosInstance.post('/designers/me/manual-orders', body);
+    return response.data;
+  },
+
+  getDesignerInvite: async (token: string): Promise<DesignerInvite> => {
+    const response = await axios.get<DesignerInvite>(`${BASE_URL}/designers/invites/${encodeURIComponent(token)}`);
+    return response.data;
+  },
+
+  acceptDesignerInvite: async (token: string, body: DesignerInviteAccept): Promise<TokenResponse> => {
+    const response = await axios.post<TokenResponse>(
+      `${BASE_URL}/designers/invites/${encodeURIComponent(token)}/accept`,
+      body
+    );
+    return response.data;
+  },
+
+  getCompanyDesigners: async (): Promise<DesignerCompanyWithDesigner[]> => {
+    const response = await axiosInstance.get('/companies/me/designers');
+    return response.data;
+  },
+
+  createDesignerInvite: async (body: DesignerInviteCreate): Promise<DesignerInvite> => {
+    const response = await axiosInstance.post('/companies/me/designer-invites', body);
+    return response.data;
+  },
+
+  patchDesignerBonus: async (designerId: number, body: DesignerBonusUpdate): Promise<DesignerCompany> => {
+    const response = await axiosInstance.patch(`/companies/me/designers/${designerId}/bonus`, body);
+    return response.data;
+  },
+
+  recordAffiliateVisit: async (code: string): Promise<void> => {
+    await axiosInstance.post('/analytics/visit', { code });
+  },
+
+  getAnalyticsDashboard: async (): Promise<AnalyticsDashboard> => {
+    const response = await axiosInstance.get('/analytics/dashboard');
+    return response.data;
+  },
+
+  getAnalyticsLeaderboard: async (): Promise<DesignerRanking[]> => {
+    const response = await axiosInstance.get('/analytics/leaderboard');
+    return response.data;
+  },
+
+  getDesignerAnalytics: async (designerId: number): Promise<Analytics[]> => {
+    const response = await axiosInstance.get(`/analytics/designer/${designerId}`);
+    return response.data;
+  },
+
+  getMyStats: async (): Promise<Analytics[]> => {
+    const response = await axiosInstance.get('/analytics/my-stats');
+    return response.data;
+  },
+
+  getCompanyProductOrderAnalytics: async (params?: {
+    sort?: CompanyAnalyticsSort;
+    from?: string | null;
+    to?: string | null;
+  }): Promise<CompanyProductAnalyticsRow[]> => {
+    const response = await axiosInstance.get('/analytics/company/products', {
+      params: {
+        sort: params?.sort ?? 'revenue',
+        from: params?.from ?? undefined,
+        to: params?.to ?? undefined,
+      },
+    });
+    return response.data;
+  },
+
+  getCompanyProductDesignerBreakdown: async (
+    productId: number,
+    params?: { sort?: CompanyAnalyticsSort; from?: string | null; to?: string | null }
+  ): Promise<CompanyProductDesignerBreakdownRow[]> => {
+    const response = await axiosInstance.get(`/analytics/company/products/${productId}/designers`, {
+      params: {
+        sort: params?.sort ?? 'revenue',
+        from: params?.from ?? undefined,
+        to: params?.to ?? undefined,
+      },
+    });
+    return response.data;
+  },
+
+  getCompanyDesignerAnalytics: async (params?: {
+    sort?: CompanyAnalyticsSort;
+    from?: string | null;
+    to?: string | null;
+  }): Promise<CompanyDesignerAnalyticsRow[]> => {
+    const response = await axiosInstance.get('/analytics/company/designers', {
+      params: {
+        sort: params?.sort ?? 'revenue',
+        from: params?.from ?? undefined,
+        to: params?.to ?? undefined,
+      },
+    });
+    return response.data;
+  },
+
+  getCompanyDesignerProductBreakdown: async (
+    designerId: number,
+    params?: { sort?: CompanyAnalyticsSort; from?: string | null; to?: string | null }
+  ): Promise<CompanyDesignerProductBreakdownRow[]> => {
+    const response = await axiosInstance.get(`/analytics/company/designers/${designerId}/products`, {
+      params: {
+        sort: params?.sort ?? 'revenue',
+        from: params?.from ?? undefined,
+        to: params?.to ?? undefined,
+      },
+    });
+    return response.data;
+  },
+
+  getMyOrders: async (skip = 0, limit = 100): Promise<OrderWithDetails[]> => {
+    const response = await axiosInstance.get('/orders/my-orders', { params: { skip, limit } });
+    return response.data;
+  },
+
   getProductAnalytics: async (productId: number): Promise<Analytics[]> => {
     const response = await axiosInstance.get(`/products/${productId}/analytics`);
     return response.data;
   },
 
-  // Company endpoints (for Telegram linking - part of affiliate module)
   linkTelegram: async (companyId: number, telegramChatId: string): Promise<Company> => {
     const response = await axiosInstance.post(`/companies/${companyId}/telegram`, {
       telegram_chat_id: telegramChatId,
@@ -272,16 +440,9 @@ const api = {
     return response.data;
   },
 
-  linkBloggerTelegram: async (telegramChatId: string): Promise<Blogger> => {
-    const response = await axiosInstance.post('/bloggers/me/telegram', {
-      telegram_chat_id: telegramChatId,
-    });
-    return response.data;
-  },
-
-  getTelegramSetup: async (companyId: number): Promise<any> => {
+  getTelegramSetup: async (companyId: number): Promise<CompanyTelegramSetup> => {
     const response = await axiosInstance.get(`/companies/${companyId}/telegram/setup`);
-    return response.data;
+    return response.data as CompanyTelegramSetup;
   },
 
   getCompanyAnalytics: async (companyId: number): Promise<Analytics[]> => {
@@ -289,18 +450,15 @@ const api = {
     return response.data;
   },
 
-  // OAuth endpoints (frontend-first flow)
-  getGoogleAuthorizeUrl: async (userType: 'company' | 'blogger'): Promise<{
+  getGoogleAuthorizeUrl: async (
+    userType: 'company' | 'designer'
+  ): Promise<{
     authorization_url: string;
     state: string;
     redirect_uri: string;
   }> => {
-    // Backend uses FRONTEND_URL env var to construct redirect_uri
-    // Make sure FRONTEND_URL matches what's registered in Google OAuth Console
     const response = await axiosInstance.get('/auth/google/authorize-url', {
-      params: { 
-        user_type: userType,
-      },
+      params: { user_type: userType },
     });
     return response.data;
   },
@@ -309,25 +467,12 @@ const api = {
     code: string;
     state: string;
     redirect_uri: string;
-    user_type: 'company' | 'blogger';
+    user_type: 'company' | 'designer';
   }): Promise<TokenResponse> => {
-    try {
-      const response = await axiosInstance.post('/auth/google/exchange', data);
-      return response.data;
-    } catch (error: any) {
-      console.error('exchangeGoogleCode error:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        requestData: {
-          ...data,
-          code: data.code?.substring(0, 20) + '...', // Log partial code
-        },
-      });
-      throw error;
-    }
+    const response = await axiosInstance.post('/auth/google/exchange', data);
+    return response.data;
   },
 
-  // Company endpoints
   createCompany: async (companyData: CompanyCreate): Promise<Company> => {
     const response = await axiosInstance.post('/companies/', companyData);
     return response.data;
@@ -338,8 +483,8 @@ const api = {
     return response.data;
   },
 
-  getMyCompany: async (companyId: number): Promise<Company> => {
-    const response = await axiosInstance.get(`/companies/me/${companyId}`);
+  getMyCompany: async (_companyId: number): Promise<Company> => {
+    const response = await axiosInstance.get(`/companies/me`);
     return response.data;
   },
 
@@ -366,7 +511,6 @@ const api = {
     return response.data;
   },
 
-  // Company Answers endpoints
   getCompanyAnswers: async (companyId: number): Promise<CompanyAnswers> => {
     const response = await axiosInstance.get(`/companies/${companyId}/answers`);
     return response.data;
@@ -380,8 +524,10 @@ const api = {
     return response.data;
   },
 
-  // Decision endpoints (hypothesis_generator, cusdev_target_planner, custdev_insights_analyzer, custdev_interview_designer)
-  generateHypothesisGenerator: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolOutput> => {
+  generateHypothesisGenerator: async (
+    companyId: number,
+    body?: { answers?: Record<string, unknown>; language?: string }
+  ): Promise<ToolOutput> => {
     const response = await axiosInstance.post(`/companies/${companyId}/hypothesis-generator/generate`, body ?? {});
     return response.data;
   },
@@ -391,7 +537,10 @@ const api = {
     return response.data;
   },
 
-  generateCustdevTargetPlanner: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolOutput> => {
+  generateCustdevTargetPlanner: async (
+    companyId: number,
+    body?: { answers?: Record<string, unknown>; language?: string }
+  ): Promise<ToolOutput> => {
     const response = await axiosInstance.post(`/companies/${companyId}/cusdev-target-planner/generate`, body ?? {});
     return response.data;
   },
@@ -401,7 +550,10 @@ const api = {
     return response.data;
   },
 
-  generateCustdevInterviewDesigner: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolOutput> => {
+  generateCustdevInterviewDesigner: async (
+    companyId: number,
+    body?: { answers?: Record<string, unknown>; language?: string }
+  ): Promise<ToolOutput> => {
     const response = await axiosInstance.post(`/companies/${companyId}/custdev-interview-designer/generate`, body ?? {});
     return response.data;
   },
@@ -411,14 +563,15 @@ const api = {
     return response.data;
   },
 
-  generateCustdevInsightsAnalyzer: async (companyId: number, body?: { answers?: Record<string, unknown>; language?: string }): Promise<ToolOutput> => {
+  generateCustdevInsightsAnalyzer: async (
+    companyId: number,
+    body?: { answers?: Record<string, unknown>; language?: string }
+  ): Promise<ToolOutput> => {
     const response = await axiosInstance.post(`/companies/${companyId}/custdev-insights-analyzer/generate`, body ?? {});
     return response.data;
   },
 
-  // Iteration endpoints
-
-  getIterations: async (companyId: number): Promise<{iterations: Iteration[]}> => {
+  getIterations: async (companyId: number): Promise<{ iterations: Iteration[] }> => {
     const response = await axiosInstance.get(`/api/iterations/${companyId}`);
     return response.data;
   },
@@ -453,7 +606,6 @@ const api = {
     return response.data;
   },
 
-  // Admin endpoints
   getAllCompanies: async (skip = 0, limit = 100): Promise<Company[]> => {
     const response = await axiosInstance.get('/admin/companies', {
       params: { skip, limit },
@@ -466,12 +618,15 @@ const api = {
     return response.data;
   },
 
-  // Admin endpoints - get company data as admin
+  patchAdminCompany: async (companyId: number, body: CompanySubscriptionAdminUpdate): Promise<Company> => {
+    const response = await axiosInstance.patch(`/admin/companies/${companyId}`, body);
+    return response.data;
+  },
+
   getCompanyAnswersAdmin: async (companyId: number): Promise<CompanyAnswers> => {
     const response = await axiosInstance.get(`/admin/companies/${companyId}/answers`);
     return response.data;
   },
-
 };
 
 export default api;

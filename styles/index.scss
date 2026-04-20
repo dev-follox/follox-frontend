@@ -5,6 +5,7 @@
 // Import base styles
 @import './base/_variables.scss';
 @import './base/_typography.scss';
+@import './base/_radius-reset.scss';
 
 // Import component styles
 @import './components/_button.scss';
@@ -23,11 +24,7 @@
 @import './layouts/_main-layout.scss';
 
 // Import page styles
-@import './pages/_auth-landing.scss';
 @import './pages/_home.scss';
-@import './pages/_dashboard.scss';
-@import './pages/_company-dashboard.scss';
-@import './pages/_bloggers.scss';
 @import './pages/_qa.scss';
 @import './pages/_decisions.scss';
 @import './pages/_product-details.scss';
@@ -35,7 +32,6 @@
 @import './pages/_registration.scss';
 @import './pages/_not-found.scss';
 @import './pages/_auth-callback.scss';
-@import './pages/_blogger-products.scss';
 @import './pages/_admin.scss';
 @import './pages/_profile.scss';
 

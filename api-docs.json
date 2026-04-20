@@ -323,14 +323,89 @@
         }
       }
     },
-    "/companies/{company_id}/bloggers": {
+    "/companies/me/designer-invites": {
+      "post": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Invite Designer",
+        "operationId": "invite_designer_companies_me_designer_invites_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DesignerInviteCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesignerInvite"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/companies/me/designers": {
       "get": {
         "tags": [
           "companies"
         ],
-        "summary": "Get Company Bloggers",
-        "description": "List all bloggers associated with this company.",
-        "operationId": "get_company_bloggers_companies__company_id__bloggers_get",
+        "summary": "List Company Designers",
+        "operationId": "list_company_designers_companies_me_designers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DesignerCompanyWithDesigner"
+                  },
+                  "type": "array",
+                  "title": "Response List Company Designers Companies Me Designers Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/companies/me/designers/{designer_id}/bonus": {
+      "patch": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Update Designer Bonus",
+        "operationId": "update_designer_bonus_companies_me_designers__designer_id__bonus_patch",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -338,29 +413,75 @@
         ],
         "parameters": [
           {
-            "name": "company_id",
+            "name": "designer_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
-              "title": "Company Id"
+              "title": "Designer Id"
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DesignerBonusUpdate"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Blogger"
-                  },
-                  "title": "Response Get Company Bloggers Companies  Company Id  Bloggers Get"
+                  "$ref": "#/components/schemas/DesignerCompany"
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/companies/me/affiliate-links/{link_id}": {
+      "delete": {
+        "tags": [
+          "companies"
+        ],
+        "summary": "Delete Company Affiliate Link",
+        "operationId": "delete_company_affiliate_link_companies_me_affiliate_links__link_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "link_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Link Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -486,9 +607,8 @@
         "tags": [
           "products"
         ],
-        "summary": "Get Products For Blogger",
-        "description": "Products accessible to the current blogger via their affiliate links.",
-        "operationId": "get_products_for_blogger_products_for_me_get",
+        "summary": "Get Products For Designer",
+        "operationId": "get_products_for_designer_products_for_me_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -499,7 +619,7 @@
                     "$ref": "#/components/schemas/Product"
                   },
                   "type": "array",
-                  "title": "Response Get Products For Blogger Products For Me Get"
+                  "title": "Response Get Products For Designer Products For Me Get"
                 }
               }
             }
@@ -517,9 +637,8 @@
         "tags": [
           "products"
         ],
-        "summary": "Get Products For Blogger Detailed",
-        "description": "Products for blogger with affiliate code and commission rate included.",
-        "operationId": "get_products_for_blogger_detailed_products_for_me_detailed_get",
+        "summary": "Get Products For Designer Detailed",
+        "operationId": "get_products_for_designer_detailed_products_for_me_detailed_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -642,22 +761,6 @@
             "schema": {
               "type": "integer",
               "title": "Product Id"
-            }
-          },
-          {
-            "name": "blogger_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Blogger Id"
             }
           }
         ],
@@ -932,7 +1035,6 @@
           "affiliate-links"
         ],
         "summary": "Get My Links",
-        "description": "Return all affiliate links for the authenticated blogger.",
         "operationId": "get_my_links_affiliate_links_my_links_get",
         "responses": {
           "200": {
@@ -941,7 +1043,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/AffiliateLinkDetail"
+                    "$ref": "#/components/schemas/AffiliateLinkWithRollup"
                   },
                   "type": "array",
                   "title": "Response Get My Links Affiliate Links My Links Get"
@@ -963,7 +1065,6 @@
           "affiliate-links"
         ],
         "summary": "Get Affiliate Link",
-        "description": "Resolve an affiliate code — also increments click counter.",
         "operationId": "get_affiliate_link_affiliate_links__code__get",
         "parameters": [
           {
@@ -1005,8 +1106,8 @@
         "tags": [
           "affiliate-links"
         ],
-        "summary": "Delete Affiliate Link",
-        "operationId": "delete_affiliate_link_affiliate_links__link_id__delete",
+        "summary": "Delete My Affiliate Link",
+        "operationId": "delete_my_affiliate_link_affiliate_links__link_id__delete",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1040,145 +1141,18 @@
         }
       }
     },
-    "/bloggers/": {
+    "/designers/": {
       "post": {
         "tags": [
-          "bloggers"
+          "designers"
         ],
-        "summary": "Create Blogger",
-        "description": "Self-register a new blogger account.",
-        "operationId": "create_blogger_bloggers__post",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BloggerCreate"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Blogger"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "bloggers"
-        ],
-        "summary": "Get Bloggers",
-        "description": "List all bloggers associated with the current company.",
-        "operationId": "get_bloggers_bloggers__get",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "skip",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 0,
-              "title": "Skip"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 100,
-              "title": "Limit"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Blogger"
-                  },
-                  "title": "Response Get Bloggers Bloggers  Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/bloggers/me": {
-      "get": {
-        "tags": [
-          "bloggers"
-        ],
-        "summary": "Get Me",
-        "operationId": "get_me_bloggers_me_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Blogger"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "bloggers"
-        ],
-        "summary": "Update Me",
-        "operationId": "update_me_bloggers_me_put",
+        "summary": "Create Designer",
+        "operationId": "create_designer_designers__post",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BloggerUpdate"
+                "$ref": "#/components/schemas/DesignerCreate"
               }
             }
           },
@@ -1190,7 +1164,72 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Blogger"
+                  "$ref": "#/components/schemas/Designer"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/designers/me": {
+      "get": {
+        "tags": [
+          "designers"
+        ],
+        "summary": "Get Me",
+        "operationId": "get_me_designers_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Designer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "designers"
+        ],
+        "summary": "Update Me",
+        "operationId": "update_me_designers_me_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DesignerUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Designer"
                 }
               }
             }
@@ -1213,13 +1252,13 @@
         ]
       }
     },
-    "/bloggers/me/password": {
+    "/designers/me/password": {
       "put": {
         "tags": [
-          "bloggers"
+          "designers"
         ],
         "summary": "Update My Password",
-        "operationId": "update_my_password_bloggers_me_password_put",
+        "operationId": "update_my_password_designers_me_password_put",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1252,14 +1291,13 @@
         ]
       }
     },
-    "/bloggers/me/telegram": {
+    "/designers/me/telegram": {
       "post": {
         "tags": [
-          "bloggers"
+          "designers"
         ],
         "summary": "Link Telegram",
-        "description": "Link a Telegram chat to the blogger's account for notifications.",
-        "operationId": "link_telegram_bloggers_me_telegram_post",
+        "operationId": "link_telegram_designers_me_telegram_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1276,7 +1314,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Blogger"
+                  "$ref": "#/components/schemas/Designer"
                 }
               }
             }
@@ -1299,14 +1337,13 @@
         ]
       }
     },
-    "/bloggers/me/companies": {
+    "/designers/catalog/companies": {
       "get": {
         "tags": [
-          "bloggers"
+          "designers"
         ],
-        "summary": "Get My Companies",
-        "description": "Return all companies the current blogger is associated with.",
-        "operationId": "get_my_companies_bloggers_me_companies_get",
+        "summary": "List Subscribed Companies",
+        "operationId": "list_subscribed_companies_designers_catalog_companies_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1317,7 +1354,7 @@
                     "$ref": "#/components/schemas/Company"
                   },
                   "type": "array",
-                  "title": "Response Get My Companies Bloggers Me Companies Get"
+                  "title": "Response List Subscribed Companies Designers Catalog Companies Get"
                 }
               }
             }
@@ -1330,69 +1367,26 @@
         ]
       }
     },
-    "/bloggers/invite": {
-      "post": {
-        "tags": [
-          "bloggers"
-        ],
-        "summary": "Invite Blogger",
-        "description": "Company sends an invite link to a blogger's email.",
-        "operationId": "invite_blogger_bloggers_invite_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BloggerInviteCreate"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BloggerInvite"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ]
-      }
-    },
-    "/bloggers/invite/{token}": {
+    "/designers/catalog/companies/{company_id}/products": {
       "get": {
         "tags": [
-          "bloggers"
+          "designers"
         ],
-        "summary": "Get Invite Info",
-        "description": "Fetch invite details so the frontend can pre-fill the registration form.",
-        "operationId": "get_invite_info_bloggers_invite__token__get",
+        "summary": "List Company Catalog",
+        "operationId": "list_company_catalog_designers_catalog_companies__company_id__products_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
         "parameters": [
           {
-            "name": "token",
+            "name": "company_id",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "title": "Token"
+              "type": "integer",
+              "title": "Company Id"
             }
           }
         ],
@@ -1402,7 +1396,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloggerInvite"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  },
+                  "title": "Response List Company Catalog Designers Catalog Companies  Company Id  Products Get"
                 }
               }
             }
@@ -1420,14 +1418,132 @@
         }
       }
     },
-    "/bloggers/invite/{token}/accept": {
+    "/designers/me/companies": {
+      "get": {
+        "tags": [
+          "designers"
+        ],
+        "summary": "Get My Companies",
+        "operationId": "get_my_companies_designers_me_companies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Company"
+                  },
+                  "type": "array",
+                  "title": "Response Get My Companies Designers Me Companies Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/designers/me/join-company/{company_id}": {
       "post": {
         "tags": [
-          "bloggers"
+          "designers"
+        ],
+        "summary": "Join Company",
+        "operationId": "join_company_designers_me_join_company__company_id__post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesignerCompany"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/designers/invites/{token}": {
+      "get": {
+        "tags": [
+          "designers"
+        ],
+        "summary": "Get Invite Info",
+        "operationId": "get_invite_info_designers_invites__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesignerInvite"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/designers/invites/{token}/accept": {
+      "post": {
+        "tags": [
+          "designers"
         ],
         "summary": "Accept Invite",
-        "description": "Accept an invite: creates a blogger account (or links existing) and\nassociates them with the inviting company.",
-        "operationId": "accept_invite_bloggers_invite__token__accept_post",
+        "operationId": "accept_invite_designers_invites__token__accept_post",
         "parameters": [
           {
             "name": "token",
@@ -1444,7 +1560,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BloggerInviteAccept"
+                "$ref": "#/components/schemas/DesignerInviteAccept"
               }
             }
           }
@@ -1473,37 +1589,30 @@
         }
       }
     },
-    "/bloggers/me/join-company/{company_id}": {
+    "/designers/me/manual-orders": {
       "post": {
         "tags": [
-          "bloggers"
+          "designers"
         ],
-        "summary": "Join Company",
-        "description": "Manually associate an authenticated blogger with a company.",
-        "operationId": "join_company_bloggers_me_join_company__company_id__post",
-        "security": [
-          {
-            "OAuth2PasswordBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "company_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Company Id"
+        "summary": "Create Manual Order",
+        "operationId": "create_manual_order_designers_me_manual_orders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DesignerManualOrderCreate"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BloggerCompany"
+                  "$ref": "#/components/schemas/Order"
                 }
               }
             }
@@ -1518,7 +1627,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
       }
     },
     "/orders/": {
@@ -1566,7 +1680,6 @@
           "orders"
         ],
         "summary": "Get Orders",
-        "description": "All orders for the current company's products.",
         "operationId": "get_orders_orders__get",
         "security": [
           {
@@ -1628,9 +1741,8 @@
         "tags": [
           "orders"
         ],
-        "summary": "Get Blogger Orders",
-        "description": "All orders attributed to the current blogger.",
-        "operationId": "get_blogger_orders_orders_my_orders_get",
+        "summary": "Get Designer Orders",
+        "operationId": "get_designer_orders_orders_my_orders_get",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1668,7 +1780,7 @@
                   "items": {
                     "$ref": "#/components/schemas/OrderWithDetails"
                   },
-                  "title": "Response Get Blogger Orders Orders My Orders Get"
+                  "title": "Response Get Designer Orders Orders My Orders Get"
                 }
               }
             }
@@ -1737,7 +1849,6 @@
           "orders"
         ],
         "summary": "Update Order",
-        "description": "Update editable fields on an order (company-owned products only).",
         "operationId": "update_order_orders__order_id__put",
         "security": [
           {
@@ -1850,28 +1961,17 @@
           "analytics"
         ],
         "summary": "Record Visit",
-        "description": "Increment visit counter for a product/blogger pair.",
         "operationId": "record_visit_analytics_visit_post",
-        "parameters": [
-          {
-            "name": "product_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Product Id"
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AffiliateVisitRequest"
+              }
             }
           },
-          {
-            "name": "blogger_id",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Blogger Id"
-            }
-          }
-        ],
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1902,7 +2002,6 @@
           "analytics"
         ],
         "summary": "Get Dashboard",
-        "description": "Full analytics dashboard for the current company.",
         "operationId": "get_dashboard_analytics_dashboard_get",
         "responses": {
           "200": {
@@ -1929,7 +2028,6 @@
           "analytics"
         ],
         "summary": "Get Leaderboard",
-        "description": "Blogger rankings sorted by revenue for the current company.",
         "operationId": "get_leaderboard_analytics_leaderboard_get",
         "responses": {
           "200": {
@@ -1938,7 +2036,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/BloggerRanking"
+                    "$ref": "#/components/schemas/DesignerRanking"
                   },
                   "type": "array",
                   "title": "Response Get Leaderboard Analytics Leaderboard Get"
@@ -1954,14 +2052,13 @@
         ]
       }
     },
-    "/analytics/blogger/{blogger_id}": {
+    "/analytics/designer/{designer_id}": {
       "get": {
         "tags": [
           "analytics"
         ],
-        "summary": "Get Blogger Analytics",
-        "description": "Per-product analytics for a specific blogger (company-scoped).",
-        "operationId": "get_blogger_analytics_analytics_blogger__blogger_id__get",
+        "summary": "Get Designer Analytics",
+        "operationId": "get_designer_analytics_analytics_designer__designer_id__get",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1969,12 +2066,12 @@
         ],
         "parameters": [
           {
-            "name": "blogger_id",
+            "name": "designer_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
-              "title": "Blogger Id"
+              "title": "Designer Id"
             }
           }
         ],
@@ -1988,7 +2085,7 @@
                   "items": {
                     "$ref": "#/components/schemas/Analytics"
                   },
-                  "title": "Response Get Blogger Analytics Analytics Blogger  Blogger Id  Get"
+                  "title": "Response Get Designer Analytics Analytics Designer  Designer Id  Get"
                 }
               }
             }
@@ -2012,7 +2109,6 @@
           "analytics"
         ],
         "summary": "Get My Stats",
-        "description": "Blogger's own stats across all products.",
         "operationId": "get_my_stats_analytics_my_stats_get",
         "responses": {
           "200": {
@@ -2035,6 +2131,372 @@
             "OAuth2PasswordBearer": []
           }
         ]
+      }
+    },
+    "/analytics/company/products": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Company Product Order Analytics",
+        "operationId": "company_product_order_analytics_analytics_company_products_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(revenue|designer_bonus|platform_fee)$",
+              "default": "revenue",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CompanyProductAnalyticsRow"
+                  },
+                  "title": "Response Company Product Order Analytics Analytics Company Products Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/company/products/{product_id}/designers": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Company Product Designer Breakdown",
+        "operationId": "company_product_designer_breakdown_analytics_company_products__product_id__designers_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(revenue|designer_bonus|platform_fee)$",
+              "default": "revenue",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CompanyProductDesignerBreakdownRow"
+                  },
+                  "title": "Response Company Product Designer Breakdown Analytics Company Products  Product Id  Designers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/company/designers": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Company Designer Analytics",
+        "operationId": "company_designer_analytics_analytics_company_designers_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(revenue|designer_bonus|platform_fee)$",
+              "default": "revenue",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CompanyDesignerAnalyticsRow"
+                  },
+                  "title": "Response Company Designer Analytics Analytics Company Designers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/company/designers/{designer_id}/products": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Company Designer Product Breakdown",
+        "operationId": "company_designer_product_breakdown_analytics_company_designers__designer_id__products_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "designer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Designer Id"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(revenue|designer_bonus|platform_fee)$",
+              "default": "revenue",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CompanyDesignerProductBreakdownRow"
+                  },
+                  "title": "Response Company Designer Product Breakdown Analytics Company Designers  Designer Id  Products Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/admin/migrate": {
@@ -2213,6 +2675,61 @@
           }
         }
       },
+      "patch": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Patch Company Subscription",
+        "operationId": "patch_company_subscription_admin_companies__company_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Company Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanySubscriptionAdminUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Company"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "tags": [
           "admin"
@@ -2252,13 +2769,13 @@
         }
       }
     },
-    "/admin/bloggers": {
+    "/admin/designers": {
       "get": {
         "tags": [
           "admin"
         ],
-        "summary": "List Bloggers",
-        "operationId": "list_bloggers_admin_bloggers_get",
+        "summary": "List Designers",
+        "operationId": "list_designers_admin_designers_get",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2294,9 +2811,9 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Blogger"
+                    "$ref": "#/components/schemas/Designer"
                   },
-                  "title": "Response List Bloggers Admin Bloggers Get"
+                  "title": "Response List Designers Admin Designers Get"
                 }
               }
             }
@@ -2314,13 +2831,13 @@
         }
       }
     },
-    "/admin/bloggers/{blogger_id}": {
+    "/admin/designers/{designer_id}": {
       "get": {
         "tags": [
           "admin"
         ],
-        "summary": "Get Blogger",
-        "operationId": "get_blogger_admin_bloggers__blogger_id__get",
+        "summary": "Get Designer",
+        "operationId": "get_designer_admin_designers__designer_id__get",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2328,12 +2845,12 @@
         ],
         "parameters": [
           {
-            "name": "blogger_id",
+            "name": "designer_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
-              "title": "Blogger Id"
+              "title": "Designer Id"
             }
           }
         ],
@@ -2343,7 +2860,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Blogger"
+                  "$ref": "#/components/schemas/Designer"
                 }
               }
             }
@@ -2364,8 +2881,8 @@
         "tags": [
           "admin"
         ],
-        "summary": "Delete Blogger",
-        "operationId": "delete_blogger_admin_bloggers__blogger_id__delete",
+        "summary": "Delete Designer",
+        "operationId": "delete_designer_admin_designers__designer_id__delete",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2373,12 +2890,12 @@
         ],
         "parameters": [
           {
-            "name": "blogger_id",
+            "name": "designer_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
-              "title": "Blogger Id"
+              "title": "Designer Id"
             }
           }
         ],
@@ -2599,7 +3116,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "blogger",
+              "default": "designer",
               "title": "User Type"
             }
           }
@@ -2693,7 +3210,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "blogger",
+              "default": "designer",
               "title": "User Type"
             }
           }
@@ -2929,14 +3446,6 @@
       },
       "AffiliateLink": {
         "properties": {
-          "product_id": {
-            "type": "integer",
-            "title": "Product Id"
-          },
-          "blogger_id": {
-            "type": "integer",
-            "title": "Blogger Id"
-          },
           "id": {
             "type": "integer",
             "title": "Id"
@@ -2944,6 +3453,14 @@
           "code": {
             "type": "string",
             "title": "Code"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "designer_id": {
+            "type": "integer",
+            "title": "Designer Id"
           },
           "click_count": {
             "type": "integer",
@@ -2969,10 +3486,10 @@
         },
         "type": "object",
         "required": [
-          "product_id",
-          "blogger_id",
           "id",
           "code",
+          "product_id",
+          "designer_id",
           "click_count",
           "created_at"
         ],
@@ -2983,29 +3500,16 @@
           "product_id": {
             "type": "integer",
             "title": "Product Id"
-          },
-          "blogger_id": {
-            "type": "integer",
-            "title": "Blogger Id"
           }
         },
         "type": "object",
         "required": [
-          "product_id",
-          "blogger_id"
+          "product_id"
         ],
         "title": "AffiliateLinkCreate"
       },
       "AffiliateLinkDetail": {
         "properties": {
-          "product_id": {
-            "type": "integer",
-            "title": "Product Id"
-          },
-          "blogger_id": {
-            "type": "integer",
-            "title": "Blogger Id"
-          },
           "id": {
             "type": "integer",
             "title": "Id"
@@ -3013,6 +3517,14 @@
           "code": {
             "type": "string",
             "title": "Code"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "designer_id": {
+            "type": "integer",
+            "title": "Designer Id"
           },
           "click_count": {
             "type": "integer",
@@ -3038,32 +3550,67 @@
           "product": {
             "$ref": "#/components/schemas/Product"
           },
-          "blogger": {
-            "$ref": "#/components/schemas/Blogger"
+          "designer": {
+            "$ref": "#/components/schemas/Designer"
           }
         },
         "type": "object",
         "required": [
-          "product_id",
-          "blogger_id",
           "id",
           "code",
+          "product_id",
+          "designer_id",
           "click_count",
           "created_at",
           "product",
-          "blogger"
+          "designer"
         ],
         "title": "AffiliateLinkDetail"
       },
-      "Analytics": {
+      "AffiliateLinkWithRollup": {
         "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
           "product_id": {
             "type": "integer",
             "title": "Product Id"
           },
-          "blogger_id": {
+          "designer_id": {
             "type": "integer",
-            "title": "Blogger Id"
+            "title": "Designer Id"
+          },
+          "click_count": {
+            "type": "integer",
+            "title": "Click Count"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "product": {
+            "$ref": "#/components/schemas/Product"
+          },
+          "designer": {
+            "$ref": "#/components/schemas/Designer"
           },
           "visit_count": {
             "type": "integer",
@@ -3085,14 +3632,99 @@
             "title": "Revenue",
             "default": 0
           },
-          "commission_paid": {
+          "designer_bonus_paid": {
             "type": "number",
-            "title": "Commission Paid",
+            "title": "Designer Bonus Paid",
             "default": 0
           },
+          "platform_fee_paid": {
+            "type": "number",
+            "title": "Platform Fee Paid",
+            "default": 0
+          },
+          "effective_bonus_percent": {
+            "type": "number",
+            "title": "Effective Bonus Percent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "product_id",
+          "designer_id",
+          "click_count",
+          "created_at",
+          "product",
+          "designer",
+          "effective_bonus_percent"
+        ],
+        "title": "AffiliateLinkWithRollup"
+      },
+      "AffiliateVisitRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "AffiliateVisitRequest"
+      },
+      "Analytics": {
+        "properties": {
           "id": {
             "type": "integer",
             "title": "Id"
+          },
+          "affiliate_link_id": {
+            "type": "integer",
+            "title": "Affiliate Link Id"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "designer_id": {
+            "type": "integer",
+            "title": "Designer Id"
+          },
+          "visit_count": {
+            "type": "integer",
+            "title": "Visit Count",
+            "default": 0
+          },
+          "order_count": {
+            "type": "integer",
+            "title": "Order Count",
+            "default": 0
+          },
+          "items_sold": {
+            "type": "integer",
+            "title": "Items Sold",
+            "default": 0
+          },
+          "revenue": {
+            "type": "number",
+            "title": "Revenue",
+            "default": 0
+          },
+          "designer_bonus_paid": {
+            "type": "number",
+            "title": "Designer Bonus Paid",
+            "default": 0
+          },
+          "platform_fee_paid": {
+            "type": "number",
+            "title": "Platform Fee Paid",
+            "default": 0
           },
           "created_at": {
             "type": "string",
@@ -3111,10 +3743,10 @@
             ],
             "title": "Updated At"
           },
-          "blogger": {
+          "designer": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/Blogger"
+                "$ref": "#/components/schemas/Designer"
               },
               {
                 "type": "null"
@@ -3134,9 +3766,11 @@
         },
         "type": "object",
         "required": [
-          "product_id",
-          "blogger_id",
           "id",
+          "affiliate_link_id",
+          "product_id",
+          "company_id",
+          "designer_id",
           "created_at"
         ],
         "title": "Analytics"
@@ -3159,23 +3793,27 @@
             "type": "number",
             "title": "Total Revenue"
           },
-          "total_commission_paid": {
+          "total_designer_bonus": {
             "type": "number",
-            "title": "Total Commission Paid"
+            "title": "Total Designer Bonus"
           },
-          "blogger_rankings": {
+          "total_platform_fee": {
+            "type": "number",
+            "title": "Total Platform Fee"
+          },
+          "designer_rankings": {
             "items": {
-              "$ref": "#/components/schemas/BloggerRanking"
+              "$ref": "#/components/schemas/DesignerRanking"
             },
             "type": "array",
-            "title": "Blogger Rankings"
+            "title": "Designer Rankings"
           },
-          "per_product": {
+          "per_link": {
             "items": {
               "$ref": "#/components/schemas/Analytics"
             },
             "type": "array",
-            "title": "Per Product"
+            "title": "Per Link"
           }
         },
         "type": "object",
@@ -3184,290 +3822,12 @@
           "total_orders",
           "total_items_sold",
           "total_revenue",
-          "total_commission_paid",
-          "blogger_rankings",
-          "per_product"
+          "total_designer_bonus",
+          "total_platform_fee",
+          "designer_rankings",
+          "per_link"
         ],
         "title": "AnalyticsDashboard"
-      },
-      "Blogger": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "title": "Email"
-          },
-          "bio": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bio"
-          },
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "telegram_chat_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Telegram Chat Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          },
-          "updated_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Updated At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "name",
-          "email",
-          "id",
-          "created_at"
-        ],
-        "title": "Blogger"
-      },
-      "BloggerCompany": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "blogger_id": {
-            "type": "integer",
-            "title": "Blogger Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "blogger_id",
-          "company_id",
-          "created_at"
-        ],
-        "title": "BloggerCompany"
-      },
-      "BloggerCreate": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "email": {
-            "type": "string",
-            "format": "email",
-            "title": "Email"
-          },
-          "bio": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bio"
-          },
-          "password": {
-            "type": "string",
-            "title": "Password"
-          }
-        },
-        "type": "object",
-        "required": [
-          "name",
-          "email",
-          "password"
-        ],
-        "title": "BloggerCreate"
-      },
-      "BloggerInvite": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "company_id": {
-            "type": "integer",
-            "title": "Company Id"
-          },
-          "blogger_email": {
-            "type": "string",
-            "title": "Blogger Email"
-          },
-          "token": {
-            "type": "string",
-            "title": "Token"
-          },
-          "status": {
-            "$ref": "#/components/schemas/InviteStatus"
-          },
-          "expires_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Expires At"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "company_id",
-          "blogger_email",
-          "token",
-          "status",
-          "expires_at",
-          "created_at"
-        ],
-        "title": "BloggerInvite"
-      },
-      "BloggerInviteAccept": {
-        "properties": {
-          "token": {
-            "type": "string",
-            "title": "Token"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "password": {
-            "type": "string",
-            "title": "Password"
-          }
-        },
-        "type": "object",
-        "required": [
-          "token",
-          "name",
-          "password"
-        ],
-        "title": "BloggerInviteAccept"
-      },
-      "BloggerInviteCreate": {
-        "properties": {
-          "blogger_email": {
-            "type": "string",
-            "format": "email",
-            "title": "Blogger Email"
-          }
-        },
-        "type": "object",
-        "required": [
-          "blogger_email"
-        ],
-        "title": "BloggerInviteCreate"
-      },
-      "BloggerRanking": {
-        "properties": {
-          "blogger": {
-            "$ref": "#/components/schemas/Blogger"
-          },
-          "total_visits": {
-            "type": "integer",
-            "title": "Total Visits"
-          },
-          "total_orders": {
-            "type": "integer",
-            "title": "Total Orders"
-          },
-          "total_items_sold": {
-            "type": "integer",
-            "title": "Total Items Sold"
-          },
-          "total_revenue": {
-            "type": "number",
-            "title": "Total Revenue"
-          },
-          "total_commission": {
-            "type": "number",
-            "title": "Total Commission"
-          },
-          "conversion_rate": {
-            "type": "number",
-            "title": "Conversion Rate"
-          }
-        },
-        "type": "object",
-        "required": [
-          "blogger",
-          "total_visits",
-          "total_orders",
-          "total_items_sold",
-          "total_revenue",
-          "total_commission",
-          "conversion_rate"
-        ],
-        "title": "BloggerRanking"
-      },
-      "BloggerUpdate": {
-        "properties": {
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name"
-          },
-          "bio": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Bio"
-          }
-        },
-        "type": "object",
-        "title": "BloggerUpdate"
       },
       "Body_login_for_access_token_token_post": {
         "properties": {
@@ -3594,6 +3954,22 @@
             ],
             "title": "Telegram Chat Id"
           },
+          "default_designer_bonus_percent": {
+            "type": "number",
+            "title": "Default Designer Bonus Percent"
+          },
+          "subscription_expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscription Expires At"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -3618,6 +3994,7 @@
           "email",
           "company_name",
           "id",
+          "default_designer_bonus_percent",
           "created_at"
         ],
         "title": "Company"
@@ -3662,6 +4039,12 @@
           "password": {
             "type": "string",
             "title": "Password"
+          },
+          "default_designer_bonus_percent": {
+            "type": "number",
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Default Designer Bonus Percent"
           }
         },
         "type": "object",
@@ -3669,9 +4052,203 @@
           "full_name",
           "email",
           "company_name",
-          "password"
+          "password",
+          "default_designer_bonus_percent"
         ],
         "title": "CompanyCreate"
+      },
+      "CompanyDesignerAnalyticsRow": {
+        "properties": {
+          "designer_id": {
+            "type": "integer",
+            "title": "Designer Id"
+          },
+          "designer_name": {
+            "type": "string",
+            "title": "Designer Name"
+          },
+          "designer_email": {
+            "type": "string",
+            "title": "Designer Email"
+          },
+          "items_sold": {
+            "type": "integer",
+            "title": "Items Sold"
+          },
+          "revenue": {
+            "type": "number",
+            "title": "Revenue"
+          },
+          "designer_bonus": {
+            "type": "number",
+            "title": "Designer Bonus"
+          },
+          "platform_fee": {
+            "type": "number",
+            "title": "Platform Fee"
+          }
+        },
+        "type": "object",
+        "required": [
+          "designer_id",
+          "designer_name",
+          "designer_email",
+          "items_sold",
+          "revenue",
+          "designer_bonus",
+          "platform_fee"
+        ],
+        "title": "CompanyDesignerAnalyticsRow"
+      },
+      "CompanyDesignerProductBreakdownRow": {
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "items_sold": {
+            "type": "integer",
+            "title": "Items Sold"
+          },
+          "revenue": {
+            "type": "number",
+            "title": "Revenue"
+          },
+          "designer_bonus": {
+            "type": "number",
+            "title": "Designer Bonus"
+          },
+          "platform_fee": {
+            "type": "number",
+            "title": "Platform Fee"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "product_name",
+          "items_sold",
+          "revenue",
+          "designer_bonus",
+          "platform_fee"
+        ],
+        "title": "CompanyDesignerProductBreakdownRow"
+      },
+      "CompanyProductAnalyticsRow": {
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "items_sold": {
+            "type": "integer",
+            "title": "Items Sold"
+          },
+          "revenue": {
+            "type": "number",
+            "title": "Revenue"
+          },
+          "designer_bonus": {
+            "type": "number",
+            "title": "Designer Bonus"
+          },
+          "platform_fee": {
+            "type": "number",
+            "title": "Platform Fee"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "product_name",
+          "items_sold",
+          "revenue",
+          "designer_bonus",
+          "platform_fee"
+        ],
+        "title": "CompanyProductAnalyticsRow"
+      },
+      "CompanyProductDesignerBreakdownRow": {
+        "properties": {
+          "designer_id": {
+            "type": "integer",
+            "title": "Designer Id"
+          },
+          "designer_name": {
+            "type": "string",
+            "title": "Designer Name"
+          },
+          "designer_email": {
+            "type": "string",
+            "title": "Designer Email"
+          },
+          "items_sold": {
+            "type": "integer",
+            "title": "Items Sold"
+          },
+          "revenue": {
+            "type": "number",
+            "title": "Revenue"
+          },
+          "designer_bonus": {
+            "type": "number",
+            "title": "Designer Bonus"
+          },
+          "platform_fee": {
+            "type": "number",
+            "title": "Platform Fee"
+          }
+        },
+        "type": "object",
+        "required": [
+          "designer_id",
+          "designer_name",
+          "designer_email",
+          "items_sold",
+          "revenue",
+          "designer_bonus",
+          "platform_fee"
+        ],
+        "title": "CompanyProductDesignerBreakdownRow"
+      },
+      "CompanySubscriptionAdminUpdate": {
+        "properties": {
+          "subscription_expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subscription Expires At"
+          },
+          "default_designer_bonus_percent": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100,
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Designer Bonus Percent"
+          }
+        },
+        "type": "object",
+        "title": "CompanySubscriptionAdminUpdate"
       },
       "CompanyUpdate": {
         "properties": {
@@ -3718,10 +4295,447 @@
               }
             ],
             "title": "Description"
+          },
+          "default_designer_bonus_percent": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100,
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Designer Bonus Percent"
           }
         },
         "type": "object",
         "title": "CompanyUpdate"
+      },
+      "Designer": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "bio": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bio"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "telegram_chat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Chat Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "id",
+          "created_at"
+        ],
+        "title": "Designer"
+      },
+      "DesignerBonusUpdate": {
+        "properties": {
+          "bonus_percent_override": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100,
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bonus Percent Override"
+          }
+        },
+        "type": "object",
+        "title": "DesignerBonusUpdate"
+      },
+      "DesignerCompany": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "designer_id": {
+            "type": "integer",
+            "title": "Designer Id"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "bonus_percent_override": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bonus Percent Override"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "designer_id",
+          "company_id",
+          "created_at"
+        ],
+        "title": "DesignerCompany"
+      },
+      "DesignerCompanyWithDesigner": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "designer_id": {
+            "type": "integer",
+            "title": "Designer Id"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "bonus_percent_override": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bonus Percent Override"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "designer": {
+            "$ref": "#/components/schemas/Designer"
+          },
+          "effective_bonus_percent": {
+            "type": "number",
+            "title": "Effective Bonus Percent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "designer_id",
+          "company_id",
+          "created_at",
+          "designer",
+          "effective_bonus_percent"
+        ],
+        "title": "DesignerCompanyWithDesigner"
+      },
+      "DesignerCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "bio": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bio"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "title": "DesignerCreate"
+      },
+      "DesignerInvite": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "company_id": {
+            "type": "integer",
+            "title": "Company Id"
+          },
+          "designer_email": {
+            "type": "string",
+            "title": "Designer Email"
+          },
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InviteStatus"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "company_id",
+          "designer_email",
+          "token",
+          "status",
+          "expires_at",
+          "created_at"
+        ],
+        "title": "DesignerInvite"
+      },
+      "DesignerInviteAccept": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "name",
+          "password"
+        ],
+        "title": "DesignerInviteAccept"
+      },
+      "DesignerInviteCreate": {
+        "properties": {
+          "designer_email": {
+            "type": "string",
+            "format": "email",
+            "title": "Designer Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "designer_email"
+        ],
+        "title": "DesignerInviteCreate"
+      },
+      "DesignerManualOrderCreate": {
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "price_per_item": {
+            "type": "number",
+            "title": "Price Per Item"
+          },
+          "client_phone": {
+            "type": "string",
+            "title": "Client Phone"
+          },
+          "client_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Name"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "attachment_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "quantity",
+          "price_per_item",
+          "client_phone"
+        ],
+        "title": "DesignerManualOrderCreate"
+      },
+      "DesignerRanking": {
+        "properties": {
+          "designer": {
+            "$ref": "#/components/schemas/Designer"
+          },
+          "total_visits": {
+            "type": "integer",
+            "title": "Total Visits"
+          },
+          "total_orders": {
+            "type": "integer",
+            "title": "Total Orders"
+          },
+          "total_items_sold": {
+            "type": "integer",
+            "title": "Total Items Sold"
+          },
+          "total_revenue": {
+            "type": "number",
+            "title": "Total Revenue"
+          },
+          "total_designer_bonus": {
+            "type": "number",
+            "title": "Total Designer Bonus"
+          },
+          "total_platform_fee": {
+            "type": "number",
+            "title": "Total Platform Fee"
+          },
+          "conversion_rate": {
+            "type": "number",
+            "title": "Conversion Rate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "designer",
+          "total_visits",
+          "total_orders",
+          "total_items_sold",
+          "total_revenue",
+          "total_designer_bonus",
+          "total_platform_fee",
+          "conversion_rate"
+        ],
+        "title": "DesignerRanking"
+      },
+      "DesignerUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "bio": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bio"
+          }
+        },
+        "type": "object",
+        "title": "DesignerUpdate"
       },
       "GoogleExchangeRequest": {
         "properties": {
@@ -3740,7 +4754,7 @@
           "user_type": {
             "type": "string",
             "title": "User Type",
-            "default": "blogger"
+            "default": "designer"
           }
         },
         "type": "object",
@@ -3779,9 +4793,9 @@
             "type": "integer",
             "title": "Product Id"
           },
-          "blogger_id": {
+          "designer_id": {
             "type": "integer",
-            "title": "Blogger Id"
+            "title": "Designer Id"
           },
           "quantity": {
             "type": "integer",
@@ -3832,9 +4846,28 @@
             ],
             "title": "Affiliate Link Id"
           },
-          "commission_amount": {
+          "line_revenue": {
             "type": "number",
-            "title": "Commission Amount"
+            "title": "Line Revenue"
+          },
+          "designer_bonus_amount": {
+            "type": "number",
+            "title": "Designer Bonus Amount"
+          },
+          "platform_fee_amount": {
+            "type": "number",
+            "title": "Platform Fee Amount"
+          },
+          "attachment_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment Url"
           },
           "is_manual": {
             "type": "boolean",
@@ -3864,12 +4897,14 @@
         "type": "object",
         "required": [
           "product_id",
-          "blogger_id",
+          "designer_id",
           "quantity",
           "price_per_item",
           "client_phone",
           "id",
-          "commission_amount",
+          "line_revenue",
+          "designer_bonus_amount",
+          "platform_fee_amount",
           "is_manual",
           "status",
           "created_at"
@@ -3882,9 +4917,9 @@
             "type": "integer",
             "title": "Product Id"
           },
-          "blogger_id": {
+          "designer_id": {
             "type": "integer",
-            "title": "Blogger Id"
+            "title": "Designer Id"
           },
           "quantity": {
             "type": "integer",
@@ -3940,7 +4975,7 @@
         "type": "object",
         "required": [
           "product_id",
-          "blogger_id",
+          "designer_id",
           "quantity",
           "price_per_item",
           "client_phone"
@@ -4012,9 +5047,9 @@
             "type": "integer",
             "title": "Product Id"
           },
-          "blogger_id": {
+          "designer_id": {
             "type": "integer",
-            "title": "Blogger Id"
+            "title": "Designer Id"
           },
           "quantity": {
             "type": "integer",
@@ -4065,9 +5100,28 @@
             ],
             "title": "Affiliate Link Id"
           },
-          "commission_amount": {
+          "line_revenue": {
             "type": "number",
-            "title": "Commission Amount"
+            "title": "Line Revenue"
+          },
+          "designer_bonus_amount": {
+            "type": "number",
+            "title": "Designer Bonus Amount"
+          },
+          "platform_fee_amount": {
+            "type": "number",
+            "title": "Platform Fee Amount"
+          },
+          "attachment_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment Url"
           },
           "is_manual": {
             "type": "boolean",
@@ -4103,10 +5157,10 @@
               }
             ]
           },
-          "blogger": {
+          "designer": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/Blogger"
+                "$ref": "#/components/schemas/Designer"
               },
               {
                 "type": "null"
@@ -4117,12 +5171,14 @@
         "type": "object",
         "required": [
           "product_id",
-          "blogger_id",
+          "designer_id",
           "quantity",
           "price_per_item",
           "client_phone",
           "id",
-          "commission_amount",
+          "line_revenue",
+          "designer_bonus_amount",
+          "platform_fee_amount",
           "is_manual",
           "status",
           "created_at"
@@ -4168,11 +5224,6 @@
             "type": "number",
             "title": "Price"
           },
-          "commission_rate": {
-            "type": "number",
-            "title": "Commission Rate",
-            "default": 0
-          },
           "image_url": {
             "anyOf": [
               {
@@ -4184,7 +5235,7 @@
             ],
             "title": "Image Url"
           },
-          "blogger_task_description": {
+          "designer_task_description": {
             "anyOf": [
               {
                 "type": "string"
@@ -4193,7 +5244,7 @@
                 "type": "null"
               }
             ],
-            "title": "Blogger Task Description"
+            "title": "Designer Task Description"
           },
           "id": {
             "type": "integer",
@@ -4252,11 +5303,6 @@
             "type": "number",
             "title": "Price"
           },
-          "commission_rate": {
-            "type": "number",
-            "title": "Commission Rate",
-            "default": 0
-          },
           "image_url": {
             "anyOf": [
               {
@@ -4268,7 +5314,7 @@
             ],
             "title": "Image Url"
           },
-          "blogger_task_description": {
+          "designer_task_description": {
             "anyOf": [
               {
                 "type": "string"
@@ -4277,7 +5323,7 @@
                 "type": "null"
               }
             ],
-            "title": "Blogger Task Description"
+            "title": "Designer Task Description"
           },
           "company_id": {
             "type": "integer",
@@ -4327,17 +5373,6 @@
             ],
             "title": "Price"
           },
-          "commission_rate": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Commission Rate"
-          },
           "image_url": {
             "anyOf": [
               {
@@ -4349,7 +5384,7 @@
             ],
             "title": "Image Url"
           },
-          "blogger_task_description": {
+          "designer_task_description": {
             "anyOf": [
               {
                 "type": "string"
@@ -4358,7 +5393,7 @@
                 "type": "null"
               }
             ],
-            "title": "Blogger Task Description"
+            "title": "Designer Task Description"
           }
         },
         "type": "object",
@@ -4398,7 +5433,7 @@
             ],
             "title": "Company Id"
           },
-          "blogger_id": {
+          "designer_id": {
             "anyOf": [
               {
                 "type": "integer"
@@ -4407,7 +5442,7 @@
                 "type": "null"
               }
             ],
-            "title": "Blogger Id"
+            "title": "Designer Id"
           },
           "admin_id": {
             "anyOf": [

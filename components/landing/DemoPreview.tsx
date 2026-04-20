@@ -14,6 +14,15 @@ import {
   X,
 } from 'lucide-react';
 import { useTranslation } from '../../hooks/useTranslation';
+import {
+  dataTableWrap,
+  dataTable,
+  dataTheadRow,
+  dataTh,
+  dataTbodyRow,
+  dataTd,
+  dataTdMono,
+} from '../dataTableStyles';
 
 const topDesigners = [
   { name: 'Aigerim S.', revenue: '420 000 ₸', commission: '9%', rising: true },
@@ -172,26 +181,26 @@ export default function DemoPreview({ open, onClose }: Props) {
                     <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-foreground">
                       <TrendingUp className="h-4 w-4 text-primary" /> {t('landingV2.demo.company.topDesigners')}
                     </h3>
-                    <div className="overflow-hidden border border-border">
-                      <table className="w-full text-sm">
+                    <div className={dataTableWrap}>
+                      <table className={dataTable}>
                         <thead>
-                          <tr className="border-b border-border text-xs text-secondary-alpha">
-                            <th className="px-4 py-2.5 text-left font-medium">{t('landingV2.demo.company.table.designer')}</th>
-                            <th className="px-4 py-2.5 text-right font-medium">{t('landingV2.demo.company.table.revenue')}</th>
-                            <th className="px-4 py-2.5 text-right font-medium">{t('landingV2.demo.company.table.commission')}</th>
+                          <tr className={dataTheadRow}>
+                            <th className={dataTh}>{t('landingV2.demo.company.table.designer')}</th>
+                            <th className={`${dataTh} text-right`}>{t('landingV2.demo.company.table.revenue')}</th>
+                            <th className={`${dataTh} text-right`}>{t('landingV2.demo.company.table.commission')}</th>
                           </tr>
                         </thead>
                         <tbody>
                           {topDesigners.map((d, i) => (
-                            <tr key={i} className={`border-b border-border/50 last:border-0 ${i % 2 === 1 ? 'bg-foreground/[0.03]' : ''}`}>
-                              <td className="px-4 py-2.5 font-medium text-foreground">
+                            <tr key={i} className={`${dataTbodyRow} ${i % 2 === 1 ? 'bg-foreground/[0.03]' : ''}`}>
+                              <td className={`${dataTd} font-medium`}>
                                 <span className="flex items-center gap-2">
                                   {d.name}
                                   {d.rising && <RisingBadge />}
                                 </span>
                               </td>
-                              <td className="px-4 py-2.5 text-right font-mono text-foreground">{d.revenue}</td>
-                              <td className="px-4 py-2.5 text-right font-mono font-semibold text-primary">{d.commission}</td>
+                              <td className={`${dataTdMono} text-right`}>{d.revenue}</td>
+                              <td className={`${dataTdMono} text-right font-semibold text-primary`}>{d.commission}</td>
                             </tr>
                           ))}
                         </tbody>

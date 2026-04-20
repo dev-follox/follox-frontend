@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, FormEvent } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Product, AffiliateLink } from '../types';
 import api from '../services/api';
 import Card from '../components/Card';
@@ -38,10 +38,7 @@ const ProductLandingPage: React.FC = () => {
         setAffiliateLink(linkResponse);
         
         // Get product details (visit will be tracked through the affiliate link)
-        const productResponse = await api.getProduct(
-          linkResponse.product_id,
-          linkResponse.blogger_id
-        );
+        const productResponse = await api.getProduct(linkResponse.product_id);
         setProduct(productResponse);
       } catch (err) {
         setError(t('productLanding.loadError'));
@@ -63,10 +60,11 @@ const ProductLandingPage: React.FC = () => {
     try {
       await api.createOrder({
         product_id: affiliateLink.product_id,
-        blogger_id: affiliateLink.blogger_id,
+        designer_id: affiliateLink.designer_id,
         client_phone: phoneNumber,
         quantity: quantity,
         price_per_item: product.price,
+        affiliate_link_id: affiliateLink.id,
       });
       setOrderSuccess(true);
     } catch (err) {
@@ -85,14 +83,14 @@ const ProductLandingPage: React.FC = () => {
   }
 
   if (!product) {
-    return <div className="text-center text-gray-500 text-xl">{t('productLanding.notFound')}</div>;
+    return <div className="text-center text-secondary-alpha text-xl">{t('productLanding.notFound')}</div>;
   }
 
   return (
-    <div className="h-full w-full p-4 md:p-8 flex items-center justify-center">
+    <div className="h-full w-full p-4 md:p-8 flex items-center justify-center bg-background">
       <div className="max-w-4xl w-full">
       <Card className="grid md:grid-cols-2 gap-8">
-        <div className="relative h-full min-h-[300px] bg-gray-100 rounded-lg overflow-hidden">
+        <div className="relative h-full min-h-[300px] bg-card rounded-lg overflow-hidden border border-border">
           {product.image_url ? (
             <img
               src={api.getImageUrl(product.image_url)}
@@ -100,7 +98,7 @@ const ProductLandingPage: React.FC = () => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+            <div className="absolute inset-0 flex items-center justify-center text-secondary-alpha">
               <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -108,14 +106,14 @@ const ProductLandingPage: React.FC = () => {
           )}
         </div>
         <div className="p-8 flex flex-col justify-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h1>
-          <p className="text-gray-600 mb-4">{product.description}</p>
-          <p className="text-4xl font-extrabold text-primary-text mb-6">₸{product.price.toFixed(2)}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{product.name}</h1>
+          <p className="text-secondary-alpha mb-4">{product.description}</p>
+          <p className="text-4xl font-extrabold text-primary mb-6">₸{product.price.toFixed(2)}</p>
           
           {orderSuccess ? (
-            <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md" role="alert">
-              <p className="font-bold">{t('productLanding.orderSuccess')}</p>
-              <p>{t('productLanding.orderSuccessMessage')}</p>
+            <div className="rounded-md border border-primary/30 bg-primary/10 p-4 text-foreground" role="alert">
+              <p className="font-bold text-primary">{t('productLanding.orderSuccess')}</p>
+              <p className="text-secondary-alpha">{t('productLanding.orderSuccessMessage')}</p>
             </div>
           ) : (
             <form onSubmit={handleOrderSubmit} className="space-y-4">

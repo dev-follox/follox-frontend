@@ -7,13 +7,13 @@ import api from '../services/api';
 import { useTranslation } from '../hooks/useTranslation';
 import { validatePassword, getPasswordErrorFrom422 } from '../utils/passwordValidation';
 
-const BloggerRegistrationPage: React.FC = () => {
+const DesignerRegistrationPage: React.FC = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    bio: ''
+    bio: '',
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,12 +31,12 @@ const BloggerRegistrationPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await api.createBlogger(formData);
+      await api.createDesigner(formData);
       navigate('/login');
-    } catch (err: any) {
-      const passwordMsg = err?.response?.status === 422 && err?.response?.data
-        ? getPasswordErrorFrom422(err.response.data)
-        : null;
+    } catch (err: unknown) {
+      const e = err as { response?: { status?: number; data?: unknown } };
+      const passwordMsg =
+        e?.response?.status === 422 && e.response.data ? getPasswordErrorFrom422(e.response.data as never) : null;
       setError(passwordMsg ?? t('registration.signupError'));
     } finally {
       setIsLoading(false);
@@ -46,9 +46,9 @@ const BloggerRegistrationPage: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target as HTMLInputElement;
     if (name === 'password') setPasswordTouched(true);
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -59,28 +59,22 @@ const BloggerRegistrationPage: React.FC = () => {
           <Link to="/">
             <Button variant="secondary" size="sm" aria-label={t('common.back')}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M12.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L8.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M12.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L8.414 10l4.293 4.293a1 1 0 010 1.414z"
+                  clipRule="evenodd"
+                />
               </svg>
             </Button>
           </Link>
-          <h2 className="registration-header__title">
-            {t('registration.bloggerTitle')}
-          </h2>
+          <h2 className="registration-header__title">{t('registration.designerTitle')}</h2>
           <span className="registration-header__spacer" />
         </div>
         <Card className="panel panel--padded">
           <form className="registration-form" onSubmit={handleSubmit}>
             {error && <p className="text-center text-sm text-red-600">{error}</p>}
 
-            <Input
-              id="name"
-              name="name"
-              label={t('common.name')}
-              type="text"
-              required
-              value={formData.name}
-              onChange={handleChange}
-            />
+            <Input id="name" name="name" label={t('common.name')} type="text" required value={formData.name} onChange={handleChange} />
 
             <Input
               id="email"
@@ -130,9 +124,7 @@ const BloggerRegistrationPage: React.FC = () => {
             </div>
 
             <div className="registration-link">
-              <Link to="/login">
-                {t('auth.alreadyHaveAccount')}
-              </Link>
+              <Link to="/login">{t('auth.alreadyHaveAccount')}</Link>
             </div>
           </form>
         </Card>
@@ -141,4 +133,4 @@ const BloggerRegistrationPage: React.FC = () => {
   );
 };
 
-export default BloggerRegistrationPage;
+export default DesignerRegistrationPage;

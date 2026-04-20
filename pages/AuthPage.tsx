@@ -8,7 +8,7 @@ import { ArrowLeft, Eye, EyeOff, Palette, Store } from 'lucide-react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 
 type AuthMode = 'signup' | 'login';
-type UserType = 'company' | 'blogger';
+type UserType = 'company' | 'designer';
 
 const AuthPage: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
@@ -28,20 +28,21 @@ const AuthPage: React.FC = () => {
     password: '',
     phone_number: '',
     company_name: '',
-    description: ''
+    description: '',
+    default_designer_bonus_percent: '',
   });
-  
-  const [bloggerFormData, setBloggerFormData] = useState({
+
+  const [designerFormData, setDesignerFormData] = useState({
     name: '',
     email: '',
     password: '',
-    bio: ''
+    bio: '',
   });
-  
+
   const [signupError, setSignupError] = useState('');
   const [isSignupLoading, setIsSignupLoading] = useState(false);
   const [companyPasswordTouched, setCompanyPasswordTouched] = useState(false);
-  const [bloggerPasswordTouched, setBloggerPasswordTouched] = useState(false);
+  const [designerPasswordTouched, setDesignerPasswordTouched] = useState(false);
 
   const { login, isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
@@ -54,18 +55,13 @@ const AuthPage: React.FC = () => {
   
   if (isLoggedIn) {
     if (user?.role === 'COMPANY') {
-      const selectedModule = localStorage.getItem('selectedModule');
-      if (selectedModule === 'tools') {
-        navigate('/dashboard', { replace: true });
-      } else {
-        navigate('/company/dashboard', { replace: true });
-      }
-    } else if (user?.role === 'BLOGGER') {
-      navigate('/blogger/products', { replace: true });
+      navigate('/dashboard', { replace: true });
+    } else if (user?.role === 'DESIGNER') {
+      navigate('/designers/products', { replace: true });
     }
   }
 
-  const handleGoogleSignIn = async (userType: 'company' | 'blogger') => {
+  const handleGoogleSignIn = async (userType: 'company' | 'designer') => {
     try {
       // Get authorization URL from backend
       const { authorization_url, state, redirect_uri } = await api.getGoogleAuthorizeUrl(userType);
@@ -133,7 +129,7 @@ const AuthPage: React.FC = () => {
     e.preventDefault();
     setSignupError('');
 
-    const password = userType === 'company' ? companyFormData.password : bloggerFormData.password;
+    const password = userType === 'company' ? companyFormData.password : designerFormData.password;
     if (confirmPassword && password !== confirmPassword) {
       setSignupError(t('profile.security.passwordMismatch'));
       return;
@@ -148,6 +144,12 @@ const AuthPage: React.FC = () => {
 
     try {
       if (userType === 'company') {
+        const bonus = Number(companyFormData.default_designer_bonus_percent);
+        if (Number.isNaN(bonus) || bonus < 0 || bonus > 100) {
+          setSignupError(t('registration.invalidDefaultBonus'));
+          setIsSignupLoading(false);
+          return;
+        }
         await api.createCompany({
           full_name: companyFormData.full_name,
           email: companyFormData.email,
@@ -155,12 +157,13 @@ const AuthPage: React.FC = () => {
           phone_number: companyFormData.phone_number || null,
           company_name: companyFormData.company_name,
           description: companyFormData.description || null,
+          default_designer_bonus_percent: bonus,
         });
       } else {
-        await api.createBlogger(bloggerFormData);
+        await api.createDesigner(designerFormData);
       }
       setMode('login');
-      setLoginEmail(userType === 'company' ? companyFormData.email : bloggerFormData.email);
+      setLoginEmail(userType === 'company' ? companyFormData.email : designerFormData.email);
     } catch (err: any) {
       const passwordMsg = err?.response?.status === 422 && err?.response?.data
         ? getPasswordErrorFrom422(err.response.data)
@@ -180,18 +183,18 @@ const AuthPage: React.FC = () => {
     }));
   };
 
-  const handleBloggerFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleDesignerFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    if (name === 'password') setBloggerPasswordTouched(true);
-    setBloggerFormData(prev => ({
+    if (name === 'password') setDesignerPasswordTouched(true);
+    setDesignerFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const currentPasswordValue = useMemo(
-    () => (mode === 'login' ? loginPassword : userType === 'company' ? companyFormData.password : bloggerFormData.password),
-    [mode, loginPassword, userType, companyFormData.password, bloggerFormData.password]
+    () => (mode === 'login' ? loginPassword : userType === 'company' ? companyFormData.password : designerFormData.password),
+    [mode, loginPassword, userType, companyFormData.password, designerFormData.password]
   );
 
   return (
@@ -248,12 +251,12 @@ const AuthPage: React.FC = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setUserType('blogger')}
+                  onClick={() => setUserType('designer')}
                   className={`flex flex-col items-center gap-2 border-2 p-4 transition-all ${
-                    userType === 'blogger' ? 'border-primary bg-primary/5' : 'border-border hover:border-foreground/20'
+                    userType === 'designer' ? 'border-primary bg-primary/5' : 'border-border hover:border-foreground/20'
                   }`}
                 >
-                  <Palette className={`h-6 w-6 ${userType === 'blogger' ? 'text-primary' : 'text-stone'}`} strokeWidth={1.5} />
+                  <Palette className={`h-6 w-6 ${userType === 'designer' ? 'text-primary' : 'text-stone'}`} strokeWidth={1.5} />
                   <span className="text-sm font-medium text-foreground">{t('authV2.roles.designer')}</span>
                 </button>
               </div>
@@ -398,6 +401,25 @@ const AuthPage: React.FC = () => {
                   </div>
 
                   <div>
+                    <label htmlFor="company-default-bonus" className={labelCls}>
+                      {t('registration.defaultBonusLabel')}
+                    </label>
+                    <input
+                      id="company-default-bonus"
+                      name="default_designer_bonus_percent"
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={1}
+                      className={inputCls}
+                      required
+                      value={companyFormData.default_designer_bonus_percent}
+                      onChange={handleCompanyFormChange}
+                    />
+                    <p className="mt-1 text-xs text-secondary-alpha">{t('registration.defaultBonusHint')}</p>
+                  </div>
+
+                  <div>
                     <label htmlFor="company-password" className={labelCls}>
                       {t('common.password')}
                     </label>
@@ -440,8 +462,8 @@ const AuthPage: React.FC = () => {
                       className={inputCls}
                       placeholder={t('authV2.placeholders.name')}
                       required
-                      value={bloggerFormData.name}
-                      onChange={handleBloggerFormChange}
+                      value={designerFormData.name}
+                      onChange={handleDesignerFormChange}
                     />
                   </div>
 
@@ -456,8 +478,8 @@ const AuthPage: React.FC = () => {
                       className={inputCls}
                       placeholder="you@example.com"
                       required
-                      value={bloggerFormData.email}
-                      onChange={handleBloggerFormChange}
+                      value={designerFormData.email}
+                      onChange={handleDesignerFormChange}
                     />
                   </div>
 
@@ -473,9 +495,9 @@ const AuthPage: React.FC = () => {
                         className={`${inputCls} pr-10`}
                         placeholder={t('authV2.placeholders.passwordMin')}
                         required
-                        value={bloggerFormData.password}
-                        onChange={handleBloggerFormChange}
-                        onBlur={() => setBloggerPasswordTouched(true)}
+                        value={designerFormData.password}
+                        onChange={handleDesignerFormChange}
+                        onBlur={() => setDesignerPasswordTouched(true)}
                       />
                       <button
                         type="button"
@@ -486,8 +508,8 @@ const AuthPage: React.FC = () => {
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
-                    {bloggerPasswordTouched && (() => {
-                      const v = validatePassword(bloggerFormData.password, t);
+                    {designerPasswordTouched && (() => {
+                      const v = validatePassword(designerFormData.password, t);
                       return v.valid ? null : <p className="mt-1 text-sm text-red-600">{v.message}</p>;
                     })()}
                   </div>
@@ -501,8 +523,8 @@ const AuthPage: React.FC = () => {
                       name="bio"
                       rows={3}
                       className={`${inputCls} h-auto`}
-                      value={bloggerFormData.bio}
-                      onChange={handleBloggerFormChange}
+                      value={designerFormData.bio}
+                      onChange={handleDesignerFormChange}
                     />
                   </div>
                 </>

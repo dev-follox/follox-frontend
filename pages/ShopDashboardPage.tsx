@@ -1,36 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTranslation } from '../hooks/useTranslation';
 import { Product } from '../types';
 import api from '../services/api';
-import Card from '../components/Card';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ProductForm from '../components/ProductForm';
-
-type TabType = 'products' | 'designers';
+import { Plus, Trash2 } from 'lucide-react';
+import { isCompanySubscriptionActive } from '../utils/companySubscription';
 
 const ShopDashboardPage: React.FC = () => {
 	const { user } = useAuth();
 	const { t } = useTranslation();
-	const company = user?.company;
+	const company = user?.role === 'COMPANY' ? user.company : undefined;
+	const canWrite = isCompanySubscriptionActive(company);
 	const navigate = useNavigate();
-	const [activeTab, setActiveTab] = useState<TabType>('products');
-	const location = useLocation();
-
-	// Sync activeTab with current route
-	useEffect(() => {
-		if (location.pathname === '/company/designers') {
-			setActiveTab('designers');
-		} else if (
-			location.pathname.startsWith('/company/dashboard') ||
-			location.pathname.startsWith('/company/products')
-		) {
-			setActiveTab('products');
-		}
-	}, [location.pathname]);
 	const [products, setProducts] = useState<Product[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -93,7 +79,7 @@ const ShopDashboardPage: React.FC = () => {
 	const handleCreateProduct = async (data: {
 		name: string;
 		description?: string;
-		blogger_task_description?: string;
+		designer_task_description?: string;
 		price: number;
 		image_url?: string;
 	}) => {
@@ -127,7 +113,7 @@ const ShopDashboardPage: React.FC = () => {
 	const handleUpdateProduct = async (data: {
 		name: string;
 		description?: string;
-		blogger_task_description?: string;
+		designer_task_description?: string;
 		price: number;
 		image_url?: string;
 	}) => {
@@ -138,7 +124,7 @@ const ShopDashboardPage: React.FC = () => {
 			const updatedProduct = await api.updateProduct(editingProduct.id, {
 				name: data.name,
 				description: data.description || null,
-				blogger_task_description: data.blogger_task_description || null,
+				designer_task_description: data.designer_task_description || null,
 				price: data.price,
 				image_url: data.image_url || null
 			});
@@ -192,10 +178,21 @@ const ShopDashboardPage: React.FC = () => {
 
 	return (
 		<>
-			<div className="company-dashboard">
-				<div className="company-dashboard-header">
-					<h1 className="company-dashboard-header__title">{t('company.yourProducts')}</h1>
-					<Button onClick={() => setIsDialogOpen(true)}>{t('company.addProduct')}</Button>
+			<div className="space-y-6 p-4 md:p-8">
+				{!canWrite && (
+					<div className="rounded-md border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-foreground">
+						{t('subscription.readOnlyNotice')}
+					</div>
+				)}
+				<div className="flex items-center justify-between">
+					<h1 className="text-2xl font-bold text-foreground">Каталог</h1>
+					<Button
+						onClick={() => setIsDialogOpen(true)}
+						icon={<Plus className="h-4 w-4" />}
+						disabled={!canWrite}
+					>
+						{t('company.addProduct')}
+					</Button>
 				</div>
 
 				<ConfirmDialog
@@ -213,82 +210,39 @@ const ShopDashboardPage: React.FC = () => {
 					isLoading={isDeleting}
 				/>
 
-				{products.length === 0 ? (
-					<p className="company-empty-state">{t('company.noProducts')}</p>
-				) : (
-					<div className="company-products-grid">
-						{products.map(product => (
-							<Card
-								key={product.id}
-								className="company-product-card"
-								onClick={e => handleCardClick(product.id, e)}
-							>
-								<div className="company-product-card__actions dropdown-container">
-									<div className="relative" ref={el => (dropdownRefs.current[product.id] = el)}>
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+					{products.map((product) => (
+						<div
+							key={product.id}
+							className="border border-border bg-card text-card-foreground group cursor-pointer"
+							onClick={(e) => handleCardClick(product.id, e)}
+						>
+							<div className="p-4">
+								<div className="flex justify-between items-start">
+									<h3 className="font-semibold text-foreground">{product.name}</h3>
+									<div className="dropdown-container">
 										<button
-											onClick={e => {
+											type="button"
+											className="inline-flex items-center justify-center h-9 px-4 opacity-0 group-hover:opacity-100 hover:bg-foreground/5 disabled:opacity-30"
+											disabled={!canWrite}
+											onClick={(e) => {
 												e.stopPropagation();
-												setOpenDropdownId(openDropdownId === product.id ? null : product.id);
+												handleDeleteClick(product.id);
 											}}
-											className="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
-											aria-label="Действия"
 										>
-											<svg
-												className="w-5 h-5 text-gray-600"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-												/>
-											</svg>
+											<Trash2 className="h-4 w-4 text-danger" />
 										</button>
-										{openDropdownId === product.id && (
-											<div className="absolute right-0 mt-2 w-48 bg-white rounded-md z-20 border border-[rgba(228,228,231,1)]">
-												<div className="py-1">
-													<button
-														onClick={e => {
-															e.stopPropagation();
-															handleEditClick(product);
-														}}
-														className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-													>
-														{t('common.edit')}
-													</button>
-													<button
-														onClick={e => {
-															e.stopPropagation();
-															handleDeleteClick(product.id);
-														}}
-														className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-													>
-														{t('common.delete')}
-													</button>
-												</div>
-											</div>
-										)}
 									</div>
 								</div>
-								{product.image_url && (
-									<div className="company-product-card__image">
-										<img src={api.getImageUrl(product.image_url)} alt={product.name} />
-									</div>
-								)}
-								<div className="company-product-card__content">
-									<h2 className="company-product-card__title">{product.name}</h2>
-									<p className="company-product-card__description">
-										<span>{product.description || t('company.noDescription')}</span>
-									</p>
-									<p className="company-product-card__price">₸{product.price.toFixed(2)}</p>
-								</div>
-							</Card>
-						))}
-					</div>
-				)}
+								<p className="text-sm text-muted-foreground mt-1">{product.description || t('company.noDescription')}</p>
+								<p className="text-lg font-bold text-primary mt-2">{new Intl.NumberFormat().format(product.price)} ₸</p>
+							</div>
+						</div>
+					))}
+					{products.length === 0 && (
+						<p className="text-muted-foreground col-span-full text-center py-8">{t('company.noProducts')}</p>
+					)}
+				</div>
 			</div>
 			<ProductForm
 				isOpen={isDialogOpen}

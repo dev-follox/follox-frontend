@@ -162,9 +162,11 @@ const UserProfilePage: React.FC = () => {
 
   if (!isCompany) {
     return (
-      <div className="profile-page p-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">{t('profile.title')}</h1>
-        <p className="text-gray-600">{t('profile.notAvailable')}</p>
+      <div className="profile-page p-4 md:p-8">
+        <div className="rounded-lg border border-border bg-card p-6">
+          <h1 className="mb-2 text-2xl font-bold text-foreground">{t('profile.title')}</h1>
+          <p className="text-secondary-alpha">{t('profile.notAvailable')}</p>
+        </div>
       </div>
     );
   }
@@ -179,17 +181,17 @@ const UserProfilePage: React.FC = () => {
 
   if (!profile) {
     return (
-      <div className="profile-page p-6">
-        <p className="text-red-600">{t('profile.loadError')}</p>
+      <div className="profile-page p-4 md:p-8">
+        <p className="text-destructive">{t('profile.loadError')}</p>
       </div>
     );
   }
 
   return (
-    <div className="profile-page">
-      <div className="profile-page__header border-b border-gray-200 pb-4 mb-4">
+    <div className="profile-page p-4 md:p-8">
+      <div className="profile-page__header mb-6 border-b border-border pb-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-xl font-bold text-gray-800">{t('profile.title')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('profile.title')}</h1>
           {isCompany && (
             <div className="w-full sm:w-auto sm:min-w-[200px]">
               <QnaProgressWidget />
@@ -198,14 +200,14 @@ const UserProfilePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex border-b border-gray-200 mb-6">
+      <div className="mb-6 flex border-b border-border">
         <button
           type="button"
           onClick={() => setActiveTab('general')}
-          className={`profile-page__tab flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
+          className={`profile-page__tab -mb-px flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
             activeTab === 'general'
               ? 'border-primary text-primary-text'
-              : 'border-transparent text-gray-600 hover:text-gray-800'
+              : 'border-transparent text-secondary-alpha hover:text-foreground'
           }`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -217,10 +219,10 @@ const UserProfilePage: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('security')}
-          className={`profile-page__tab flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors ${
+          className={`profile-page__tab -mb-px flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
             activeTab === 'security'
               ? 'border-primary text-primary-text'
-              : 'border-transparent text-gray-600 hover:text-gray-800'
+              : 'border-transparent text-secondary-alpha hover:text-foreground'
           }`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,9 +233,9 @@ const UserProfilePage: React.FC = () => {
       </div>
 
       {activeTab === 'general' && (
-        <div className="profile-page__general">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">{t('profile.general.title')}</h2>
+        <div className="profile-page__general rounded-lg border border-border bg-card p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">{t('profile.general.title')}</h2>
             {!isEditing ? (
               <Button
                 type="button"
@@ -273,7 +275,7 @@ const UserProfilePage: React.FC = () => {
                   type="email"
                   value={editForm.email ?? ''}
                   disabled
-                  className="bg-gray-50"
+                  className="bg-background/80"
                 />
                 <Input
                   id="profile-phone_number"
@@ -294,14 +296,14 @@ const UserProfilePage: React.FC = () => {
                   onChange={(e) => handleEditChange('company_name', e.target.value)}
                 />
                 <div>
-                  <label htmlFor="profile-stage" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="profile-stage" className="mb-1 block text-sm font-medium text-foreground">
                     {t('auth.stage')}
                   </label>
                   <select
                     id="profile-stage"
                     value={editForm.stage ?? ''}
                     onChange={(e) => handleEditChange('stage', e.target.value || null)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   >
                     {STAGE_OPTIONS.map((opt) => (
                       <option key={opt.value || 'empty'} value={opt.value}>
@@ -320,38 +322,38 @@ const UserProfilePage: React.FC = () => {
                 />
               </>
             ) : (
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-border">
                 <div className="flex items-center justify-between gap-4 py-3 first:pt-0">
-                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.fullName')}</span>
-                  <p className="text-sm text-gray-900 text-right break-words">{profile.full_name || '—'}</p>
+                  <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('auth.fullName')}</span>
+                  <p className="break-words text-right text-sm text-foreground">{profile.full_name || '—'}</p>
                 </div>
                 <div className="flex items-center justify-between gap-4 py-3">
-                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.email')}</span>
-                  <p className="text-sm text-gray-900 text-right break-words">{profile.email || '—'}</p>
+                  <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('auth.email')}</span>
+                  <p className="break-words text-right text-sm text-foreground">{profile.email || '—'}</p>
                 </div>
                 <div className="flex items-center justify-between gap-4 py-3">
-                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.phoneNumber')}</span>
-                  <p className="text-sm text-gray-900 text-right break-words">{profile.phone_number || '—'}</p>
+                  <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('auth.phoneNumber')}</span>
+                  <p className="break-words text-right text-sm text-foreground">{profile.phone_number || '—'}</p>
                 </div>
                 <div className="flex items-center justify-between gap-4 py-3">
-                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.linkedinLink')}</span>
-                  <p className="text-sm text-gray-900 text-right break-words">{profile.professional_profile_link || '—'}</p>
+                  <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('auth.linkedinLink')}</span>
+                  <p className="break-words text-right text-sm text-foreground">{profile.professional_profile_link || '—'}</p>
                 </div>
                 <div className="flex items-center justify-between gap-4 py-3">
-                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.companyName')}</span>
-                  <p className="text-sm text-gray-900 text-right break-words">{profile.company_name || '—'}</p>
+                  <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('auth.companyName')}</span>
+                  <p className="break-words text-right text-sm text-foreground">{profile.company_name || '—'}</p>
                 </div>
                 <div className="flex items-center justify-between gap-4 py-3">
-                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('auth.stage')}</span>
-                  <p className="text-sm text-gray-900 text-right">
+                  <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('auth.stage')}</span>
+                  <p className="text-right text-sm text-foreground">
                     {profile.stage
                       ? t(profile.stage === 'pre-revenue' ? 'auth.stageOptions.preRevenue' : profile.stage === 'post-PMF' ? 'auth.stageOptions.postPMF' : `auth.stageOptions.${profile.stage}`)
                       : '—'}
                   </p>
                 </div>
                 <div className="flex items-start justify-between gap-4 py-3 last:pb-0">
-                  <span className="text-sm font-medium text-gray-500 shrink-0">{t('common.description')}</span>
-                  <p className="text-sm text-gray-900 text-right whitespace-pre-wrap break-words">{profile.description || '—'}</p>
+                  <span className="shrink-0 text-sm font-medium text-secondary-alpha">{t('common.description')}</span>
+                  <p className="break-words whitespace-pre-wrap text-right text-sm text-foreground">{profile.description || '—'}</p>
                 </div>
               </div>
             )}
@@ -360,9 +362,9 @@ const UserProfilePage: React.FC = () => {
       )}
 
       {activeTab === 'security' && (
-        <div className="profile-page__security space-y-6">
-          <div className="profile-page__block border border-gray-200 rounded-lg p-4 max-w-xl">
-            <h3 className="text-base font-semibold text-gray-800 mb-4">{t('profile.security.changePassword')}</h3>
+        <div className="profile-page__security max-w-xl space-y-6">
+          <div className="profile-page__block rounded-lg border border-border bg-card p-6">
+            <h3 className="mb-4 text-base font-semibold text-foreground">{t('profile.security.changePassword')}</h3>
             <form onSubmit={handleChangePassword} className="space-y-4">
               <Input
                 id="current-password"
@@ -398,9 +400,9 @@ const UserProfilePage: React.FC = () => {
             </form>
           </div>
 
-          <div className="profile-page__block profile-page__block--danger border-2 border-red-500 rounded-lg p-4 max-w-xl bg-red-50/50">
-            <h3 className="text-base font-semibold text-gray-800 mb-2">{t('profile.security.deleteAccount')}</h3>
-            <p className="text-sm text-gray-600 mb-4">{t('profile.security.deleteWarning')}</p>
+          <div className="profile-page__block profile-page__block--danger max-w-xl rounded-lg border-2 border-destructive/40 bg-destructive/5 p-6">
+            <h3 className="mb-2 text-base font-semibold text-foreground">{t('profile.security.deleteAccount')}</h3>
+            <p className="mb-4 text-sm text-secondary-alpha">{t('profile.security.deleteWarning')}</p>
             <Button
               type="button"
               variant="danger"

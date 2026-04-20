@@ -32,8 +32,7 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <DemoPreview open={demoOpen} onClose={() => setDemoOpen(false)} />
-
-      <LandingHeader onTryForFree={() => setDemoOpen(true)} />
+      <LandingHeader onTryDemo={() => setDemoOpen(true)} />
 
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
         <img src="/assets/hero-bg.jpg" alt="" className="absolute inset-0 h-full w-full object-cover" />
@@ -68,15 +67,20 @@ const HomePage: React.FC = () => {
             className="mt-10 flex flex-wrap justify-center gap-4"
           >
             <Link to="/login">
-              <button className="inline-flex items-center gap-2 bg-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-primary/90">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white transition-colors hover:bg-primary/90"
+              >
                 {t('landingV2.hero.ctaStart')} <ArrowRight className="h-4 w-4" />
               </button>
             </Link>
             <button
+              type="button"
               onClick={() => setDemoOpen(true)}
-              className="inline-flex items-center gap-2 border border-border px-6 py-3 font-semibold text-foreground transition-colors hover:border-primary/50"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-colors hover:border-primary/50"
             >
-              <Play className="h-4 w-4" /> {t('landingV2.hero.ctaDemo')}
+              <Play className="h-4 w-4" />
+              {t('landingV2.hero.ctaDemo')}
             </button>
           </motion.div>
 
@@ -232,7 +236,7 @@ const HomePage: React.FC = () => {
                 ))}
               </ul>
 
-              <Link to="/blogger/register">
+              <Link to="/designers/register">
                 <button className="w-full border border-foreground/20 bg-transparent px-6 py-2 font-semibold text-foreground transition-colors hover:bg-foreground/5">
                   {t('landingV2.pricing.designer.cta')}
                 </button>
