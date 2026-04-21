@@ -198,7 +198,7 @@ const DesignerCompanyCatalogPage: React.FC = () => {
                 <tr key={p.id} className={dataTbodyRow}>
                   <td className={dataTd}>
                     <Link
-                      to={`/designers/products/${p.id}`}
+                      to={`/designers/dashboard/${p.id}`}
                       className="font-medium text-primary hover:underline"
                     >
                       {p.name}

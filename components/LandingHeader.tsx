@@ -19,7 +19,7 @@ const LandingHeader: React.FC<LandingHeaderProps> = ({ transparent = false, onTr
     <header className={`landing-header ${transparent ? 'landing-header--transparent' : ''}`}>
       <div className="landing-header__inner">
         <Link to="/" className="landing-header__logo">
-          <img src="/assets/logo.png" alt="Follox" className="landing-header__logo-img" />
+          <img src="/assets/logo.png" alt="Flipster" className="landing-header__logo-img" />
           Flipster
         </Link>
         <nav className="landing-header__nav">

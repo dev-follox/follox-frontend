@@ -1,7 +1,7 @@
 {
   "common": {
     "welcome": "Welcome",
-    "welcomeTo": "Welcome to Follox",
+    "welcomeTo": "Welcome to Flipster",
     "loading": "Loading...",
     "save": "Save",
     "saving": "Saving",
@@ -295,7 +295,7 @@
     },
     "rolePrompt": "I’m signing up as",
     "roles": {
-      "shop": "Shop",
+      "company": "Company",
       "designer": "Designer"
     },
     "forgotPassword": "Forgot password?",
@@ -583,8 +583,8 @@
     "bonusSaveError": "Could not save bonus override"
   },
   "designerCatalog": {
-    "title": "Company catalog",
-    "subtitle": "Companies you can work with (active subscription). Open a catalog to create affiliate links or register manual orders.",
+    "title": "Companies",
+    "subtitle": "Open a catalog to create affiliate links or register manual orders.",
     "empty": "No companies available right now.",
     "loadError": "Could not load companies.",
     "join": "Join company",
@@ -700,6 +700,7 @@
       "orders": "Orders",
       "sold": "Sold",
       "revenue": "Revenue",
+      "sale": "Sale",
       "noData": "No analytics data yet"
     },
     "notFound": "Product not found.",

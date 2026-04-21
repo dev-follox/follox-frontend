@@ -68,11 +68,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
       <div className={`sidebar ${isOpen ? 'sidebar--open' : 'sidebar--closed'}`}>
         <div className="p-6 border-b border-gray-200">
           <Link
-            to={isAdmin ? '/admin/companies' : isCompany ? '/dashboard' : '/designers/products'}
+            to={isAdmin ? '/admin/companies' : isCompany ? '/dashboard' : '/designers/dashboard'}
             className="sidebar__logo flex items-center gap-2 text-2xl font-bold text-gray-800 hover:text-primary-text"
           >
-            <img src="/assets/logo.png" alt="Follox" className="sidebar__logo-img" />
-            Follox
+            <img src="/assets/logo.png" alt="Flipster" className="sidebar__logo-img" />
+            Flipster
           </Link>
         </div>
 
@@ -140,17 +140,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 
                 {isDesigner && (
                   <Link
-                    to="/designers/products"
+                    to="/designers/dashboard"
                     onClick={handleLinkClick}
                     className={`flex items-center pl-6 pr-4 py-2 rounded-md text-sm transition-colors ${
-                      isActive('/designers/products') || isActive('/designers/links')
+                      isActive('/designers/dashboard') || isActive('/designers/links')
                         ? 'bg-primary text-primary-text'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <span
                       className={`mr-2 ${
-                        isActive('/designers/products') || isActive('/designers/links')
+                          isActive('/designers/dashboard') || isActive('/designers/links')
                           ? 'text-primary-text'
                           : 'text-gray-400'
                       }`}

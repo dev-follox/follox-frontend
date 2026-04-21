@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../services/api';
-import type { AffiliateLinkWithRollup, OrderWithDetails } from '../types';
+import type { AffiliateLinkWithRollup, Company, OrderWithDetails } from '../types';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
 import { useTranslation } from '../hooks/useTranslation';
@@ -25,6 +25,7 @@ const DesignerAffiliateLinkDetailPage: React.FC = () => {
 
   const [link, setLink] = useState<AffiliateLinkWithRollup | null>(null);
   const [orders, setOrders] = useState<OrderWithDetails[]>([]);
+  const [linkedCompanies, setLinkedCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,9 +36,14 @@ const DesignerAffiliateLinkDetailPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const [links, allOrders] = await Promise.all([api.getMyAffiliateLinks(), api.getMyOrders(0, 200)]);
+      const [links, allOrders, companies] = await Promise.all([
+        api.getMyAffiliateLinks(),
+        api.getMyOrders(0, 200),
+        api.getMyDesignerCompanies(),
+      ]);
       const found = links.find((l) => l.id === linkId) ?? null;
       setLink(found);
+      setLinkedCompanies(companies);
       setOrders(allOrders.filter((o) => o.affiliate_link_id === linkId));
     } catch {
       setError(t('designerLinkDetail.loadError'));
@@ -67,7 +73,7 @@ const DesignerAffiliateLinkDetailPage: React.FC = () => {
     return (
       <div className="p-6 text-center">
         <p className="text-red-600">{error ?? t('designerLinkDetail.notFound')}</p>
-        <Link to="/designers/products" className="mt-4 inline-block text-sm text-primary underline">
+        <Link to="/designers/dashboard" className="mt-4 inline-block text-sm text-primary underline">
           {t('designerProductDetails.backToList')}
         </Link>
       </div>
@@ -79,13 +85,18 @@ const DesignerAffiliateLinkDetailPage: React.FC = () => {
   const itemsSold = link.items_sold ?? 0;
   const revenue = link.revenue ?? 0;
   const bonus = link.designer_bonus_paid ?? link.commission_paid ?? 0;
-  const platform = link.platform_fee_paid ?? 0;
+
+  const companyName =
+    link.product?.company?.company_name ??
+    (link.product?.company_id != null
+      ? linkedCompanies.find((c) => c.id === link.product.company_id)?.company_name
+      : undefined);
 
   return (
     <div className="space-y-6 p-4 md:p-8">
       <div className="flex flex-wrap items-center gap-3">
         <Link
-          to="/designers/products"
+          to="/designers/dashboard"
           className="inline-flex items-center gap-1 text-sm text-secondary-alpha hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -95,6 +106,7 @@ const DesignerAffiliateLinkDetailPage: React.FC = () => {
 
       <div>
         <h1 className="text-2xl font-bold text-foreground">{link.product?.name ?? `#${link.product_id}`}</h1>
+        {companyName && <p className="mt-1 text-sm font-medium text-secondary-alpha">{companyName}</p>}
         <p className="mt-1 text-sm text-secondary-alpha">
           {t('designerProducts.effectiveBonus')}: {link.effective_bonus_percent}%
         </p>
@@ -117,7 +129,7 @@ const DesignerAffiliateLinkDetailPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <div className="border border-border bg-card p-4">
           <div className="flex items-center gap-2 text-xs text-secondary-alpha">
             <MousePointerClick className="h-4 w-4" />
@@ -146,10 +158,6 @@ const DesignerAffiliateLinkDetailPage: React.FC = () => {
             {t('companySales.designerBonus')}
           </div>
           <p className="mt-1 font-mono text-xl font-semibold text-foreground">{money(bonus)}</p>
-        </div>
-        <div className="border border-border bg-card p-4">
-          <div className="text-xs text-secondary-alpha">{t('companySales.platformFee')}</div>
-          <p className="mt-1 font-mono text-xl font-semibold text-foreground">{money(platform)}</p>
         </div>
       </div>
 

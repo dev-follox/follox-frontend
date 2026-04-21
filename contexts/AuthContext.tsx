@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const authUser: AuthUser = { role: 'DESIGNER', designer: designer || null };
       setUser(authUser);
       localStorage.setItem('auth_user', JSON.stringify(authUser));
-      navigate('/designers/products', { replace: true });
+      navigate('/designers/dashboard', { replace: true });
       return;
     }
 
@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const authUser: AuthUser = { role: 'DESIGNER', designer };
       setUser(authUser);
       localStorage.setItem('auth_user', JSON.stringify(authUser));
-      navigate('/designers/products', { replace: true });
+      navigate('/designers/dashboard', { replace: true });
     },
     [navigate]
   );
@@ -166,7 +166,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const authUser: AuthUser = { role: 'DESIGNER', designer };
         setUser(authUser);
         localStorage.setItem('auth_user', JSON.stringify(authUser));
-        navigate('/designers/products', { replace: true });
+        navigate('/designers/dashboard', { replace: true });
         return;
       }
 

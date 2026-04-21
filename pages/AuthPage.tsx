@@ -57,7 +57,7 @@ const AuthPage: React.FC = () => {
     if (user?.role === 'COMPANY') {
       navigate('/dashboard', { replace: true });
     } else if (user?.role === 'DESIGNER') {
-      navigate('/designers/products', { replace: true });
+      navigate('/designers/dashboard', { replace: true });
     }
   }
 
@@ -247,7 +247,7 @@ const AuthPage: React.FC = () => {
                   }`}
                 >
                   <Store className={`h-6 w-6 ${userType === 'company' ? 'text-primary' : 'text-stone'}`} strokeWidth={1.5} />
-                  <span className="text-sm font-medium text-foreground">{t('authV2.roles.shop')}</span>
+                  <span className="text-sm font-medium text-foreground">{t('authV2.roles.company')}</span>
                 </button>
                 <button
                   type="button"

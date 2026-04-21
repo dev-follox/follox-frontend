@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
         host: '0.0.0.0',
         proxy: {
           '/v1': {
-            target: env.VITE_API_URL || 'https://api.follox.co',
+            target: env.VITE_API_URL || 'https://api.flipster.kz',
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/v1/, ''),
             secure: false,

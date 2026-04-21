@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Banknote, Clock, DollarSign, Link2, ListOrdered, Store } from 'lucide-react';
 import api from '../services/api';
-import { AffiliateLinkWithRollup, OrderWithDetails } from '../types';
+import { AffiliateLinkWithRollup, Company, OrderWithDetails } from '../types';
 import Spinner from '../components/Spinner';
 import StatCard from '../components/dashboard/StatCard';
 import DashboardOrderStatusBadge from '../components/dashboard/DashboardOrderStatusBadge';
@@ -12,6 +12,7 @@ const DesignerProductsPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [myLinks, setMyLinks] = useState<AffiliateLinkWithRollup[]>([]);
+  const [linkedCompanies, setLinkedCompanies] = useState<Company[]>([]);
   const [orders, setOrders] = useState<OrderWithDetails[]>([]);
   const [earned, setEarned] = useState(0);
   const [awaiting, setAwaiting] = useState(0);
@@ -26,10 +27,11 @@ const DesignerProductsPage: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [stats, links, myOrders] = await Promise.all([
+        const [stats, links, myOrders, companies] = await Promise.all([
           api.getMyStats(),
           api.getMyAffiliateLinks(),
           api.getMyOrders(),
+          api.getMyDesignerCompanies(),
         ]);
 
         const totalBonus = stats.reduce((sum, s) => sum + (s.designer_bonus_paid ?? s.commission_paid ?? 0), 0);
@@ -39,6 +41,7 @@ const DesignerProductsPage: React.FC = () => {
         setReadyToWithdraw(Math.max(totalBonus * 0.8, 0));
 
         setMyLinks(links);
+        setLinkedCompanies(companies);
         setOrders(myOrders.slice(0, 10));
       } catch {
         setError(t('designerProducts.loadError'));
@@ -61,11 +64,13 @@ const DesignerProductsPage: React.FC = () => {
     return <div className="text-center text-destructive">{error}</div>;
   }
 
+  const companyNameById = new Map(linkedCompanies.map((c) => [c.id, c.company_name]));
+
   return (
     <div className="designer-products-page space-y-5 p-4 md:p-8">
       <div>
-        <h1 className="text-xl font-bold uppercase tracking-wide text-foreground md:text-2xl">{t('designerProducts.title')}</h1>
-        <p className="mt-1 text-sm text-secondary-alpha">{t('designerProducts.dashboardSubtitle')}</p>
+        <h1 className="text-xl font-bold tracking-wide text-foreground md:text-2xl">{t('dashboard.title')}</h1>
+        <p className="mt-1 text-sm text-secondary-alpha">{t('dashboardV2.dashboardSubtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -89,6 +94,9 @@ const DesignerProductsPage: React.FC = () => {
             {myLinks.map((link) => {
               const rev = link.revenue ?? 0;
               const bonus = link.designer_bonus_paid ?? link.commission_paid ?? 0;
+              const companyName =
+                link.product?.company?.company_name ??
+                (link.product?.company_id != null ? companyNameById.get(link.product.company_id) : undefined);
               return (
                 <div
                   key={link.id}
@@ -100,18 +108,20 @@ const DesignerProductsPage: React.FC = () => {
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-foreground">{link.product?.name ?? `#${link.product_id}`}</p>
-                      <p className="mt-0.5 text-xs text-secondary-alpha">
-                        {t('designerProducts.effectiveBonus')}:{' '}
-                        <span className="font-mono font-semibold text-primary">{link.effective_bonus_percent}%</span>
-                      </p>
+                      {companyName && (
+                        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-secondary-alpha">
+                          <span>{t('designerLinkDetail.company')}: {companyName}</span>
+                        </div>
+                      )}
                       <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-secondary-alpha">
                         <span>
-                          {t('productDetails.analytics.revenue')}: {money(rev)}
-                        </span>
-                        <span>
-                          {t('companySales.designerBonus')}: {money(bonus)}
+                          {t('productDetails.analytics.sale')}: {money(rev)}
                         </span>
                       </div>
+                      <p className="mt-0.5 text-xs text-secondary-alpha">
+                        {t('designerProducts.effectiveBonus')}:{' '}
+                        <span className="font-mono font-semibold text-primary">{link.effective_bonus_percent}%</span>, {money(bonus)}
+                      </p>
                     </div>
                   </div>
                   <div className="flex shrink-0 flex-wrap gap-2">
@@ -125,7 +135,7 @@ const DesignerProductsPage: React.FC = () => {
                     <button
                       type="button"
                       className="text-sm font-medium text-secondary-alpha underline-offset-2 hover:text-foreground hover:underline"
-                      onClick={() => navigate(`/designers/products/${link.product_id}`)}
+                      onClick={() => navigate(`/designers/dashboard/${link.product_id}`)}
                     >
                       {t('designerProducts.linkAndProduct')}
                     </button>

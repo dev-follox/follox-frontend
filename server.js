@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use(
     '/v1',
     createProxyMiddleware({
-      target: 'https://api.follox.co',
+      target: 'https://api.flipster.kz',
       changeOrigin: true,
       pathRewrite: { '^/v1': '' },
       followRedirects: true,
@@ -22,7 +22,7 @@ app.use(
         // Prevent backend URLs from leaking on 30x redirects
         const location = proxyRes.headers['location'];
         if (location) {
-          proxyRes.headers['location'] = location.replace('https://api.follox.co', '/v1');
+          proxyRes.headers['location'] = location.replace('https://api.flipster.kz', '/v1');
         }
       }
     })

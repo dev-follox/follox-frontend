@@ -49,8 +49,8 @@ const BASE_URL = '/v1';
 
 export const getImageUrl = (imageUrl: string) => {
   if (imageUrl.startsWith('http')) {
-    if (imageUrl.includes('https://api.follox.co')) {
-      return imageUrl.replace(/https?:\/\/api\.follox\.kz/g, BASE_URL);
+    if (imageUrl.includes('https://api.flipster.kz')) {
+      return imageUrl.replace(/https?:\/\/api\.flipster\.kz/g, BASE_URL);
     }
     return imageUrl;
   }

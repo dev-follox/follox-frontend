@@ -16,7 +16,7 @@ const BADGE: Record<
   NormalizedOrderStatus,
   { cls: string; Icon: React.ComponentType<{ className?: string }> }
 > = {
-  waiting_to_process: { cls: 'text-amber-800 bg-amber-100', Icon: AlertCircle },
+  waiting_to_process: { cls: 'text-amber-700 bg-amber-500/15', Icon: AlertCircle },
   processed: { cls: 'text-primary bg-primary/15', Icon: CheckCircle2 },
   cancelled: {
     cls: 'border border-danger/50 bg-danger/15 text-danger',

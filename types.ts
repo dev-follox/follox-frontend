@@ -163,6 +163,8 @@ export interface Product {
   description?: string;
   price: number;
   company_id: number;
+  /** Embedded shop info when API includes it (e.g. affiliate link payloads). */
+  company?: { id: number; company_name: string } | null;
   image_url?: string;
   designer_task_description?: string;
   created_at: string;

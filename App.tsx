@@ -69,8 +69,8 @@ const AppContent: React.FC = () => {
 
             <Route path="/designers/catalog" element={<DesignerCatalogPage />} />
             <Route path="/designers/catalog/:companyId" element={<DesignerCompanyCatalogPage />} />
-            <Route path="/designers/products" element={<DesignerProductsPage />} />
-            <Route path="/designers/products/:productId" element={<DesignerProductDetailsPage />} />
+            <Route path="/designers/dashboard" element={<DesignerProductsPage />} />
+            <Route path="/designers/dashboard/:productId" element={<DesignerProductDetailsPage />} />
             <Route path="/designers/links/:linkId" element={<DesignerAffiliateLinkDetailPage />} />
 
             <Route path="/admin/companies" element={<AdminCompaniesPage />} />

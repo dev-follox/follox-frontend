@@ -66,10 +66,10 @@ const Header: React.FC = () => {
             active: isActive(['/designers/catalog']),
           },
           {
-            to: '/designers/products',
+              to: '/designers/dashboard',
             label: t('sidebar.designerMyLinks'),
             icon: LayoutDashboard,
-            active: isActive(['/designers/products', '/designers/links']),
+            active: isActive(['/designers/dashboard', '/designers/links']),
           },
         ]
       : [{ to: '/admin/companies', label: t('sidebar.companies'), icon: Users, active: isActive(['/admin/companies']) }];
@@ -78,7 +78,7 @@ const Header: React.FC = () => {
     <header className="landing-header landing-header--main">
       <div className="landing-header__inner">
         <Link
-          to={isAdmin ? '/admin/companies' : isCompany ? '/dashboard' : '/designers/products'}
+            to={isAdmin ? '/admin/companies' : isCompany ? '/dashboard' : '/designers/dashboard'}
           className="landing-header__logo"
         >
           <img src="/assets/logo.png" alt="Flipster" className="landing-header__logo-img" />

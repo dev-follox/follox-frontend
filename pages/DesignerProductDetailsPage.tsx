@@ -78,7 +78,7 @@ const DesignerProductDetailsPage: React.FC = () => {
   return (
     <div className="designer-product-details-page h-full w-full p-4 md:p-8">
       <div className="mb-6">
-        <Button onClick={() => navigate('/designers/products')} variant="secondary" size="sm" className="rounded-lg">
+        <Button onClick={() => navigate('/designers/dashboard')} variant="secondary" size="sm" className="rounded-lg">
           {t('designerProductDetails.backToList')}
         </Button>
       </div>
