@@ -8,7 +8,7 @@ import Spinner from '../components/Spinner';
 import Button from '../components/Button';
 import ConfirmDialog from '../components/ConfirmDialog';
 import ProductForm from '../components/ProductForm';
-import { Plus, Trash2 } from 'lucide-react';
+import { ImageOff, Plus, Trash2 } from 'lucide-react';
 import { isCompanySubscriptionActive } from '../utils/companySubscription';
 
 const ShopDashboardPage: React.FC = () => {
@@ -214,9 +214,23 @@ const ShopDashboardPage: React.FC = () => {
 					{products.map((product) => (
 						<div
 							key={product.id}
-							className="border border-border bg-card text-card-foreground group cursor-pointer"
+							className="border border-border bg-card text-card-foreground group cursor-pointer overflow-hidden"
 							onClick={(e) => handleCardClick(product.id, e)}
 						>
+							<div className="aspect-square w-full overflow-hidden bg-foreground/5">
+								{product.image_url ? (
+									<img
+										src={api.getImageUrl(product.image_url)}
+										alt={product.name}
+										className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+										loading="lazy"
+									/>
+								) : (
+									<div className="flex h-full w-full items-center justify-center text-muted-foreground">
+										<ImageOff className="h-10 w-10" />
+									</div>
+								)}
+							</div>
 							<div className="p-4">
 								<div className="flex justify-between items-start">
 									<h3 className="font-semibold text-foreground">{product.name}</h3>
