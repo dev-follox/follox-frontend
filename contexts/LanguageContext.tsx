@@ -1,6 +1,13 @@
-import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useState, useCallback, ReactNode } from 'react';
+import ruTranslations from '../locales/ru.json';
+import enTranslations from '../locales/en.json';
 
 export type Language = 'ru' | 'en';
+
+const TRANSLATIONS: Record<Language, Record<string, any>> = {
+  ru: ruTranslations,
+  en: enTranslations,
+};
 
 interface LanguageContextType {
   language: Language;
@@ -21,30 +28,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     return saved && (saved === 'ru' || saved === 'en') ? saved : 'ru';
   });
 
-  const [translations, setTranslations] = useState<Record<string, any>>({});
-
-  // Load translations
-  useEffect(() => {
-    const loadTranslations = async () => {
-      try {
-        const translationModule = await import(`../locales/${language}.json`);
-        setTranslations(translationModule.default);
-      } catch (error) {
-        console.error(`Failed to load translations for ${language}:`, error);
-        // Fallback to Russian if loading fails
-        if (language !== 'ru') {
-          try {
-            const fallback = await import('../locales/ru.json');
-            setTranslations(fallback.default);
-          } catch (fallbackError) {
-            console.error('Failed to load fallback translations:', fallbackError);
-          }
-        }
-      }
-    };
-
-    loadTranslations();
-  }, [language]);
+  const translations = TRANSLATIONS[language] ?? TRANSLATIONS.ru;
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang);
