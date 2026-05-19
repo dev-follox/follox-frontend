@@ -210,7 +210,7 @@ const ShopDashboardPage: React.FC = () => {
 					isLoading={isDeleting}
 				/>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+				<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-4">
 					{products.map((product) => (
 						<div
 							key={product.id}
@@ -227,29 +227,29 @@ const ShopDashboardPage: React.FC = () => {
 									/>
 								) : (
 									<div className="flex h-full w-full items-center justify-center text-muted-foreground">
-										<ImageOff className="h-10 w-10" />
+										<ImageOff className="h-6 w-6" />
 									</div>
 								)}
 							</div>
-							<div className="p-4">
-								<div className="flex justify-between items-start">
-									<h3 className="font-semibold text-foreground">{product.name}</h3>
+							<div className="p-2">
+								<div className="flex justify-between items-start gap-1">
+									<h3 className="text-sm font-semibold text-foreground line-clamp-1">{product.name}</h3>
 									<div className="dropdown-container">
 										<button
 											type="button"
-											className="inline-flex items-center justify-center h-9 px-4 opacity-0 group-hover:opacity-100 hover:bg-foreground/5 disabled:opacity-30"
+											className="inline-flex items-center justify-center h-7 w-7 opacity-0 group-hover:opacity-100 hover:bg-foreground/5 disabled:opacity-30"
 											disabled={!canWrite}
 											onClick={(e) => {
 												e.stopPropagation();
 												handleDeleteClick(product.id);
 											}}
 										>
-											<Trash2 className="h-4 w-4 text-danger" />
+											<Trash2 className="h-3.5 w-3.5 text-danger" />
 										</button>
 									</div>
 								</div>
-								<p className="text-sm text-muted-foreground mt-1">{product.description || t('company.noDescription')}</p>
-								<p className="text-lg font-bold text-primary mt-2">{new Intl.NumberFormat().format(product.price)} ₸</p>
+								<p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{product.description || t('company.noDescription')}</p>
+								<p className="text-sm font-bold text-primary mt-1">{new Intl.NumberFormat().format(product.price)} ₸</p>
 							</div>
 						</div>
 					))}
